@@ -1,6 +1,10 @@
 .demo-card-wide.mdl-card {
     width: 202px;
     min-height:0px;
+    margin:5px;
+  }
+  .demo-card-wide.mdl-card :hover{
+    background:#BFBBBB;
   }
   .demo-card-wide > .mdl-card__title {
     color: black;
@@ -14,7 +18,9 @@
     background: #fafafa;
     position: relative;
   }
-
+#page-content{
+  margin: 0 auto;
+}
 
   
   .card-title{
@@ -32,4 +38,8 @@
 .mdl-layout__header button,
 .mdl-layout__header .mdl-textfield{
   -webkit-app-region:no-drag;
+}
+
+.folder-icon{
+  width:50px;
 }
