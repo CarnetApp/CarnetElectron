@@ -24,3 +24,12 @@
     color : black;
     margin:0px;
   }
+.mdl-layout__header{
+  -webkit-app-region: drag;
+}
+
+.mdl-layout__header .mdl-layout__drawer-button,
+.mdl-layout__header button,
+.mdl-layout__header .mdl-textfield{
+  -webkit-app-region:no-drag;
+}

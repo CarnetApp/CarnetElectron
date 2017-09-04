@@ -22,8 +22,11 @@
       even in small screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
                 mdl-layout--fixed-header">
-      <header class="mdl-layout__header" style=" -webkit-app-region: drag;">
+      <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
+          <button id = "back_arrow" class="mdl-button mdl-js-button mdl-button--icon" style = "left: -15px; ">
+            <i class="material-icons">arrow_back</i>
+          </button>
             <span class="mdl-layout-title">QuickDoc</span>
           <div class="mdl-layout-spacer"></div>
           <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
@@ -52,7 +55,15 @@
         </div>
       </main>
       <script>
+        var initPath = "/home/phoenamandre/QuickNote"
+        var currentPath;
         function list(path){
+          currentPath = path;
+          if(initPath == currentPath){
+            $("#back_arrow").hide()
+          }
+          else
+          $("#back_arrow").show()
           var grid = document.getElementById("page-content");
           grid.innerHTML ="";
           var noteCardViewGrid = new NoteCardViewGrid(grid);
@@ -82,7 +93,10 @@
         });
           
         }
-        list('/home/phoenamandre/QuickNote')
+        $("#back_arrow").bind("click", function(){
+          list(getParentFolderFromPath(currentPath))
+        });
+        list(initPath)
       
         </script>
     </div>
