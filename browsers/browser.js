@@ -24,7 +24,7 @@ TextGetterTask.prototype.getNext = function(){
                 console.log(note.name+" "+txt)
                 note.text = txt;
                 noteCardViewGrid.updateNote(note)
-               // noteCardViewGrid.iso.layout();
+               noteCardViewGrid.msnry.layout();
                 myTask.getNext();
             }
         });
@@ -53,10 +53,14 @@ function list(path){
     list(folder.path)
   })
   noteCardViewGrid.onNoteClick(function(note){
-    const remote = require('electron').remote;
+    const electron = require('electron')
+    const remote = electron.remote;
     const BrowserWindow = remote.BrowserWindow;
-
-    var win = new BrowserWindow({ width: 800, height: 600 });
+    const path = require('path')
+    console.log(path)
+    //var win = new BrowserWindow({ width: 800, height: 600 });
+      var reader = new Writer(note,"");
+      reader.extractNote()
   })
 var notes = [];
 

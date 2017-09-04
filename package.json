@@ -12,6 +12,8 @@
     "isotope-layout": "^3.0.4",
     "jquery": "^3.2.1",
     "jszip": "^3.1.4",
-    "masonry-layout": "^4.2.0"
+    "masonry-layout": "^4.2.0",
+    "mkdirp": "^0.5.1",
+    "rimraf": "^2.6.1"
   }
 }

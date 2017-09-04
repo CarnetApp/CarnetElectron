@@ -1,5 +1,5 @@
 const fs = require("fs");
-
+var getParentFolderFromPath = require('path').dirname;
 var FileBrowser = function (path){
     this.path = path;
 }
@@ -34,11 +34,4 @@ function getFilenameFromPath(path){
 
 function stripExtensionFromName(name){
    return name.replace(/\.[^/.]+$/, "")
-}
-
-function getParentFolderFromPath(path){
-    var array = path.split("/");
-    array.pop()
-
-    return array.join("/")
 }

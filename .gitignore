@@ -1,0 +1,10 @@
+#electron 
+
+#directories
+bower_components
+node_modules
+ist
+
+#files
+*.tgz
+*.log

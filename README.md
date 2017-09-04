@@ -9,3 +9,6 @@ sudo npm install electron-prebuilt -g --unsafe-perm
 install libs
 sudo npm install jquery
 sudo npm install masonry-layout
+
+rimraf
+mkdirp
