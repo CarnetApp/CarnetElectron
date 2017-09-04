@@ -8,4 +8,4 @@ sudo npm install electron-prebuilt -g --unsafe-perm
 
 install libs
 sudo npm install jquery
-sudo npm install isotope-layout
+sudo npm install masonry-layout

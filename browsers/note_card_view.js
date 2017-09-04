@@ -23,7 +23,7 @@ NoteCardView.prototype.init = function(){
     
 }
 
-var Isotope = require('isotope-layout');
+var Masonry = require('masonry-layout');
 var NoteCardViewGrid = function (elem){
 
     this.elem = elem;
@@ -34,15 +34,12 @@ var NoteCardViewGrid = function (elem){
 
 
 NoteCardViewGrid.prototype.init = function(){
-    this.elem.classList.add("isotope")
-    this.iso = new Isotope( this.elem, {
-        percentPosition: true,
-        itemSelector: '.demo-card-wide.mdl-card',
-        masonry: {
-            fitWidth: true            
-          // use outer width of grid-sizer for columnWidth
-        }
-      });    
+    this.msnry = new Masonry( this.elem, {
+      // options
+      itemSelector: '.demo-card-wide.mdl-card',
+      fitWidth: true      
+    });
+
       
 }
 
@@ -76,7 +73,7 @@ NoteCardViewGrid.prototype.setNotesAndFolders = function (notes){
         noteCard.setNote(note);
         this.noteCards.push(noteCard);
         this.elem.appendChild(noteElem)
-        this.iso.appended(noteElem)
+        this.msnry.appended(noteElem)
 
         $(noteElem).bind('click', { note: note, callback: this.onNoteClick }, function(event) {
             var data = event.data;
@@ -97,10 +94,11 @@ NoteCardViewGrid.prototype.setNotesAndFolders = function (notes){
             var folderCard = new FolderView(folderElem);
             folderCard.setFolder(note);
             this.elem.appendChild(folderElem)
-            this.iso.appended(folderElem)
+           this.msnry.appended(folderElem)
         }
     }
-    this.iso.layout();
+    this.msnry.layout();
+  //  this.iso.layout();
 }
 
 

@@ -24,7 +24,7 @@ TextGetterTask.prototype.getNext = function(){
                 console.log(note.name+" "+txt)
                 note.text = txt;
                 noteCardViewGrid.updateNote(note)
-                noteCardViewGrid.iso.layout();
+               // noteCardViewGrid.iso.layout();
                 myTask.getNext();
             }
         });
