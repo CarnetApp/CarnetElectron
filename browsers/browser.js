@@ -2,7 +2,8 @@ var initPath = "/home/phoenamandre/QuickNote"
 var currentPath;
 var currentTask = undefined;
 var noteCardViewGrid = undefined;
-var TextGetterTask = function(list){
+var oldNotes = {} 
+var TextGetterTask = function(list){  
     this.list = list;
     this.current = 0;
     this.continue = true;
@@ -19,10 +20,12 @@ TextGetterTask.prototype.getNext = function(){
         var opener = new NoteOpener(this.list[this.current])
         var myTask = this;
         var note = this.list[this.current]
-        opener.getMainText(function(txt){
+        opener.getMainTextAndMetadata(function(txt, metadata){
             if(myTask.continue){
-                console.log(note.name+" "+txt)
-                note.text = txt;
+                note.text = txt.substring(0, 200);
+                if(metadata!=undefined)
+                note.metadata = metadata;
+                oldNotes[note.path] = note;
                 noteCardViewGrid.updateNote(note)
                noteCardViewGrid.msnry.layout();
                 myTask.getNext();
@@ -37,17 +40,22 @@ TextGetterTask.prototype.getNext = function(){
     
 }
 
-function list(path){
-  
-  currentPath = path;
+function list(pathToList, discret){
+  if(pathToList == undefined)
+    pathToList = currentPath;
+  console.log("listing path "+pathToList);
+  currentPath = pathToList;
   if(initPath == currentPath){
     $("#back_arrow").hide()
   }
   else
   $("#back_arrow").show()
   var grid = document.getElementById("page-content");
+  var scroll = 0;
+  if(discret)
+    scroll = document.getElementById("page-container").scrollTop;
   grid.innerHTML ="";
-  noteCardViewGrid = new NoteCardViewGrid(grid);
+  noteCardViewGrid = new NoteCardViewGrid(grid,discret);
 
   noteCardViewGrid.onFolderClick(function(folder){
     list(folder.path)
@@ -57,39 +65,69 @@ function list(path){
     const remote = electron.remote;
     const BrowserWindow = remote.BrowserWindow;
     const path = require('path')
-    console.log(path)
     //var win = new BrowserWindow({ width: 800, height: 600 });
-      var reader = new Writer(note,"");
-      reader.extractNote()
+
+    var rimraf = require('rimraf'); 
+    rimraf('tmp', function(){
+      var fs = require('fs');
+      
+      fs.mkdir("tmp",function(e){
+        fs.createReadStream('reader/reader.html').pipe(fs.createWriteStream('tmp/reader.html'));
+        var size = remote.getCurrentWindow().getSize();
+        var pos = remote.getCurrentWindow().getPosition();
+        var win = new BrowserWindow({ width: size[0],height: size[1],x:pos[0], y:pos[1],  frame: false });
+       // win.hide()
+        console.log("w "+remote.getCurrentWindow().getPosition()[0])
+        const url = require('url')
+         win.loadURL(url.format({
+          pathname: path.join(__dirname, 'tmp/reader.html'),
+          protocol: 'file:',
+          query:{'path':note.path},
+          slashes: true
+        }))
+        
+      });
+        
+    })   
+    
+     // var reader = new Writer(note,"");
+     // reader.extractNote()
   })
 var notes = [];
 
-var fb = new FileBrowser(path);
+var fb = new FileBrowser(pathToList);
 fb.list(function(files){
     if(currentTask!=undefined)
         currentTask.continue = false
   for(let file of files){
     var filename = getFilenameFromPath(file.path);
-    console.log("file "+ file.path)
     if(file.isFile && filename.endsWith(".sqd")){
-      var noteTestTxt = new Note(stripExtensionFromName(filename),"content", file.path);
+      var oldNote = oldNotes[file.path];
+      
+      var noteTestTxt = new Note(stripExtensionFromName(filename),oldNote!=undefined?oldNote.text:"", file.path, oldNote!=undefined?oldNote.metadata:undefined);
       notes.push(noteTestTxt)
     }
     else if(!file.isFile){
-      console.log("folder")
 
       notes.push(file)
     }
   }
   noteCardViewGrid.setNotesAndFolders(notes)
+  if(discret){
+    document.getElementById("page-container").scrollTop = scroll;
+    console.log("scroll : "+scroll)
+
+  }
   currentTask  = new TextGetterTask(notes);
-  console.log(currentTask)
+  console.log("stopping and starting task")
   currentTask.startList();
 
 });
   
 }
-$("#back_arrow").bind("click", function(){
-  list(getParentFolderFromPath(currentPath))
-});
+
 list(initPath)
+
+$(window).focus(function() {
+  list(currentPath, true)
+});

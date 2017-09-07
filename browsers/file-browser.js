@@ -1,4 +1,4 @@
-const fs = require("fs");
+var fs = require("fs");
 var getParentFolderFromPath = require('path').dirname;
 var FileBrowser = function (path){
     this.path = path;
@@ -8,12 +8,22 @@ FileBrowser.prototype.list = function(callback){
     fs.readdir(this.path, (err, dir) => {
     //console.log(dir);
     var files = [];
+    var dirs_in = [];
+    var files_in = [];
         for(let filePath of dir){
             filePath = this.path+"/"+filePath
             var stat = fs.statSync(filePath);
             file = new File(filePath, stat.isFile());
-            files.push(file)
+            console.log(filePath)
+            if(stat.isFile())
+                files_in.push(file)
+            else
+                dirs_in.push(file)
+            
         }
+        files = files.concat(dirs_in)
+        files = files.concat(files_in)
+        
         callback(files)
     });
 }

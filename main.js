@@ -1,4 +1,4 @@
-const {app, BrowserWindow} = require('electron')
+const {app, BrowserWindow, ipcMain} = require('electron');  
 const path = require('path')
 const url = require('url')
 
@@ -27,6 +27,7 @@ win = new BrowserWindow({width: 800, height: 600,  frame: false })
     // when you should delete the corresponding element.
     win = null
   })
+
 }
 
 // This method will be called when Electron has finished
@@ -51,6 +52,22 @@ app.on('activate', () => {
   }
 })
 
+
+exports.displayMainWindow = (size,pos) => {  
+  win.setSize(size[0],size[1]);
+  win.setPosition(pos[0],pos[1]);
+  win.show();
+}
+
+exports.hideMainWindow = () => {  
+
+  win.hide();
+}
+
+exports.executeProcess = (process) => {  
+  
+    process.start();
+  }
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 

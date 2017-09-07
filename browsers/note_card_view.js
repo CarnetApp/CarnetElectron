@@ -5,7 +5,8 @@ var NoteCardView = function(elem){
 NoteCardView.prototype.setNote = function(note){
     this.note = note;
     this.cardTitleText.innerHTML = note.title;
-    this.cardText.innerHTML = note.text;
+    var date = new Date(note.metadata.last_modification_date).toLocaleDateString();
+    this.cardText.innerHTML = note.text+"<br /> <br />"+date;
 }
 
 NoteCardView.prototype.init = function(){
@@ -24,9 +25,10 @@ NoteCardView.prototype.init = function(){
 }
 
 var Masonry = require('masonry-layout');
-var NoteCardViewGrid = function (elem){
+var NoteCardViewGrid = function (elem, discret){
 
     this.elem = elem;
+    this.discret = discret;
     this.init();
 }
 
@@ -37,10 +39,15 @@ NoteCardViewGrid.prototype.init = function(){
     this.msnry = new Masonry( this.elem, {
       // options
       itemSelector: '.demo-card-wide.mdl-card',
-      fitWidth: true      
+      fitWidth: true,
+      transitionDuration: this.discret?0:"0.6s",
+      animationOptions: {
+        
+        queue: false,
+        isAnimated:false
+      },      
     });
 
-      
 }
 
 NoteCardViewGrid.prototype.onFolderClick = function(callback){
@@ -98,6 +105,7 @@ NoteCardViewGrid.prototype.setNotesAndFolders = function (notes){
         }
     }
     this.msnry.layout();
+    this.msnry.options.transitionDuration = "0.6s" //restore even when discret
   //  this.iso.layout();
 }
 
