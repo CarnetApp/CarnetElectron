@@ -11,9 +11,10 @@ FileBrowser.prototype.list = function(callback){
     var dirs_in = [];
     var files_in = [];
         for(let filePath of dir){
+            var filename = filePath;
             filePath = this.path+"/"+filePath
             var stat = fs.statSync(filePath);
-            file = new File(filePath, stat.isFile());
+            file = new File(filePath, stat.isFile(), filename);
             console.log(filePath)
             if(stat.isFile())
                 files_in.push(file)
