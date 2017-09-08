@@ -117,6 +117,27 @@ Writer.prototype.displayCountDialog = function () {
 
 
 
+
+Writer.prototype.increaseFontSize = function(){
+    surroundSelection(document.createElement('big'));
+}
+Writer.prototype.decreaseFontSize= function(){
+    surroundSelection(document.createElement('small'));
+}
+Writer.prototype.surroundSelection = function(element){
+    if (window.getSelection) {
+        var sel = window.getSelection();
+        if (sel.rangeCount) {
+            var range = sel.getRangeAt(0).cloneRange();
+            range.surroundContents(element);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    }
+}
+
+
+
 var ToolbarManager = function(){
     this.toolbars = [];
 }
