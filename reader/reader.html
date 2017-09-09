@@ -7,6 +7,8 @@
 	<link rel="stylesheet" href="../reader/assets/design/icon.css">
 	<link rel="stylesheet" href="../reader/assets/design/material.indigo-pink.min.css">
 	<link rel="stylesheet" href="../reader/assets/design/standalone.css">
+	<link rel="stylesheet" href="../reader/libs/simplecolorpicker/simple-color-picker.css">
+	
 </head>
 
 <body>
@@ -14,8 +16,10 @@
 		var $ = require('jquery');
 		var jQuery = $;
 		$.mobile = require('jquery-mobile');
+		var ColorPicker = require('simple-color-picker');
 	</script>
 	<script src="../reader/reader.js"></script>
+	<!--<script src="../reader/libs/simplecolorpicker/index.js"></script>	-->
 	<script src="../note/note-opener.js"></script>
 	<script src="../browsers/note.js"></script>
 	<script src="../browsers/file-browser.js"></script>
@@ -61,6 +65,14 @@
 
 	<!-- </statistics> -->
 
+
+	<dialog class="mdl-dialog" id="color-picker-dialog" style="padding: 0;">
+		<div class="mdl-dialog__content" id="color-picker-div" >
+		</div>
+		<div class="mdl-dialog__actions">
+			<button type="button" class="mdl-button ok">OK</button>
+		</div>
+	</dialog>
 
 	<!--<div id="header">
 
@@ -137,10 +149,10 @@ mdl-layout--fixed-header">
 					<i class="material-icons">format_underline</i>
 			  </button>
 
-					<button onclick="writer.formatDoc('bold');" class="mdl-button mdl-js-button headerbar-button">
+					<button onclick="    writer.displayTextColorPicker();" class="mdl-button mdl-js-button headerbar-button">
 					<i class="material-icons">format_color_text</i>
 			  </button>
-					<button onclick="writer.formatDoc('bold');" class="mdl-button mdl-js-button headerbar-button">
+					<button onclick="writer.displayFillColorPicker();" class="mdl-button mdl-js-button headerbar-button">
 					<i class="material-icons">format_color_fill</i>
 			  </button>
 					<button class="mdl-button mdl-js-button headerbar-button" onclick="writer.decreaseFontSize();">
