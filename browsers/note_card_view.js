@@ -4,7 +4,10 @@ var NoteCardView = function(elem){
 }
 NoteCardView.prototype.setNote = function(note){
     this.note = note;
-    this.cardTitleText.innerHTML = note.title;
+    if(note.title.indexOf("untitled")==0)
+        this.cardTitleText.innerHTML = ""
+    else
+        this.cardTitleText.innerHTML = note.title;
     var date = new Date(note.metadata.last_modification_date).toLocaleDateString();
     this.cardText.innerHTML = note.text+"<br /> <br />"+date;
 }
