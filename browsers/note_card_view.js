@@ -14,11 +14,15 @@ NoteCardView.prototype.setNote = function(note){
 
 NoteCardView.prototype.init = function(){
     this.elem.classList.add("mdl-card");
+    this.elem.classList.add("note-card-view");
+    
     this.elem.classList.add("mdl-shadow--2dp");
     this.cardContent = document.createElement('div');
     this.cardContent.classList.add("mdl-card__supporting-text");
     
     this.cardText = document.createElement('div');
+    this.cardText.classList.add("card-text");
+    
     this.cardTitleText = document.createElement('h2');
     this.cardTitleText.classList.add("card-title");
     this.cardContent.appendChild(this.cardTitleText)

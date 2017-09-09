@@ -5,7 +5,7 @@
     cursor: pointer;
     
   }
-  .demo-card-wide.mdl-card :hover{
+  .note-card-view :hover{
     background-color:#BFBBBB;
     -webkit-transition: background-color 250ms linear;
     -ms-transition: background-color 250ms linear;
@@ -38,10 +38,17 @@
 }
   .card-title{
     font-size: 24px;
+    
     font-weight: 300;
     line-height: normal;
     color : black;
     margin:0px;
+  }
+  .card-title:hover{
+    background: none;
+  }
+  .card-text:hover{
+    background: none;
   }
 .mdl-layout__header{
   -webkit-app-region: drag;
