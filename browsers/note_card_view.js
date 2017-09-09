@@ -129,6 +129,7 @@ FolderView.prototype.setFolder = function(folder){
 
 FolderView.prototype.init = function(){
     this.elem.classList.add("mdl-card");
+    this.elem.classList.add("folder-card-view");
     this.elem.classList.add("mdl-shadow--2dp");
     this.cardContent = document.createElement('div');
     this.cardContent.classList.add("mdl-card__supporting-text");

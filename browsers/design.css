@@ -5,7 +5,8 @@
     cursor: pointer;
     
   }
-  .note-card-view :hover{
+  .note-card-view :hover,
+  .folder-card-view :hover{
     background-color:#BFBBBB;
     -webkit-transition: background-color 250ms linear;
     -ms-transition: background-color 250ms linear;
