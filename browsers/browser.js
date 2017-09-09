@@ -77,8 +77,8 @@ function openNote(notePath) {
   rimraf('tmp', function () {
     var fs = require('fs');
 
-    fs.mkdir("tmp", function (e) {
-      fs.createReadStream('reader/reader.html').pipe(fs.createWriteStream('tmp/reader.html'));
+    fs.mkdir(__dirname+"/tmp", function (e) {
+      fs.createReadStream(__dirname+'/reader/reader.html').pipe(fs.createWriteStream(__dirname+'/tmp/reader.html'));
       var size = remote.getCurrentWindow().getSize();
       var pos = remote.getCurrentWindow().getPosition();
       var win = new BrowserWindow({ width: size[0], height: size[1], x: pos[0], y: pos[1], frame: false });
@@ -164,9 +164,9 @@ document.getElementById("add-note-button").onclick = function () {
   })
 }
 
-$("#back_arrow").one("click", function (elem) {
-
-})
+document.getElementById("back_arrow").addEventListener("click", function () {
+    list(getParentFolderFromPath(currentPath))
+});
 $(window).focus(function () {
   list(currentPath, true)
 });
