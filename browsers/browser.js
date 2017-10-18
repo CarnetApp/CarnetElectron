@@ -20,6 +20,7 @@ TextGetterTask.prototype.getNext = function () {
     var opener = new NoteOpener(this.list[this.current])
     var myTask = this;
     var note = this.list[this.current]
+    try{
     opener.getMainTextAndMetadata(function (txt, metadata) {
       if (myTask.continue) {
         note.text = txt.substring(0, 200);
@@ -31,6 +32,10 @@ TextGetterTask.prototype.getNext = function () {
         myTask.getNext();
       }
     });
+  }
+  catch(error){
+    console.log(error);
+  }
     this.current++;
   }
   else {

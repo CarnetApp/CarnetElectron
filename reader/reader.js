@@ -54,9 +54,21 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     /*simple initialization*/
     this.oDoc.focus();
     resetScreenHeight();
-
+    this.refreshKeywords();
     //  $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 
+}
+
+Writer.prototype.refreshKeywords = function(){
+    var keywordsContainer = document.getElementById("keywords-list");
+    keywordsContainer.innerHTML = "";
+    for (let word of this.note.metadata.keywords) {
+        var keywordElem = document.createElement("a")
+        keywordElem.classList.add("mdl-navigation__link");
+        keywordElem.innerHTML = word;
+        keywordsContainer.appendChild(keywordElem);
+        
+    }
 }
 
 Writer.prototype.formatDoc = function (sCmd, sValue) {
@@ -107,6 +119,11 @@ Writer.prototype.init = function () {
     }
     this.colorPicker = new ColorPicker();
     this.colorPicker.appendTo(this.elem.querySelector('#color-picker-div'))
+
+    this.newKeywordDialog =  this.elem.querySelector('#new-keyword-dialog');
+    if (!this.newKeywordDialog.showModal) {
+        dialogPolyfill.registerDialog(this.newKeywordDialog);
+    }
 
     this.oEditor = document.getElementById("editor");
     this.backArrow = document.getElementById("back-arrow");
@@ -161,6 +178,12 @@ Writer.prototype.surroundSelection = function (element) {
             sel.addRange(range);
         }
     }
+}
+
+Writer.prototype.addKeyword = function(word){
+    this.note.metadata.keywords.push(word);
+    this.seriesTaskExecutor.addTask(this.saveNoteTask.saveTxt)
+    this.refreshKeywords();
 }
 
 Writer.prototype.setColor = function (color) {
@@ -239,6 +262,7 @@ SaveNoteTask.prototype.saveTxt = function (onEnd) {
                 return console.log(err);
             }
             this.writer.note.metadata.last_modification_date = Date.now();
+            console.log("saving meta  "+ this.writer.note.metadata.keywords[0])
             fs.writeFile(__dirname + '/metadata.json', JSON.stringify(this.writer.note.metadata), function (err) {
                 if (err) {
                     onEnd()

@@ -64,3 +64,10 @@
 .folder-icon{
   width:50px;
 }
+
+.card-more-button{
+  right:0px;
+  background: inherit !important;
+  position: absolute !important;
+}
+

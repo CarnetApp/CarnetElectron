@@ -11,10 +11,11 @@ var Note = function(title, text, path, metadata){
     }
     else
         this.metadata = metadata;
+
 }
 
 var NoteMetadata = function(){
     this.creation_date = ""
     this.last_modification_date = ""
-    this.keywords = {}
+    this.keywords = []
 }

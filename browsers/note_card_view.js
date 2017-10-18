@@ -15,11 +15,23 @@ NoteCardView.prototype.setNote = function(note){
 NoteCardView.prototype.init = function(){
     this.elem.classList.add("mdl-card");
     this.elem.classList.add("note-card-view");
+
+    this.menuButton =  document.createElement('button');
     
+    this.menuButton.classList.add("mdl-button");
+    
+    this.menuButton.classList.add("mdl-js-button");
+    this.menuButton.classList.add("mdl-button--icon");
+    this.menuButton.classList.add("card-more-button");
+    
+    var menuButtonIcon =  document.createElement('li');
+    menuButtonIcon.classList.add("material-icons");
+    menuButtonIcon.innerHTML = "more_vert";
+    this.menuButton.appendChild(menuButtonIcon);
     this.elem.classList.add("mdl-shadow--2dp");
     this.cardContent = document.createElement('div');
     this.cardContent.classList.add("mdl-card__supporting-text");
-    
+    this.cardContent.appendChild(this.menuButton)
     this.cardText = document.createElement('div');
     this.cardText.classList.add("card-text");
     
