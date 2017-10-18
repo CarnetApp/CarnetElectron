@@ -70,4 +70,9 @@
   background: inherit !important;
   position: absolute !important;
 }
+.keyword{
+  margin-right:3px;
+  padding:3px;
+  background: #D2D2D2;
+}
 

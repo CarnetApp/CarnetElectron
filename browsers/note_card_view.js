@@ -10,6 +10,16 @@ NoteCardView.prototype.setNote = function(note){
         this.cardTitleText.innerHTML = note.title;
     var date = new Date(note.metadata.last_modification_date).toLocaleDateString();
     this.cardText.innerHTML = note.text+"<br /> <br />"+date;
+    this.cardKeywords.innerHTML = "";
+    if(typeof note.metadata.keywords[Symbol.iterator] === 'function')
+    for (let keyword of note.metadata.keywords) {
+        console.log("keyword "+keyword)
+        keywordSpan = document.createElement('span');
+        keywordSpan.innerHTML = keyword;
+        keywordSpan.classList.add("keyword");
+        this.cardKeywords.appendChild(keywordSpan)
+      }
+   
 }
 
 NoteCardView.prototype.init = function(){
@@ -39,6 +49,10 @@ NoteCardView.prototype.init = function(){
     this.cardTitleText.classList.add("card-title");
     this.cardContent.appendChild(this.cardTitleText)
     this.cardContent.appendChild(this.cardText)
+    this.cardKeywords = document.createElement('div');
+    this.cardKeywords.classList.add("keywords");
+    this.cardContent.appendChild(this.cardKeywords)
+    
     this.elem.appendChild(this.cardContent);
     
 }
