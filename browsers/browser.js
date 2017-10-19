@@ -23,7 +23,8 @@ TextGetterTask.prototype.getNext = function () {
     try{
     opener.getMainTextAndMetadata(function (txt, metadata) {
       if (myTask.continue) {
-        note.text = txt.substring(0, 200);
+        if(txt != undefined)
+          note.text = txt.substring(0, 200);
         if (metadata != undefined)
           note.metadata = metadata;
         oldNotes[note.path] = note;

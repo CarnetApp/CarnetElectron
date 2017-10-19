@@ -9,12 +9,17 @@ var NoteOpener = function (note) {
 NoteOpener.prototype.getMainTextAndMetadata = function (callback) {
   var opener = this;
   this.getFullHTML(function (data, zip) {
+    if(zip!=undefined){
     opener.getMetadataString(zip, function (metadata) {
       var tempElement = document.createElement("div");
       tempElement.innerHTML = data;
       callback(tempElement.innerText, metadata != undefined ? JSON.parse(metadata) : undefined)
     })
-
+  } 
+  else{
+    callback(undefined, undefined)
+    
+  }
   });
 }
 
@@ -27,15 +32,23 @@ NoteOpener.prototype.getMetadataString = function (zip, callback) {
 }
 
 NoteOpener.prototype.getFullHTML = function (callback) {
+  console.log("this.note.path  "+this.note.path)
+  
   fs.readFile(this.note.path, function (err, data) {
     if (err) {
+      console.log("error ")
       return console.log(err);
     }
+    if(data.length !=0)
     JSZip.loadAsync(data).then(function (zip) {
+      console.log("called "+zip)
       zip.file("index.html").async("string").then(function (content) {
+        console.log("ok  ")
+        
         callback(content, zip)
       })
     });
+    else  callback(undefined, undefined)
   });
 }
 
