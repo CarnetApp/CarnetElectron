@@ -18,5 +18,8 @@
     "mkdirp": "^0.5.1",
     "rimraf": "^2.6.1",
     "simple-color-picker": "^0.1.2"
+  },
+  "devDependencies": {
+    "electron": "1.7.9"
   }
 }

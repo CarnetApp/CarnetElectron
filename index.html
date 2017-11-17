@@ -1,72 +1,74 @@
 <!DOCTYPE html>
 <html>
-  <head>
- 
+
+<head>
+
     <script>
-  window.jQuery = window.$ = require('jquery');
-  
-      </script>
-<link rel="stylesheet" href="browsers/design.css">
+        window.jQuery = window.$ = require('jquery');
+    </script>
+    <link rel="stylesheet" href="browsers/design.css">
     <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
     <script src="browsers/note_card_view.js"></script>
     <script src="browsers/note.js"></script>
     <script src="browsers/file-browser.js"></script>
     <script src="note/note-opener.js"></script>
+    <script src="note/NoteUtils.js"></script>
+    <script src="reader/assets/scripts/jquery-ui.min.js"></script>
+
     <script src="reader/reader.js"></script>
-    
+    <script src="recent/recent_db_manager.js"></script>
+
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-  </head>
-  <body>
+</head>
+
+<body>
     <!-- The drawer is always open in large screens. The header is always shown,
       even in small screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
                 mdl-layout--fixed-header">
-      <header class="mdl-layout__header">
-        <div class="mdl-layout__header-row">
-          <button id = "back_arrow" class="mdl-button mdl-js-button mdl-button--icon" style = "left: -15px; ">
+        <header class="mdl-layout__header">
+            <div class="mdl-layout__header-row">
+                <button id="back_arrow" class="mdl-button mdl-js-button mdl-button--icon" style="left: -15px; ">
             <i class="material-icons">arrow_back</i>
           </button>
-            <span class="mdl-layout-title">QuickDoc</span>
-          <div class="mdl-layout-spacer"></div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
+                <span class="mdl-layout-title">QuickDoc</span>
+                <div class="mdl-layout-spacer"></div>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
                       mdl-textfield--floating-label mdl-textfield--align-right">
-            <label class="mdl-button mdl-js-button mdl-button--icon"
-                   for="fixed-header-drawer-exp">
+                    <label class="mdl-button mdl-js-button mdl-button--icon" for="fixed-header-drawer-exp">
               <i class="material-icons">search</i>
             </label>
-            <div class="mdl-textfield__expandable-holder">
-              <input class="mdl-textfield__input" type="text" name="sample"
-                     id="fixed-header-drawer-exp">
+                    <div class="mdl-textfield__expandable-holder">
+                        <input class="mdl-textfield__input" type="text" name="sample" id="fixed-header-drawer-exp">
+                    </div>
+                </div>
             </div>
-          </div>
+        </header>
+        <div class="mdl-layout__drawer">
+            <nav class="mdl-navigation">
+                <a class="mdl-navigation__link" href="" onclick="list('recentdb://',false); return false">Recent</a>
+                <a class="mdl-navigation__link" href="" onclick="list(getNotePath(),false); return false">Browser</a>
+                <a class="mdl-navigation__link" href="">Settings</a>
+            </nav>
         </div>
-      </header>
-      <div class="mdl-layout__drawer">
-        <nav class="mdl-navigation">
-          <a class="mdl-navigation__link" href="">Recent</a>
-          <a class="mdl-navigation__link" href="">Browser</a>
-          <a class="mdl-navigation__link" href="">Settings</a>
-        </nav>
-      </div>
-      <main class="mdl-layout__content" id="page-container">
-          <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button" style="z-index:10000;position:absolute; bottom:30px; right:30px">
+        <main class="mdl-layout__content" id="page-container">
+            <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button" style="z-index:10000;position:absolute; bottom:30px; right:30px">
               <i class="material-icons">add</i>
             </button>
-         <div id="grid-container" >
-            <div id="page-content" class="page-content">
-                
-              </div>
-          </div>
-        
-     
-      </main>
-      <script src = "browsers/browser.js">
-       
-      
+            <div id="grid-container">
+                <div id="page-content" class="page-content">
+
+                </div>
+            </div>
+
+
+        </main>
+        <script src="browsers/browser.js">
         </script>
     </div>
-  </body>
+</body>
+
 </html>
