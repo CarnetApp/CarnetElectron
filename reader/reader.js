@@ -56,7 +56,7 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     this.sDefTxt = this.oDoc.innerHTML;
     /*simple initialization*/
     this.oDoc.focus();
-    if(app!=undefined)
+    if(typeof app === 'function')
         app.hideProgress();
     resetScreenHeight();
     this.refreshKeywords();
