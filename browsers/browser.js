@@ -72,6 +72,10 @@ var NewNoteCreationTask = function(callback) {
     });
 }
 
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.replace(new RegExp(search, 'g'), replacement);
+};
 
 function openNote(notePath) {
     const electron = require('electron')
@@ -87,19 +91,27 @@ function openNote(notePath) {
         var fs = require('fs');
 
         fs.mkdir(__dirname + "/tmp", function(e) {
-            fs.createReadStream(__dirname + '/reader/reader.html').pipe(fs.createWriteStream(__dirname + '/tmp/reader.html'));
-            var size = remote.getCurrentWindow().getSize();
-            var pos = remote.getCurrentWindow().getPosition();
-            var win = new BrowserWindow({ width: size[0], height: size[1], x: pos[0], y: pos[1], frame: false });
-            // win.hide()
-            console.log("w " + remote.getCurrentWindow().getPosition()[0])
-            const url = require('url')
-            win.loadURL(url.format({
-                pathname: path.join(__dirname, 'tmp/reader.html'),
-                protocol: 'file:',
-                query: { 'path': notePath },
-                slashes: true
-            }))
+            fs.readFile(__dirname + '/reader/reader.html','utf8', function (err, data) {
+                if (err) {fs.rea
+                  console.log("error ")
+                  return console.log(err);
+                }
+               
+                fs.writeFileSync('tmp/reader.html',  data.replace(new RegExp('<!ROOTPATH>', 'g'), '../'));
+                var size = remote.getCurrentWindow().getSize();
+                var pos = remote.getCurrentWindow().getPosition();
+                var win = new BrowserWindow({ width: size[0], height: size[1], x: pos[0], y: pos[1], frame: false });
+                // win.hide()
+                console.log("w " + remote.getCurrentWindow().getPosition()[0])
+                const url = require('url')
+                win.loadURL(url.format({
+                    pathname: path.join(__dirname, 'tmp/reader.html'),
+                    protocol: 'file:',
+                    query: { 'path': notePath },
+                    slashes: true
+                }))
+            });
+            
 
         });
 

@@ -2,10 +2,6 @@
 
 (function() {
 
-var Emitter = require('component-emitter');
-var isNumber = require('is-number');
-var tinycolor = require('tinycolor2');
-var transform = require('dom-transform');
 
 /**
  * Creates a new SimpleColorPicker

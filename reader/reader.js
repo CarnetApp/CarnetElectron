@@ -4,25 +4,28 @@ var Writer = function (note, elem) {
     this.noteOpener = new NoteOpener(note);
     this.seriesTaskExecutor = new SeriesTaskExecutor();
     this.saveNoteTask = new SaveNoteTask(this)
+    resetScreenHeight();
+    console.log("create Writer")
 
 }
 
 
 Writer.prototype.extractNote = function () {
+    console.log("Writer.prototype.extractNote")
+    
     var writer = this;
     console.log("extractNote")
     writer.noteOpener.extractTo("tmp/", function (noSuchFile) {
         console.log("done")
         if (!noSuchFile) {
             var fs = require('fs');
-            fs.readFile('tmp/index.html', function read(err, data) {
+            fs.readFile('tmp/index.html','base64', function read(err, data) {
                 if (err) {
                     throw err;
                 }
 
                 content = data;
-                console.log(data)
-                writer.fillWriter(content)
+                writer.fillWriter(decodeURIComponent(escape(atob(content))))
             });
         }
         else {
@@ -53,6 +56,8 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     this.sDefTxt = this.oDoc.innerHTML;
     /*simple initialization*/
     this.oDoc.focus();
+    if(app!=undefined)
+        app.hideProgress();
     resetScreenHeight();
     this.refreshKeywords();
     //  $("#editor").webkitimageresize().webkittableresize().webkittdresize();
@@ -62,42 +67,49 @@ Writer.prototype.fillWriter = function (extractedHTML) {
 Writer.prototype.refreshKeywords = function(){
     var keywordsContainer = document.getElementById("keywords-list");
     keywordsContainer.innerHTML = "";
+    var writer = this;
     for (let word of this.note.metadata.keywords) {
         var keywordElem = document.createElement("a")
         keywordElem.classList.add("mdl-navigation__link");
         keywordElem.innerHTML = word;
         keywordsContainer.appendChild(keywordElem);
+        keywordElem.addEventListener('click', function () {
+            writer.removeKeyword(word);
+        });
         
     }
 }
 
 Writer.prototype.formatDoc = function (sCmd, sValue) {
     this.oEditor.focus();
-    if (validateMode()) { document.execCommand(sCmd, false, sValue); this.oEditor.focus(); }
+    document.execCommand(sCmd, false, sValue); this.oEditor.focus();
 }
 
 Writer.prototype.displayTextColorPicker = function () {
     var writer = this;
-    this.displayColorPicker(function () {
-        writer.setColor(writer.colorPicker.getHexString())
+    this.displayColorPicker(function (color) {
+        writer.setColor(color)
     });
 }
 
 Writer.prototype.displayFillColorPicker = function () {
     var writer = this;
-    this.displayColorPicker(function () {
-        writer.fillColor(writer.colorPicker.getHexString())
+    this.displayColorPicker(function (color) {
+        writer.fillColor(color)
     });
 }
-
-
+var currentColor = undefined;
+Writer.prototype.setPickerColor = function(picker){
+	currentColor = "#"+picker.toString();
+}
 Writer.prototype.displayColorPicker = function (callback) {
+	currentColorCallback = callback;
     this.colorPickerDialog.querySelector('.ok').addEventListener('click', function () {
-        writer.colorPickerDialog.close();        
-        callback()
-
+        writer.colorPickerDialog.close();
+		callback(currentColor);
     });
     this.colorPickerDialog.showModal()
+    document.getElementById('color-picker-div').show();
 }
 Writer.prototype.init = function () {
     document.execCommand('styleWithCSS', false, true);    
@@ -117,8 +129,7 @@ Writer.prototype.init = function () {
     if (!this.colorPickerDialog.showModal) {
         dialogPolyfill.registerDialog(this.colorPickerDialog);
     }
-    this.colorPicker = new ColorPicker();
-    this.colorPicker.appendTo(this.elem.querySelector('#color-picker-div'))
+
 
     this.newKeywordDialog =  this.elem.querySelector('#new-keyword-dialog');
     if (!this.newKeywordDialog.showModal) {
@@ -128,11 +139,7 @@ Writer.prototype.init = function () {
     this.oEditor = document.getElementById("editor");
     this.backArrow = document.getElementById("back-arrow");
     this.backArrow.addEventListener("click", function () {
-        var { ipcRenderer, remote } = require('electron');
-        var main = remote.require("./main.js");
-        var win = remote.getCurrentWindow();
-        main.displayMainWindow(win.getSize(), win.getPosition());
-        win.close()
+       Compatibility.onBackPressed();
     });
     this.toolbarManager = new ToolbarManager()
     this.toolbarManager.addToolbar(document.getElementById("format-toolbar"))
@@ -163,10 +170,10 @@ Writer.prototype.displayCountDialog = function () {
 
 
 Writer.prototype.increaseFontSize = function () {
-    surroundSelection(document.createElement('big'));
+    this.surroundSelection(document.createElement('big'));
 }
 Writer.prototype.decreaseFontSize = function () {
-    surroundSelection(document.createElement('small'));
+    this.surroundSelection(document.createElement('small'));
 }
 Writer.prototype.surroundSelection = function (element) {
     if (window.getSelection) {
@@ -181,9 +188,19 @@ Writer.prototype.surroundSelection = function (element) {
 }
 
 Writer.prototype.addKeyword = function(word){
-    this.note.metadata.keywords.push(word);
-    this.seriesTaskExecutor.addTask(this.saveNoteTask.saveTxt)
-    this.refreshKeywords();
+    if(this.note.metadata.keywords.indexOf(word) < 0 && word.length > 0){
+        this.note.metadata.keywords.push(word);
+        this.seriesTaskExecutor.addTask(this.saveNoteTask.saveTxt)
+        this.refreshKeywords();
+    }
+}
+
+Writer.prototype.removeKeyword = function(word){
+    if(this.note.metadata.keywords.indexOf(word) >= 0){
+        this.note.metadata.keywords.splice(this.note.metadata.keywords.indexOf(word),1);
+        this.seriesTaskExecutor.addTask(this.saveNoteTask.saveTxt)
+        this.refreshKeywords();
+    }
 }
 
 Writer.prototype.setColor = function (color) {
@@ -254,23 +271,23 @@ var SaveNoteTask = function (writer) {
 SaveNoteTask.prototype.saveTxt = function (onEnd) {
    
     var fs = require('fs');
+    var writer = this.writer;
     console.log("saving")
-    fs.unlink(__dirname + "/reader.html", function () {
-        fs.writeFile(__dirname + '/index.html', this.writer.oEditor.innerHTML, function (err) {
+    fs.unlink("tmp/reader.html", function () {
+        fs.writeFile('tmp/index.html', writer.oEditor.innerHTML, function (err) {
             if (err) {
                 onEnd()
                 return console.log(err);
             }
-            this.writer.note.metadata.last_modification_date = Date.now();
-            console.log("saving meta  "+ this.writer.note.metadata.keywords[0])
-            fs.writeFile(__dirname + '/metadata.json', JSON.stringify(this.writer.note.metadata), function (err) {
+            writer.note.metadata.last_modification_date = Date.now();
+            console.log("saving meta  "+ writer.note.metadata.keywords[0])
+            fs.writeFile('tmp/metadata.json', JSON.stringify(writer.note.metadata), function (err) {
                 if (err) {
                     onEnd()
                     return console.log(err);
                 }
-                this.writer.oEditor.innerHTML
                 console.log("compress")
-                this.writer.noteOpener.compressFrom(__dirname, function () {
+                writer.noteOpener.compressFrom("tmp", function () {
                     console.log("compressed")
 
                     onEnd()
