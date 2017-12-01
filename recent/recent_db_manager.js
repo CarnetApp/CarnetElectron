@@ -9,13 +9,16 @@ var RecentDBManager = function(path) {
 RecentDBManager.prototype.getFullDB = function(callback) {
     console.log("getFullDB")
     fs.readFile(this.path, function(err, data) {
+        if(data == undefined||data.length == 0)
+            data = "{\"data\":[]}";
+        console.log("data "+data)
         callback(err, data);
     });
 }
 
 RecentDBManager.prototype.getFlatenDB = function(callback) {
     this.getFullDB(function(err, data) {
-        console.log("fullDB " + fullDB)
+        console.log("fullDB " + data)
 
         var fullDB = JSON.parse(data)["data"];
         var flaten = [];
