@@ -49,6 +49,8 @@ TextGetterTask.prototype.getNext = function() {
 }
 
 var NewNoteCreationTask = function(callback) {
+    if(currentPath == initPath)
+        currentPath = main.getNotePath();
     var fb = new FileBrowser(currentPath);
     console.log(currentPath + " fefef")
     var task = this;
