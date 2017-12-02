@@ -49,10 +49,11 @@ TextGetterTask.prototype.getNext = function() {
 }
 
 var NewNoteCreationTask = function(callback) {
-    if(currentPath == initPath)
-        currentPath = main.getNotePath();
-    var fb = new FileBrowser(currentPath);
-    console.log(currentPath + " fefef")
+    var path = currentPath;
+    if(path == initPath)
+    path = main.getNotePath();
+    var fb = new FileBrowser(path);
+    console.log(path + " fefef")
     var task = this;
     fb.list(function(files) {
         task.files = files;
@@ -69,7 +70,7 @@ var NewNoteCreationTask = function(callback) {
                 }
             }
         }
-        callback(currentPath + "/" + name)
+        callback(path + "/" + name)
 
     });
 }
