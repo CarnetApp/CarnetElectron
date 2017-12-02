@@ -1,4 +1,5 @@
 var fs = require('fs');
+var getParentFolderFromPath = require('path').dirname;
 
 var RecentDBManager = function(path) {
     this.path = path;
@@ -53,13 +54,53 @@ RecentDBManager.prototype.addToDB = function(path) {
 
         fullDB["data"].push(item);
         console.log(JSON.stringify(item))
-        fs.writeFile(db.path, JSON.stringify(fullDB), function(err) {});
+        require("mkdirp")(getParentFolderFromPath(db.path), function(){
+            fs.writeFile(db.path, JSON.stringify(fullDB), function(err) {console.log(err)});
+            
+        })
     })
 }
 
+// sort on key values
+function keysrt(key,desc) {
+    return function(a,b){
+     return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
+    }
+  }
 
 //returns last time
-RecentDBManager.prototype.mergeDB = function(path) {
-
+RecentDBManager.prototype.mergeDB = function(path, callback) {
+    console.log("merging with "+path);
+    var db = this;
+    this.getFullDB(function(err,data){
+        var otherDB = new RecentDBManager(path)
+        otherDB.getFullDB(function(err, dataBis){
+            var dataJson = JSON.parse(data)
+            var dataBisJson = JSON.parse(dataBis)
+            for (let itemBis of dataBisJson["data"]) {
+                var isIn = false;
+                for (let item of dataJson["data"]) {
+                    if(itemBis.time == item.time && itemBis.path == item.path && itemBis.action == item.action){
+                        isIn = true;
+                        console.log(itemBis.time+ " is in");
+                        break;
+                    }
+                }
+                if(!isIn){
+                    console.log(itemBis.time+ " is not in");
+                    dataJson["data"].push(itemBis);
+                }
+            }
+            dataJson["data"].sort(keysrt('time'))
+            require("mkdirp")(getParentFolderFromPath(db.path), function(){
+                fs.writeFile(db.path, JSON.stringify(dataJson), function(err) {
+                    console.log(err);
+                    callback();
+                });
+                
+            })
+        });
+    })
 
 }
+exports.RecentDBManager = RecentDBManager;

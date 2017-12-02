@@ -22,8 +22,17 @@ localStorage = new LocalStorage('./scratch')
 if (localStorage.getItem("app_id") == null)
     localStorage.setItem("app_id", guid())
 uid = localStorage.getItem("app_id")
+var dbmerger = require("./recent/merge_db");
 
+function startMerging(){
+    new dbmerger.DBMerger(exports.getNotePath()+ "/.quickdoc/recentdb/",uid).startMergin(function(){
+        console.log("merge finished");
+        setTimeout(startMerging, 5*60*1000);
+
+    });
+}
 function createWindow() {
+    startMerging();
     // Create the browser window.
     win = new BrowserWindow({ width: 800, height: 600, frame: false })
 
@@ -91,6 +100,7 @@ exports.getNotePath = function(){
         path = app.getPath('documents')+"/QuickNote" ;
         localStorage.setItem("root_path",path);
     }
+    require("mkdirp")(path)
     return path;
 }
 
