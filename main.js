@@ -25,7 +25,7 @@ uid = localStorage.getItem("app_id")
 var dbmerger = require("./recent/merge_db");
 
 function startMerging(){
-    new dbmerger.DBMerger(exports.getNotePath()+ "/.quickdoc/recentdb/",uid).startMergin(function(){
+    new dbmerger.DBMerger(exports.getNotePath()+ "/quickdoc/recentdb/",uid).startMergin(function(){
         console.log("merge finished");
         setTimeout(startMerging, 5*60*1000);
 
@@ -92,13 +92,12 @@ exports.hideMainWindow = () => {
     win.hide();
 }
 
-
 exports.getNotePath = function(){
     var path = localStorage.getItem("root_path") 
     if (path == null){
         const {app} = require('electron')
         path = app.getPath('documents')+"/QuickNote" ;
-        localStorage.setItem("root_path",path);
+        localStorage.setItem("root_path","/home/alexandre/Nextcloud/Documents/QuickNote");
     }
     require("mkdirp")(path)
     return path;

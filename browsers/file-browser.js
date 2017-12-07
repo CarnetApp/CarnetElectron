@@ -10,13 +10,13 @@ FileBrowser.prototype.list = function(callback) {
         var { ipcRenderer, remote } = require('electron');
         var main = remote.require("./main.js");
         var mainPath = main.getNotePath();
-        var db = new RecentDBManager(mainPath + "/.quickdoc/recentdb/" + main.getAppUid())
+        var db = new RecentDBManager(mainPath + "/quickdoc/recentdb/" + main.getAppUid())
         db.getFlatenDB(function(err, flaten) {
             console.log(JSON.stringify(flaten))
             var files = [];
             for (let filePath of flaten) {
                 var filename = filePath;
-                filePath = mainPath + filePath
+                filePath = mainPath +"/"+ filePath
                 file = new File(filePath, true, filename);
                 files.push(file)
             }

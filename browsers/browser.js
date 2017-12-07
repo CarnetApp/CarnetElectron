@@ -84,7 +84,7 @@ function openNote(notePath) {
     const electron = require('electron')
     const remote = electron.remote;
     const BrowserWindow = remote.BrowserWindow;
-    var db = new RecentDBManager(main.getNotePath() + "/.quickdoc/recentdb/" + main.getAppUid())
+    var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
     db.addToDB(NoteUtils.getNoteRelativePath(main.getNotePath(), notePath));
     const path = require('path')
         //var win = new BrowserWindow({ width: 800, height: 600 });

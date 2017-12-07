@@ -12,6 +12,10 @@ DBMerger.prototype.startMergin = function(onFinished) {
     this.onFinished = onFinished;
     var merger = this;   
     fs.readdir(this.recentFolder, (err, dir) => {
+        if(dir == undefined){
+            onFinished();
+            return;
+    }
         merger.dir = dir;
         merger.pos = 0;
         merger.mergeNext();
