@@ -12,14 +12,12 @@ RecentDBManager.prototype.getFullDB = function(callback) {
     fs.readFile(this.path, function(err, data) {
         if(data == undefined||data.length == 0)
             data = "{\"data\":[]}";
-        console.log("data "+data)
         callback(err, data);
     });
 }
 
 RecentDBManager.prototype.getFlatenDB = function(callback) {
     this.getFullDB(function(err, data) {
-        console.log("fullDB " + data)
 
         var fullDB = JSON.parse(data)["data"];
         var flaten = [];
@@ -31,8 +29,14 @@ RecentDBManager.prototype.getFlatenDB = function(callback) {
                 }
                 flaten.push(item.path)
             } else if (item.action == "remove") {
+                console.log("removing "+item.path)
                 if (index > -1) {
                     flaten.splice(index, 1);
+                }
+            } else if (item.action == "move") {
+                console.log("move "+item.path+" to "+item.newPath)
+                if (index > -1) {
+                    flaten[index] = item.newPath;
                 }
             }
         }
@@ -42,13 +46,45 @@ RecentDBManager.prototype.getFlatenDB = function(callback) {
 }
 
 RecentDBManager.prototype.addToDB = function(path) {
+    this.action(path, "add")
+}
+
+RecentDBManager.prototype.removeFromDB = function(path,callback) {
+    this.action(path, "remove",callback)
+}
+
+RecentDBManager.prototype.move = function(path,newPath,callback) {
+    var db = this;
+    console.log("move "+path+" to "+newPath)
+    
+    this.getFullDB(function(err, data) {
+        var fullDB = JSON.parse(data);
+        var item = new function() {
+            this.time = new Date().getTime();
+            this.action = "move";
+            this.path = path;
+            this.newPath = newPath;
+        };
+
+        fullDB["data"].push(item);
+        console.log(JSON.stringify(item))
+        require("mkdirp")(getParentFolderFromPath(db.path), function(){
+            fs.writeFile(db.path, JSON.stringify(fullDB), function(err) {console.log(err)});
+            if(callback)
+                callback()
+            
+        })
+    })
+}
+
+RecentDBManager.prototype.action = function(path, action, callback){
     var db = this;
     this.getFullDB(function(err, data) {
         console.log(data)
         var fullDB = JSON.parse(data);
         var item = new function() {
             this.time = new Date().getTime();
-            this.action = "add";
+            this.action = action;
             this.path = path;
         };
 
@@ -56,6 +92,8 @@ RecentDBManager.prototype.addToDB = function(path) {
         console.log(JSON.stringify(item))
         require("mkdirp")(getParentFolderFromPath(db.path), function(){
             fs.writeFile(db.path, JSON.stringify(fullDB), function(err) {console.log(err)});
+            if(callback)
+                callback()
             
         })
     })

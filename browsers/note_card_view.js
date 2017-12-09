@@ -94,6 +94,11 @@ NoteCardViewGrid.prototype.onNoteClick = function(callback) {
     this.onNoteClick = callback;
 }
 
+NoteCardViewGrid.prototype.onMenuClick = function(callback) {
+    this.onMenuClick = callback;
+}
+
+
 NoteCardViewGrid.prototype.updateNote = function(note) {
     for (var i = 0; i < this.noteCards.length; i++) {
         var noteCard = this.noteCards[i];
@@ -123,6 +128,14 @@ NoteCardViewGrid.prototype.setNotesAndFolders = function(notes) {
                 if (!$(this).hasClass('noclick')) {
                     var data = event.data;
                     data.callback(data.note)
+                }
+            });
+
+            $(noteCard.menuButton).bind('click', { note: note, callback: this.onMenuClick }, function(event) {
+                if (!$(this).hasClass('noclick')) {
+                    var data = event.data;
+                    data.callback(data.note)
+                    return false;
                 }
             });
         } else {

@@ -152,6 +152,41 @@ function list(pathToList, discret) {
         // var reader = new Writer(note,"");
         // reader.extractNote()
     })
+
+
+    noteCardViewGrid.onMenuClick(function(note) {
+        var dialog = document.querySelector('#contextual-dialog');
+        dialog.querySelector('#name-input').value=note.title;
+        dialog.querySelector('.delete-button').onclick = function(){
+            NoteUtils.deleteNote(note.path, function(){
+                dialog.close();
+                list(currentPath, true)
+            })
+        }
+        dialog.querySelector('#archive-button').onclick = function(){
+            var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
+            db.removeFromDB(NoteUtils.getNoteRelativePath(main.getNotePath(), note.path), function(){
+                dialog.close();
+               
+                list(currentPath, true)
+            });
+            
+        }
+        dialog.querySelector('.cancel').onclick = function(){
+            dialog.close();
+        }
+        dialog.querySelector('.ok').onclick = function(){
+            NoteUtils.renameNote(note.path, dialog.querySelector('#name-input').value+".sqd", function(){
+                list(currentPath, true)
+            })
+            
+            dialog.close();
+        }
+        dialog.showModal();
+        dialog.querySelector('#name-input').focus()
+        
+    })
+    
     var notes = [];
 
     var fb = new FileBrowser(pathToList);
