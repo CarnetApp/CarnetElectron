@@ -52,6 +52,12 @@ var NewNoteCreationTask = function(callback) {
     var path = currentPath;
     if(path == initPath)
     path = main.getNotePath();
+    var fs = require('fs');
+    if (!fs.exists(path)){
+        var mkdirp = require('mkdirp');
+        mkdirp.sync(path);
+    }
+
     var fb = new FileBrowser(path);
     console.log(path + " fefef")
     var task = this;
