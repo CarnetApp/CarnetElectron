@@ -46,8 +46,7 @@ function createWindow() {
     }))
 
     // Open the DevTools.
-    win.webContents.openDevTools()
-
+   if(isDebug) win.webContents.openDevTools()    
     console.log("app uid " + uid)
 
     // Emitted when the window is closed.
