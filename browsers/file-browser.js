@@ -30,6 +30,8 @@ FileBrowser.prototype.list = function(callback) {
             var files_in = [];
             for (let filePath of dir) {
                 var filename = filePath;
+                if(filename == "quickdoc" || filename.startsWith("."))
+                    continue;
                 filePath = this.path + "/" + filePath
                 var stat = fs.statSync(filePath);
                 file = new File(filePath, stat.isFile(), filename);
