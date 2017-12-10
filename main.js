@@ -101,8 +101,7 @@ exports.getNotePath = function(){
         localStorage.setItem("root_path","/home/alexandre/Nextcloud/Documents/QuickNote");
     }
     require("mkdirp")(path)
-    if(isDebug)
-    return path+"Debug";
+    return path+(isDebug?"Debug":"");
 }
 
 
