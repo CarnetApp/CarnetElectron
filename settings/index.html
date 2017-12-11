@@ -20,24 +20,6 @@
 
 <body>
 
-        <dialog class="mdl-dialog" id="contextual-dialog">
-                <div style="text-align: center">
-                <button type="button" class="mdl-button" id="archive-button" >Archive</button>
-                <button type="button" class="mdl-button delete-button">Delete</button>
-            </div>
-             <div class="mdl-dialog__content">
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <input class="mdl-textfield__input" type="text" id="name-input">
-                            <label class="mdl-textfield__label" for="sample3" style = "top:4px; color: rgb(63,81,181); font-size: 12px;">Rename</label>
-                        </div>
-                    </div>
-                <div class="mdl-dialog__actions">
-                        <button type="button" class="mdl-button ok">OK</button>                        
-                        <button type="button" class="mdl-button cancel" >Cancel</button>
-                        
-                </div>
-            </dialog>
-
     <!-- The drawer is always open in large screens. The header is always shown,
       even in small screens. -->
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
@@ -73,7 +55,8 @@
                       
                           <tr>
                             <td class="mdl-data-table__cell--non-numeric" id="select_note_path_button">
-                                Select note path
+                                Select note path <br />
+                                <span id="current_root_path"></span>
                             </td>
                           
                           </tr>

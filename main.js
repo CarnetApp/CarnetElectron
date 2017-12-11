@@ -115,14 +115,8 @@ exports.hideMainWindow = () => {
 }
 
 exports.getNotePath = function(){
-    var path = localStorage.getItem("root_path") 
-    if (path == null){
-        const {app} = require('electron')
-        path = app.getPath('documents')+"/QuickNote" ;
-        localStorage.setItem("root_path","/home/alexandre/Nextcloud/Documents/QuickNote");
-    }
-    require("mkdirp")(path)
-    return path+(isDebug?"Debug":"");
+    var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
+    return new SettingsHelper().getNotePath();
 }
 var mergeListener
 exports.setMergeListener = (listener) => {
