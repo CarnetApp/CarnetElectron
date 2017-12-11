@@ -110,6 +110,7 @@ function keysrt(key,desc) {
 RecentDBManager.prototype.mergeDB = function(path, callback) {
     console.log("merging with "+path);
     var db = this;
+    var hasChanged = false;
     this.getFullDB(function(err,data){
         var otherDB = new RecentDBManager(path)
         otherDB.getFullDB(function(err, dataBis){
@@ -127,13 +128,14 @@ RecentDBManager.prototype.mergeDB = function(path, callback) {
                 if(!isIn){
                     console.log(itemBis.time+ " is not in");
                     dataJson["data"].push(itemBis);
+                    hasChanged = true;
                 }
             }
             dataJson["data"].sort(keysrt('time'))
             require("mkdirp")(getParentFolderFromPath(db.path), function(){
                 fs.writeFile(db.path, JSON.stringify(dataJson), function(err) {
                     console.log(err);
-                    callback();
+                    callback(hasChanged);
                 });
                 
             })

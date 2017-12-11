@@ -27,14 +27,35 @@ uid = localStorage.getItem("app_id")
 var dbmerger = require("./recent/merge_db");
 
 function startMerging(){
-    new dbmerger.DBMerger(exports.getNotePath()+ "/quickdoc/recentdb/",uid).startMergin(function(){
-        console.log("merge finished");
+    new dbmerger.DBMerger(exports.getNotePath()+ "/quickdoc/recentdb/",uid).startMergin(function(hasChanged){
+        if(mergeListener != undefined && hasChanged)
+        mergeListener();
+        console.log("merge finished has changed ? "+hasChanged);
         setTimeout(startMerging, 5*60*1000);
 
     });
 }
 function createWindow() {
     startMerging();
+    //observe
+
+var chokidar = require('chokidar');
+var watcher = chokidar.watch(exports.getNotePath()+ "/quickdoc/recentdb/", {ignored: /^\./, persistent: true});
+watcher
+  .on('add', function(path) {
+      if(path !== exports.getNotePath()+ "/quickdoc/recentdb/"+uid)
+        startMerging()
+    })
+  .on('change', function(path) {
+    if(path !== exports.getNotePath()+ "/quickdoc/recentdb/"+uid)    
+        startMerging()
+    })
+  .on('unlink', function(path) {
+    if(path !== exports.getNotePath()+ "/quickdoc/recentdb/"+uid)    
+        startMerging()
+})
+  
+
     // Create the browser window.
     win = new BrowserWindow({ width: 1030, height: 600, frame: false,icon: path.join(__dirname, 'assets/images/QuickDoc.png') })
 
@@ -103,7 +124,10 @@ exports.getNotePath = function(){
     require("mkdirp")(path)
     return path+(isDebug?"Debug":"");
 }
-
+var mergeListener
+exports.setMergeListener = (listener) => {
+    mergeListener = listener;
+}
 
 
 exports.getAppUid = () => {

@@ -10,10 +10,11 @@ var DBMerger = function(recentFolder,appUid){
 
 DBMerger.prototype.startMergin = function(onFinished) {
     this.onFinished = onFinished;
-    var merger = this;   
+    var merger = this;
+    this.hasChanged = false;   
     fs.readdir(this.recentFolder, (err, dir) => {
         if(dir == undefined){
-            onFinished();
+            onFinished(false);
             return;
     }
         merger.dir = dir;
@@ -27,13 +28,15 @@ DBMerger.prototype.mergeNext = function(){
     
     var merger = this;
     if(this.pos < this.dir.length){
-        db.mergeDB(merger.recentFolder+"/"+this.dir[this.pos], function(){
+        db.mergeDB(merger.recentFolder+"/"+this.dir[this.pos], function(hasChanged){
+            if(hasChanged)
+                merger.hasChanged = hasChanged;
             merger.pos ++ ;
             merger.mergeNext();
         })
             
     }
-    else this.onFinished();
+    else this.onFinished(this.hasChanged);
 }
 
 exports.DBMerger = DBMerger;

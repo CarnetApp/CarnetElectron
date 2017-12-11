@@ -225,6 +225,9 @@ function list(pathToList, discret) {
 
 }
 list(initPath)
+main.setMergeListener(function(){
+    list(initPath,true)
+})
 
 document.getElementById("add-note-button").onclick = function() {
     new NewNoteCreationTask(function(path) {
