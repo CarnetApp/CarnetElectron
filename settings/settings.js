@@ -7,7 +7,8 @@ document.getElementById("select_note_path_button").onclick = function(){
           dialog.showOpenDialog({
         properties: ['openDirectory']
       },function(path){
-        settingsHelper.setNotePath(path)
+          if(path != undefined)
+            settingsHelper.setNotePath(path)
       })
 }
 document.getElementById("current_root_path").innerHTML = settingsHelper.getNotePath()
