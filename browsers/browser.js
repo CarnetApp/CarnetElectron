@@ -6,7 +6,8 @@ var oldNotes = {}
 var dontOpen = false;
 var { ipcRenderer, remote } = require('electron');
 var main = remote.require("./main.js");
-
+var SettingsHelper = require("./settings/settings_helper").SettingsHelper
+var settingsHelper = new SettingsHelper()
 var TextGetterTask = function(list) {
     this.list = list;
     this.current = 0;
@@ -137,7 +138,7 @@ function list(pathToList, discret) {
         pathToList = currentPath;
     console.log("listing path " + pathToList);
     currentPath = pathToList;
-    if (initPath == currentPath) {
+    if (pathToList == settingsHelper.getNotePath() || pathToList == initPath) {
         $("#back_arrow").hide()
     } else
         $("#back_arrow").show()
