@@ -129,6 +129,10 @@ exports.setMergeListener = (listener) => {
     mergeListener = listener;
 }
 
+exports.getLocalStorage = function(){
+    return localStorage;
+}
+
 
 exports.getAppUid = () => {
 
