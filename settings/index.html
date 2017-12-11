@@ -19,6 +19,16 @@
 </head>
 
 <body>
+    <style>
+        .settings-button{
+            cursor: pointer;
+        }
+        .settings-box{
+            margin-top: 15px;
+            margin-left:calc(50% - 200px); 
+            width:400px;
+        }
+        </style>
 
     <!-- The drawer is always open in large screens. The header is always shown,
       even in small screens. -->
@@ -26,21 +36,10 @@
                 mdl-layout--fixed-header">
         <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
-                <button id="back_arrow" class="mdl-button mdl-js-button mdl-button--icon" style="left: -15px; ">
-            <i class="material-icons">arrow_back</i>
-          </button>
-                <span class="mdl-layout-title">QuickDoc</span>
+             
+                <span class="mdl-layout-title">Settings</span>
                 <div class="mdl-layout-spacer"></div>
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
-                      mdl-textfield--floating-label mdl-textfield--align-right">
-                    <label class="mdl-button mdl-js-button mdl-button--icon" for="fixed-header-drawer-exp">
-              <i class="material-icons">search</i>
-            </label>
-                    <div class="mdl-textfield__expandable-holder">
-                        <input class="mdl-textfield__input" type="text" name="sample" id="fixed-header-drawer-exp">
-                    </div>
-                </div>
-            </div>
+               
         </header>
         <div class="mdl-layout__drawer">
             <nav class="mdl-navigation">
@@ -51,14 +50,23 @@
         </div>
         <main class="mdl-layout__content" id="page-container" style="text-align:center;">
             
-                <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp" style="margin-left:calc(50% - 125px); width:250px;">
+                <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp settings-box" style="">
                       
                           <tr>
-                            <td class="mdl-data-table__cell--non-numeric" id="select_note_path_button">
+                            <td class="mdl-data-table__cell--non-numeric settings-button" id="select_note_path_button">
                                 Select note path <br />
                                 <span id="current_root_path"></span>
                             </td>
-                          
+                        </tr>
+                                    <tr>
+                            <td class="mdl-data-table__cell--non-numeric settings-button">
+                                Cloud sync
+                            </td>
+                        </tr>
+                                    <tr>
+                            <td class="mdl-data-table__cell--non-numeric settings-button">
+                                Import from Google Keep
+                            </td>
                           </tr>
                         
                       </table>
