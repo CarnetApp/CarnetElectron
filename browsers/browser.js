@@ -51,7 +51,7 @@ TextGetterTask.prototype.getNext = function() {
 
 var NewNoteCreationTask = function(callback) {
     var path = currentPath;
-    if(path == initPath)
+    if(path == initPath || path.startsWith("keyword://"))
     path = main.getNotePath();
     var fs = require('fs');
     if (!fs.exists(path)){
@@ -133,12 +133,34 @@ function onDragEnd(gg) {
     dontOpen = true;
 }
 
+function refreshKeywords(){
+    var KeywordsDBManager = require("./keywords/keywords_db_manager").KeywordsDBManager;
+    var keywordsDBManager = new KeywordsDBManager(main.getNotePath()+ "/quickdoc/keywords/"+main.getAppUid())    
+    keywordsDBManager.getFlatenDB(function(error, data){
+        var keywordsContainer = document.getElementById("keywords");
+        keywordsContainer.innerHTML = "";
+        for (let key in data) {
+            if(data[key].length==0)
+                continue;
+            var keywordElem = document.createElement("a");
+            keywordElem.classList.add("mdl-navigation__link")
+            keywordElem.innerHTML = key;
+           // keywordElem.setAttribute("href","");
+            keywordElem.onclick = function(){
+                list("keyword://"+key, false);
+                return false;
+            }
+            keywordsContainer.appendChild(keywordElem)
+        }
+    })
+}
+
 function list(pathToList, discret) {
     if (pathToList == undefined)
         pathToList = currentPath;
     console.log("listing path " + pathToList);
     currentPath = pathToList;
-    if (pathToList == settingsHelper.getNotePath() || pathToList == initPath) {
+    if (pathToList == settingsHelper.getNotePath() || pathToList == initPath || pathToList.startsWith("keyword://")) {
         $("#back_arrow").hide()
     } else
         $("#back_arrow").show()
@@ -226,6 +248,7 @@ function list(pathToList, discret) {
 
 }
 list(initPath)
+refreshKeywords();
 main.setMergeListener(function(){
     list(initPath,true)
 })
@@ -242,6 +265,7 @@ document.getElementById("back_arrow").addEventListener("click", function() {
 });
 $(window).focus(function() {
     list(currentPath, true)
+    refreshKeywords()
 });
 
 function getNotePath() {

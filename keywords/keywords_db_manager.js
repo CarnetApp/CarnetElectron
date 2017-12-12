@@ -1,7 +1,15 @@
 
 var fs = require('fs');
+var NoteUtils = require("../note/NoteUtils").NoteUtils
+var { remote } = require('electron');
+var main = remote.require("./main.js");
+var SettingsHelper = require("../settings/settings_helper.js").SettingsHelper;
+var settingsHelper = new SettingsHelper()
 var getParentFolderFromPath = require('path').dirname;
 var KeywordsDBManager = function(path){
+    if(path == undefined){
+        path = settingsHelper.getNotePath()+ "/quickdoc/keywords/"+main.getAppUid()
+    }
     this.path = path;
 }
 
@@ -27,27 +35,43 @@ KeywordsDBManager.prototype.getFlatenDB = function(callback) {
             var index = flaten[keyword].indexOf(item.path);
             if (item.action == "add") {
                 if (index == -1) {
+                    console.log("adding key "+item.path)
+                    
                     flaten[keyword].push(item.path)
+
                 }
             } else if (item.action == "remove") {
-                console.log("removing "+item.path)
+                console.log("removing key "+item.path)
                 if (index > -1) {
                     flaten[keyword].splice(index, 1);
                 }
             } else if (item.action == "move") {
-                console.log("move "+item.path+" to "+item.newPath)
+                console.log("move key "+item.path+" to "+item.newPath)
                 if (index > -1) {
                     flaten[keyword][index] = item.newPath;
                 }
             }
         }
-        flaten.reverse()
+        for(let key in flaten){
+            flaten[key].reverse() //unshift seems slower...
+        }
         callback(false, flaten);
     });
 }
 
 KeywordsDBManager.prototype.addToDB = function(keyword, path) {
+    console.log("path 1 "+path)
+    if(path.startsWith("/"))
+        path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
+        console.log("path 2 "+path)
+        
     this.action(keyword, path, "add")
+}
+
+KeywordsDBManager.prototype.removeFromDB = function(keyword, path) {
+    if(path.startsWith("/"))
+        path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
+    this.action(keyword, path, "remove")
 }
 
 KeywordsDBManager.prototype.action = function(keyword,path, action, callback){

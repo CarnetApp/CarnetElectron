@@ -5,11 +5,12 @@ var FileBrowser = function(path) {
 }
 
 FileBrowser.prototype.list = function(callback) {
+    var { ipcRenderer, remote } = require('electron');
+    var main = remote.require("./main.js");
+    var mainPath = main.getNotePath();
+    
     if (this.path == "recentdb://") {
         console.log("getting recent")
-        var { ipcRenderer, remote } = require('electron');
-        var main = remote.require("./main.js");
-        var mainPath = main.getNotePath();
         var db = new RecentDBManager(mainPath + "/quickdoc/recentdb/" + main.getAppUid())
         db.getFlatenDB(function(err, flaten) {
             console.log(JSON.stringify(flaten))
@@ -22,7 +23,26 @@ FileBrowser.prototype.list = function(callback) {
             }
             callback(files)
         })
-    } else {
+    } else if (this.path.startsWith("keyword://")) {
+        console.log("getting keyword")
+        var KeywordsDBManager = require("./keywords/keywords_db_manager").KeywordsDBManager;
+        var keywordsDBManager = new KeywordsDBManager(main.getNotePath()+ "/quickdoc/keywords/"+main.getAppUid())    
+        var filebrowser = this;
+        keywordsDBManager.getFlatenDB(function(error, data){
+            var files = [];
+            console.log("keyword "+filebrowser.path.substring("keyword://".length))
+            for (let filePath of data[filebrowser.path.substring("keyword://".length)]) {
+                var filename = filePath;
+                console.log("file "+filePath)
+                
+                filePath = mainPath +"/"+ filePath
+                file = new File(filePath, true, filename);
+                files.push(file)
+            }
+            callback(files)
+        })
+    }
+    else {
         fs.readdir(this.path, (err, dir) => {
             //console.log(dir);
             var files = [];

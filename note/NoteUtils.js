@@ -34,3 +34,5 @@ NoteUtils.renameNote = function(notePath, newTitle, callback){
         })
     }
 }
+
+exports.NoteUtils = NoteUtils
