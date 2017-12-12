@@ -54,8 +54,9 @@ watcher
     if(path !== exports.getNotePath()+ "/quickdoc/recentdb/"+uid)    
         startMerging()
 })
-  
-
+var KeywordsDBManager = require("./keywords/keywords_db_manager").KeywordsDBManager;
+var keywordsDBManager = new KeywordsDBManager(exports.getNotePath()+ "/quickdoc/keywords/"+uid)
+keywordsDBManager.addToDB("test","testpath")
     // Create the browser window.
     win = new BrowserWindow({ width: 1030, height: 600, frame: false,icon: path.join(__dirname, 'assets/images/QuickDoc.png') })
 
