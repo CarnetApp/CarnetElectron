@@ -145,7 +145,7 @@ function refreshKeywords(){
             var keywordElem = document.createElement("a");
             keywordElem.classList.add("mdl-navigation__link")
             keywordElem.innerHTML = key;
-           // keywordElem.setAttribute("href","");
+            keywordElem.setAttribute("href","");
             keywordElem.onclick = function(){
                 list("keyword://"+key, false);
                 return false;

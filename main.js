@@ -25,18 +25,30 @@ if (localStorage.getItem("app_id") == null)
     localStorage.setItem("app_id", guid())
 uid = localStorage.getItem("app_id")
 var dbmerger = require("./recent/merge_db");
+var keywordsdbmerger = require("./keywords/merge_db");
 
 function startMerging(){
     new dbmerger.DBMerger(exports.getNotePath()+ "/quickdoc/recentdb/",uid).startMergin(function(hasChanged){
         if(mergeListener != undefined && hasChanged)
         mergeListener();
         console.log("merge finished has changed ? "+hasChanged);
-        setTimeout(startMerging, 5*60*1000);
+      //  setTimeout(startMerging, 5*60*1000);
+
+    });
+}
+
+function startKeywordsMerging(){
+    new keywordsdbmerger.KeywordDBMerger(exports.getNotePath()+ "/quickdoc/keywords/",uid).startMergin(function(hasChanged){
+        if(mergeListener != undefined && hasChanged)
+        mergeListener();
+        console.log("merge finished has changed ? "+hasChanged);
+      //  setTimeout(startKeywordsMerging, 5*60*1000);
 
     });
 }
 function createWindow() {
     startMerging();
+    startKeywordsMerging()
     //observe
 
 var chokidar = require('chokidar');
@@ -53,6 +65,20 @@ watcher
   .on('unlink', function(path) {
     if(path !== exports.getNotePath()+ "/quickdoc/recentdb/"+uid)    
         startMerging()
+})
+var watcher = chokidar.watch(exports.getNotePath()+ "/quickdoc/keywords/", {ignored: /^\./, persistent: true});
+watcher
+  .on('add', function(path) {
+      if(path !== exports.getNotePath()+ "/quickdoc/keywords/"+uid)
+      startKeywordsMerging()
+    })
+  .on('change', function(path) {
+    if(path !== exports.getNotePath()+ "/quickdoc/keywords/"+uid)    
+    startKeywordsMerging()
+    })
+  .on('unlink', function(path) {
+    if(path !== exports.getNotePath()+ "/quickdoc/keywords/"+uid)    
+    startKeywordsMerging()
 })
     // Create the browser window.
     win = new BrowserWindow({ width: 1030, height: 600, frame: false,icon: path.join(__dirname, 'assets/images/QuickDoc.png') })

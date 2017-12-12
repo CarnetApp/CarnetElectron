@@ -2,7 +2,9 @@
 var fs = require('fs');
 var NoteUtils = require("../note/NoteUtils").NoteUtils
 var { remote } = require('electron');
-var main = remote.require("./main.js");
+var main = undefined
+if(remote != undefined)
+    main = remote.require("./main.js");
 var SettingsHelper = require("../settings/settings_helper.js").SettingsHelper;
 var settingsHelper = new SettingsHelper()
 var getParentFolderFromPath = require('path').dirname;
@@ -96,5 +98,50 @@ KeywordsDBManager.prototype.action = function(keyword,path, action, callback){
         })
     })
 }
+
+//returns last time
+KeywordsDBManager.prototype.mergeDB = function(path, callback) {
+    console.log("merging with "+path);
+    var db = this;
+    var hasChanged = false;
+    this.getFullDB(function(err,data){
+        var otherDB = new KeywordsDBManager(path)
+        otherDB.getFullDB(function(err, dataBis){
+            var dataJson = JSON.parse(data)
+            var dataBisJson = JSON.parse(dataBis)
+            for (let itemBis of dataBisJson["data"]) {
+                var isIn = false;
+                for (let item of dataJson["data"]) {
+                    if(itemBis.time == item.time && itemBis.path == item.path && itemBis.action == item.action){
+                        isIn = true;
+                        console.log(itemBis.time+ " is in");
+                        break;
+                    }
+                }
+                if(!isIn){
+                    console.log(itemBis.time+ " is not in");
+                    dataJson["data"].push(itemBis);
+                    hasChanged = true;
+                }
+            }
+            dataJson["data"].sort(keysrt('time'))
+            require("mkdirp")(getParentFolderFromPath(db.path), function(){
+                fs.writeFile(db.path, JSON.stringify(dataJson), function(err) {
+                    console.log(err);
+                    callback(hasChanged);
+                });
+                
+            })
+        });
+    })
+}
+
+
+// sort on key values
+function keysrt(key,desc) {
+    return function(a,b){
+     return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
+    }
+  }
 
 exports.KeywordsDBManager = KeywordsDBManager

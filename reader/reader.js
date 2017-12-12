@@ -55,8 +55,8 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     }, false);
     this.sDefTxt = this.oDoc.innerHTML;
     /*simple initialization*/
-    this.oDoc.focus();
-    if(typeof app === 'function')
+    this.oDoc.focus();    
+    if(typeof app == 'object')
         app.hideProgress();
     resetScreenHeight();
     this.refreshKeywords();
