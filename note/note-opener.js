@@ -114,7 +114,7 @@ Extractor.prototype.fullExtract = function () {
 
         fs.writeFileSync(dest, content,'base64');
         if (filename == "metadata.json") {
-          extractor.opener.note.metadata = JSON.parse(atob(content));
+          extractor.opener.note.metadata = JSON.parse(decodeURIComponent(escape(atob(content))));
         }
 
       }

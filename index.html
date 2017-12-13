@@ -66,16 +66,17 @@
                 </div>
             </div>
         </header>
-        <div class="mdl-layout__drawer">
+        <div class="mdl-layout__drawer" style="height: 100%;">
             <nav class="mdl-navigation">
                 <a class="mdl-navigation__link" href="" onclick="list('recentdb://',false); return false">Recent</a>
                 <a class="mdl-navigation__link" href="" onclick="list(getNotePath(),false); return false">Browser</a>
                 <a class="mdl-navigation__link" href="settings/index.html">Settings</a>
             </nav>
             <span style="text-align:center; margin:10px;"> Keywords</span>
-            <nav class="mdl-navigation" id="keywords">
-
-            </nav>
+            <div id="keywords-scrollview">
+                <nav class="mdl-navigation" id="keywords">
+                </nav>
+            </div>
         </div>
         <main class="mdl-layout__content" id="page-container">
             <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button" style="z-index:10000;position:absolute; bottom:30px; right:30px">
