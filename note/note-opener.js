@@ -140,7 +140,9 @@ Compressor.prototype.start = function () {
   var fs = require('fs');
   var archiver = require('archiver');
   console.log("start")
-  var archive = archiver.create('zip', {});
+  var archive = archiver.create('zip', {
+    zlib: { level: 0 } // no compression
+  });
   var output = fs.createWriteStream(this.path);
   archive.pipe(output);
 
