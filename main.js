@@ -151,7 +151,7 @@ exports.getLocalStorage = function(){
     return localStorage;
 }
 
-
+exports.isDebug = isDebug
 exports.getAppUid = () => {
 
     return uid;

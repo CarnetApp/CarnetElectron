@@ -39,6 +39,8 @@
 	<script src="<!ROOTPATH>reader/reader.js"></script>
 	<!--<script src="<!ROOTPATH>reader/libs/simplecolorpicker/index.js"></script>	-->
 	<script src="<!ROOTPATH>note/note-opener.js"></script>
+	<script src="<!ROOTPATH>compatibility/note-opener.js"></script>
+	
 	<script src="<!ROOTPATH>browsers/note.js"></script>
 
 	<script src="<!ROOTPATH>browsers/file-browser.js"></script>
@@ -212,18 +214,25 @@ mdl-layout--fixed-header">
 			<div id="page-content" class="page-content">
 				<div id="center" style="height:100%;padding:0px;">
 					<div id="editor" style="height:100%;overflow-y: auto;overflow-x: none;margin:0px;position: relative;">
-						<div id="text" contenteditable="true" style="height:100%;">
-							<!-- be aware that THIS will be modified in java -->
-							<!-- soft won't save note if contains donotsave345oL -->
-						</div>
-						<div id="floating">
-
-						</div>
+						
 					</div>
 				</div>
 			</div>
 		</main>
+
 		<script>
+		var writer = undefined;
+		function loadPath(path){
+			if(writer == undefined){
+				writer = new Writer(document);
+				writer.init();
+			}
+			writer.reset();
+			var note = new Note("", "", path, undefined);
+			writer.setNote(note);
+			console.log("extract")
+			writer.extractNote();
+		}
 			if(loaded == undefined)
 			var loaded = false; //don't know why, loaded twice on android
 			if(!loaded){
@@ -249,15 +258,15 @@ mdl-layout--fixed-header">
 			win.show()
 			main.hideMainWindow();
 		}
+		
+		var path = getParameterByName("path");
+		if(path != undefined){
 			console.log("path " + getParameterByName("path"))
-			var note = new Note("", "", getParameterByName("path"), undefined)
-			var writer = new Writer(note, document);
-			console.log("extract1")
-			writer.init();
-			console.log("extract")
-			writer.extractNote();
-			resetScreenHeight();
-			loaded = true;
+			loadPath(path)
+			
+		}
+		resetScreenHeight();
+		loaded = true;
 	}
 		</script>
 

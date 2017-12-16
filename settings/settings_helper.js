@@ -12,7 +12,13 @@ SettingsHelper.prototype.getNotePath = function(){
     }
     require("mkdirp")(path)
     console.log("path "+path)
-    return path;
+    var { ipcRenderer, remote } = require('electron');
+    var main;
+    if(remote!=undefined)
+       main = remote.require("./main.js");
+    else
+        main = require("../main.js");
+    return path+(main.isDebug?"Debug":"");
 }
 
 SettingsHelper.prototype.setNotePath = function(path){

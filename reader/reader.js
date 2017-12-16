@@ -1,7 +1,5 @@
-var Writer = function (note, elem) {
-    this.note = note;
+var Writer = function (elem) {
     this.elem = elem;
-    this.noteOpener = new NoteOpener(note);
     this.seriesTaskExecutor = new SeriesTaskExecutor();
     this.saveNoteTask = new SaveNoteTask(this)
     resetScreenHeight();
@@ -9,6 +7,11 @@ var Writer = function (note, elem) {
 
 }
 
+Writer.prototype.setNote = function(note){
+    this.note = note;   
+    this.noteOpener = new NoteOpener(note);
+    
+}
 
 Writer.prototype.extractNote = function () {
     console.log("Writer.prototype.extractNote")
@@ -43,6 +46,8 @@ Writer.prototype.extractNote = function () {
         //copying reader.html
     })
 }
+
+
 
 Writer.prototype.fillWriter = function (extractedHTML) {
     if (extractedHTML != undefined)
@@ -137,6 +142,7 @@ Writer.prototype.init = function () {
     }
 
     this.oEditor = document.getElementById("editor");
+   
     this.backArrow = document.getElementById("back-arrow");
     this.backArrow.addEventListener("click", function () {
        Compatibility.onBackPressed();
@@ -226,6 +232,16 @@ Writer.prototype.removeKeyword = function(word){
         this.seriesTaskExecutor.addTask(this.saveNoteTask.saveTxt)
         this.refreshKeywords();
     }
+}
+
+Writer.prototype.reset = function(){
+    this.oEditor.innerHTML = '<div id="text" contenteditable="true" style="height:100%;">\
+    <!-- be aware that THIS will be modified in java -->\
+    <!-- soft won\'t save note if contains donotsave345oL -->\
+</div>\
+<div id="floating">\
+\
+</div>';
 }
 
 Writer.prototype.setColor = function (color) {

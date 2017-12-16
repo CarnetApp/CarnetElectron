@@ -11,5 +11,5 @@ if [ "$1" == "android" ]; then
     cp compatibility.js "$2"/app/src/main/assets/reader/ -R
     cp browsers "$2"/app/src/main/assets/reader/ -R
     cp libs "$2"/app/src/main/assets/reader/ -R
-
+    cp note "$2"/app/src/main/assets/reader -R
 fi

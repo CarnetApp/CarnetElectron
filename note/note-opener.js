@@ -73,6 +73,7 @@ var Extractor = function (data, dest, opener, callback) {
   this.data = data;
   this.currentFile = 0;
   this.path = dest;
+  this.startTime = Date.now()
   this.callback = callback;
   this.opener = opener;
 }
@@ -90,7 +91,8 @@ Extractor.prototype.fullExtract = function () {
   console.log("fullExtract = " + this.files.length)
 
   if (this.currentFile >= this.files.length) {
-    console.log("size = " + this.files.length)
+    console.log("size = " + this.files.length) 
+    console.log("took "+(Date.now()-this.startTime)+"ms")
     this.callback()
     return;
   }

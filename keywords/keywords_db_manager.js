@@ -31,7 +31,7 @@ KeywordsDBManager.prototype.getFlatenDB = function(callback) {
         var flaten = {};
         for (let item of fullDB) {
             var keyword = item.keyword
-            if(flaten[keyword] == undefined){
+            if(keyword != undefined && flaten[keyword] == undefined){
                 flaten[keyword] = []
             }
             var index = flaten[keyword].indexOf(item.path);
@@ -49,8 +49,9 @@ KeywordsDBManager.prototype.getFlatenDB = function(callback) {
                 }
             } else if (item.action == "move") {
                 console.log("move key "+item.path+" to "+item.newPath)
-                if (index > -1) {
-                    flaten[keyword][index] = item.newPath;
+                for(let key in flaten){
+                    var indexBis = flaten[key].indexOf(item.path);
+                    flaten[key][indexBis] = item.newPath;
                 }
             }
         }
