@@ -26,7 +26,13 @@ Writer.prototype.extractNote = function () {
                 if (err) {
                     throw err;
                 }
-
+                fs.readFile('tmp/metadata.json','base64', function read(err, metadata) {                    
+                    if (err) {
+                        throw err;
+                    }
+                    writer.note.metadata = JSON.parse(decodeURIComponent(escape(atob(metadata))));
+                    writer.refreshKeywords()
+                });
                 content = data;
                 writer.fillWriter(decodeURIComponent(escape(atob(content))))
             });
