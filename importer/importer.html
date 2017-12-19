@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <script>
+    </script>
+    <link rel="stylesheet" href="../browsers/design.css">
+    <script src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+    <script src="../libs/date.js"></script>
+    <script src="../reader/libs/jquery.min.js"></script>
+    
+    <script src="importer.js"></script>
+
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+    <!-- Material Design icon font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+
+<body>
+    <style>
+        .value{
+            display: none;
+        }
+        .settings-button{
+            cursor: pointer;
+        }
+        .centered-container{
+            padding-top: 15px;
+            margin-left:calc(50% - 200px); 
+            width:400px;
+        }
+       
+        </style>
+    <div class="centered-container" id="select-folder">
+        <h2>Google Keep</h2>
+            Google provides a way to export all of your Google Keep notes. <br />
+            Follow this link
+            <br /> <br />
+            and select Google Keep.
+            <br /> <br />
+            Once the archive is downloaded, please extract it to an empty folder and select folder with notes, usually takout/Google Keep
+            <br /> <br />
+        <button class="mdl-button mdl-js-button mdl-button--raised" id="select-folder-button">
+            
+            Path to extracted archive
+        </button>
+    </div>
+    <div id="note-selection-view">
+
+        <div class="centered-container">
+        <button class="mdl-button mdl-js-button mdl-button--raised import-button" style="width:370px" onclick="importer.importNotes()">
+                Import
+            </button>
+        </div>
+        <div id="table-container" class="centered-container">
+            
+                <div id="progress-view">
+                    Loading notes list
+                    <div id="p2" style="margin:auto" class="mdl-progress mdl-js-progress mdl-progress__indeterminate"></div>
+                </div>
+        </div>
+        <div class="centered-container" style="margin-bottom:10px;">
+                <button class="mdl-button mdl-js-button mdl-button--raised import-button" style="width:370px" onclick="importer.importNotes()">
+                    Import
+                    </button>
+        </div>
+   
+    </div>
+    <div id="folder-picker" class="centered-container" style="background:grey; margin-left:calc(50% - 230px); ">
+    <webview id="webview" style="position:fixed; box-shadow: 0px 0px 10px black;top:0px; margin:10px; width:450px; height:calc(100% - 30px);" src="../utils/folder-picker.html" nodeintegration>
+        
+    </webview>
+    </div>
+
+    <script>
+        var settingsHelper = require("../settings/settings_helper").SettingsHelper
+        var SettingsHelper = new settingsHelper();
+        var importer = new Importer(SettingsHelper.getNotePath()+"/Keep");
+    
+    </script>
+</body>
+
+</html>

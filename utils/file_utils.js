@@ -23,4 +23,23 @@ FileUtils.base64MimeType = function(encoded) {
       }
   }
 
+  FileUtils.base64ToBlob = function(base64) {
+    var binary = atob(base64);
+    var len = binary.length;
+    var buffer = new ArrayBuffer(len);
+    var view = new Uint8Array(buffer);
+    for (var i = 0; i < len; i++) {
+      view[i] = binary.charCodeAt(i);
+    }
+    var blob = new Blob([view]);
+    return blob;
+    };
   exports.FileUtils = FileUtils;
+
+  FileUtils.getFilename = function(filepath){
+    return filepath.replace(/^.*[\\\/]/, '');
+  }
+
+  FileUtils.stripExtensionFromName = function(name) {
+    return name.replace(/\.[^/.]+$/, "")
+}
