@@ -37,18 +37,15 @@ KeywordsDBManager.prototype.getFlatenDB = function(callback) {
             var index = flaten[keyword].indexOf(item.path);
             if (item.action == "add") {
                 if (index == -1) {
-                    console.log("adding key "+item.path)
                     
                     flaten[keyword].push(item.path)
 
                 }
             } else if (item.action == "remove") {
-                console.log("removing key "+item.path)
                 if (index > -1) {
                     flaten[keyword].splice(index, 1);
                 }
             } else if (item.action == "move") {
-                console.log("move key "+item.path+" to "+item.newPath)
                 for(let key in flaten){
                     var indexBis = flaten[key].indexOf(item.path);
                     flaten[key][indexBis] = item.newPath;
@@ -115,12 +112,10 @@ KeywordsDBManager.prototype.mergeDB = function(path, callback) {
                 for (let item of dataJson["data"]) {
                     if(itemBis.time == item.time && itemBis.path == item.path && itemBis.action == item.action){
                         isIn = true;
-                        console.log(itemBis.time+ " is in");
                         break;
                     }
                 }
                 if(!isIn){
-                    console.log(itemBis.time+ " is not in");
                     dataJson["data"].push(itemBis);
                     hasChanged = true;
                 }
