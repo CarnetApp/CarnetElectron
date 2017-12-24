@@ -1,4 +1,8 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const {
+    app,
+    BrowserWindow,
+    ipcMain
+} = require('electron');
 const path = require('path')
 const url = require('url')
 var uid = null;
@@ -19,79 +23,92 @@ function guid() {
 }
 
 
-const LocalStorage = require('node-localstorage').LocalStorage;
-localStorage = new LocalStorage('./scratch')
-if (localStorage.getItem("app_id") == null)
-    localStorage.setItem("app_id", guid())
-uid = localStorage.getItem("app_id")
+var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
+var settingsHelper = new SettingsHelper();
+if (settingsHelper.getAppUid() == null || settingsHelper.getAppUid() == "undefined")
+    settingsHelper.setAppUid(guid());
+uid = settingsHelper.getAppUid();
+console.log("app uid " + uid)
 var dbmerger = require("./recent/merge_db");
 var keywordsdbmerger = require("./keywords/merge_db");
 
-function startMerging(){
-    new dbmerger.DBMerger(exports.getNotePath()+ "/quickdoc/recentdb/",uid).startMergin(function(hasChanged){
-        if(mergeListener != undefined && hasChanged)
-        mergeListener();
-        console.log("merge finished has changed ? "+hasChanged);
-      //  setTimeout(startMerging, 5*60*1000);
+function startMerging() {
+    new dbmerger.DBMerger(exports.getNotePath() + "/quickdoc/recentdb/", uid).startMergin(function (hasChanged) {
+        if (mergeListener != undefined && hasChanged)
+            mergeListener();
+        console.log("merge finished has changed ? " + hasChanged);
+        //  setTimeout(startMerging, 5*60*1000);
 
     });
 }
 
-function startKeywordsMerging(){
-    new keywordsdbmerger.KeywordDBMerger(exports.getNotePath()+ "/quickdoc/keywords/",uid).startMergin(function(hasChanged){
-        if(mergeListener != undefined && hasChanged)
-        mergeListener();
-        console.log("merge finished has changed ? "+hasChanged);
-      //  setTimeout(startKeywordsMerging, 5*60*1000);
+function startKeywordsMerging() {
+    new keywordsdbmerger.KeywordDBMerger(exports.getNotePath() + "/quickdoc/keywords/", uid).startMergin(function (hasChanged) {
+        if (mergeListener != undefined && hasChanged)
+            mergeListener();
+        console.log("merge finished has changed ? " + hasChanged);
+        //  setTimeout(startKeywordsMerging, 5*60*1000);
 
     });
 }
+
 function createWindow() {
     startMerging();
     startKeywordsMerging()
     //observe
 
-var chokidar = require('chokidar');
-var watcher = chokidar.watch(exports.getNotePath()+ "/quickdoc/recentdb/", {ignored: /^\./, persistent: true});
-watcher
-  .on('add', function(path) {
-      if(path !== exports.getNotePath()+ "/quickdoc/recentdb/"+uid)
-        startMerging()
-    })
-  .on('change', function(path) {
-    if(path !== exports.getNotePath()+ "/quickdoc/recentdb/"+uid)    
-        startMerging()
-    })
-  .on('unlink', function(path) {
-    if(path !== exports.getNotePath()+ "/quickdoc/recentdb/"+uid)    
-        startMerging()
-})
-var watcher = chokidar.watch(exports.getNotePath()+ "/quickdoc/keywords/", {ignored: /^\./, persistent: true});
-watcher
-  .on('add', function(path) {
-      if(path !== exports.getNotePath()+ "/quickdoc/keywords/"+uid)
-      startKeywordsMerging()
-    })
-  .on('change', function(path) {
-    if(path !== exports.getNotePath()+ "/quickdoc/keywords/"+uid)    
-    startKeywordsMerging()
-    })
-  .on('unlink', function(path) {
-    if(path !== exports.getNotePath()+ "/quickdoc/keywords/"+uid)    
-    startKeywordsMerging()
-})
+    var chokidar = require('chokidar');
+    var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/recentdb/", {
+        ignored: /^\./,
+        persistent: true
+    });
+    watcher
+        .on('add', function (path) {
+            if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid)
+                startMerging()
+        })
+        .on('change', function (path) {
+            if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid)
+                startMerging()
+        })
+        .on('unlink', function (path) {
+            if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid)
+                startMerging()
+        })
+    var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/keywords/", {
+        ignored: /^\./,
+        persistent: true
+    });
+    watcher
+        .on('add', function (path) {
+            if (path !== exports.getNotePath() + "/quickdoc/keywords/" + uid)
+                startKeywordsMerging()
+        })
+        .on('change', function (path) {
+            if (path !== exports.getNotePath() + "/quickdoc/keywords/" + uid)
+                startKeywordsMerging()
+        })
+        .on('unlink', function (path) {
+            if (path !== exports.getNotePath() + "/quickdoc/keywords/" + uid)
+                startKeywordsMerging()
+        })
     // Create the browser window.
-    win = new BrowserWindow({ width: 1030, height: 600, frame: false,icon: path.join(__dirname, 'assets/images/QuickDoc.png') })
+    win = new BrowserWindow({
+        width: 1030,
+        height: 600,
+        frame: false,
+        icon: path.join(__dirname, 'assets/images/QuickDoc.png')
+    })
 
     // and load the index.html of the app.
     win.loadURL(url.format({
-        pathname: path.join(__dirname, 'index.html'),
+        pathname: path.join(__dirname, isDebug ? 'index.html' : 'index.html'),
         protocol: 'file:',
         slashes: true
     }))
 
     // Open the DevTools.
-   if(isDebug) win.webContents.openDevTools()    
+    if (isDebug) win.webContents.openDevTools()
     console.log("app uid " + uid)
 
     // Emitted when the window is closed.
@@ -138,7 +155,7 @@ exports.hideMainWindow = () => {
     win.hide();
 }
 
-exports.getNotePath = function(){
+exports.getNotePath = function () {
     var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
     return new SettingsHelper().getNotePath();
 }
@@ -147,7 +164,7 @@ exports.setMergeListener = (listener) => {
     mergeListener = listener;
 }
 
-exports.getLocalStorage = function(){
+exports.getLocalStorage = function () {
     return localStorage;
 }
 
@@ -158,7 +175,14 @@ exports.getAppUid = () => {
 }
 exports.executeProcess = (process) => {
 
-        process.start();
-    }
-    // In this file you can include the rest of your app's specific main process
-    // code. You can also put them in separate files and require them here.
+    process.start();
+}
+
+
+exports.registerFolderPickListener = (listener) => {
+    this.folderPickListener = listener;
+}
+
+exports.onFolderPicked = (folder) => {
+    this.folderPickListener(folder);
+}
