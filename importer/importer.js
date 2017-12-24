@@ -188,8 +188,10 @@ Importer.prototype.writeNext = function (callback) {
 function DateError() {}
 
 Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
-    var fs = require("fs");
     var FileUtils = require("../utils/file_utils.js").FileUtils
+    var fileName = FileUtils.getFilename(keepNotePath);
+    this.importingSpan.innerHTML = fileName;
+    var fs = require("fs");
     console.log(keepNotePath)
     var importer = this;
     fs.readFile(keepNotePath, 'base64', function (err, data) {
@@ -231,8 +233,9 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
 
 
         console.log(escape(dateDiv.innerText.trim()).replace("%E0%20", ""))
+        var date = dateDiv.innerText.trim();
         //escape unescape only way I've found to replace the à which didn't work with simple replace("à ","")
-        var fixedDate = unescape(escape(dateDiv.innerText.trim()).replace("%E0%20", "").replace("%E9", "e").replace("%FB", "u")).replace("at ", "").replace("à ", "")
+        var fixedDate = unescape(escape(date).replace("%E0%20", "").replace("%E9", "e").replace("%FB", "u")).replace("at ", "").replace("à ", "")
             .replace("&agrave; ", "")
             .replace("juin", "june")
             .replace("juil.", "july")
@@ -254,9 +257,10 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
             time = getDateFromFormat(fixedDate, "d MMM yyyy HH:mm:ss")
         if (time == 0)
             throw new DateError()
+        var notePath = destFolder + "/" + (title == date ? "untitled" : "") + FileUtils.stripExtensionFromName(fileName) + ".sqd"
         importer.timeStampedNotes.push({
             time: time,
-            path: destFolder + "/" + title + ".sqd"
+            path: notePath
         });
         console.log(time)
         if (labels != undefined) {
@@ -316,10 +320,12 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
             console.log("mime " + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(base64File)))
 
         }
+        FileUtils.deleteFolderRecursive("importtmp");
+
         var mkdirp = require('mkdirp');
         mkdirp.sync("importtmp");
         importer.writeNext(function () {
-            console.log("callback")
+            console.log("callback, zip to " + notePath)
             var archiver = require("archiver")
             var archive = archiver.create('zip', {
                 zlib: {
@@ -327,7 +333,8 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
                 } // no compression
             });
             mkdirp(destFolder)
-            var output = fs.createWriteStream(destFolder + "/" + (title == "" ? "untitle" : "") + FileUtils.stripExtensionFromName(FileUtils.getFilename(keepNotePath)) + ".sqd");
+
+            var output = fs.createWriteStream(notePath);
             archive.pipe(output);
 
             archive
@@ -336,6 +343,8 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
 
             callback()
         })
+
+
 
     });
 
