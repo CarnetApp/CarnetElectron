@@ -368,13 +368,17 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
             mkdirp(destFolder)
 
             var output = fs.createWriteStream(notePath);
+            output.on('close', function () {
+                callback()
+            });
+
             archive.pipe(output);
+
 
             archive
                 .directory("importtmp", false)
                 .finalize();
 
-            callback()
         })
 
 
