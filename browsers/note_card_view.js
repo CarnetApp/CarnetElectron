@@ -1,8 +1,8 @@
-var NoteCardView = function(elem) {
+var NoteCardView = function (elem) {
     this.elem = elem;
     this.init();
 }
-NoteCardView.prototype.setNote = function(note) {
+NoteCardView.prototype.setNote = function (note) {
     this.note = note;
     if (note.title.indexOf("untitled") == 0)
         this.cardTitleText.innerHTML = ""
@@ -22,7 +22,7 @@ NoteCardView.prototype.setNote = function(note) {
 
 }
 
-NoteCardView.prototype.init = function() {
+NoteCardView.prototype.init = function () {
     this.elem.classList.add("mdl-card");
     this.elem.classList.add("note-card-view");
 
@@ -58,7 +58,7 @@ NoteCardView.prototype.init = function() {
 }
 
 var Masonry = require('masonry-layout');
-var NoteCardViewGrid = function(elem, discret, dragCallback) {
+var NoteCardViewGrid = function (elem, discret, dragCallback) {
 
     this.elem = elem;
     this.discret = discret;
@@ -69,7 +69,7 @@ var NoteCardViewGrid = function(elem, discret, dragCallback) {
 
 
 
-NoteCardViewGrid.prototype.init = function() {
+NoteCardViewGrid.prototype.init = function () {
     this.msnry = new Masonry(this.elem, {
         // options
         itemSelector: '.demo-card-wide.mdl-card',
@@ -86,33 +86,41 @@ NoteCardViewGrid.prototype.init = function() {
 
 }
 
-NoteCardViewGrid.prototype.onFolderClick = function(callback) {
+NoteCardViewGrid.prototype.onFolderClick = function (callback) {
     this.onFolderClick = callback;
 }
 
-NoteCardViewGrid.prototype.onNoteClick = function(callback) {
+NoteCardViewGrid.prototype.onNoteClick = function (callback) {
     this.onNoteClick = callback;
 }
 
-NoteCardViewGrid.prototype.onMenuClick = function(callback) {
+NoteCardViewGrid.prototype.onMenuClick = function (callback) {
     this.onMenuClick = callback;
 }
 
 
-NoteCardViewGrid.prototype.updateNote = function(note) {
+NoteCardViewGrid.prototype.updateNote = function (note) {
     for (var i = 0; i < this.noteCards.length; i++) {
         var noteCard = this.noteCards[i];
         if (noteCard.note.path == note.path) {
+            console.log(noteCard.note.path + " " + note.text)
             noteCard.setNote(note);
         }
     }
 }
 
-NoteCardViewGrid.prototype.setNotesAndFolders = function(notes) {
+NoteCardViewGrid.prototype.setNotesAndFolders = function (notes) {
     this.notes = notes;
     this.noteCards = [];
-    for (i = 0; i < notes.length; i++) {
-        var note = notes[i]
+    this.lastAdded = 0;
+    this.addNext(45);
+    var gr = this
+
+}
+NoteCardViewGrid.prototype.addNext = function (num) {
+    var lastAdded = this.lastAdded
+    for (i = this.lastAdded; i < this.notes.length && i < num + lastAdded; i++) {
+        var note = this.notes[i]
         if (note instanceof Note) {
             var noteElem = document.createElement("div");
             noteElem.classList.add("demo-card-wide")
@@ -124,14 +132,20 @@ NoteCardViewGrid.prototype.setNotesAndFolders = function(notes) {
             this.elem.appendChild(noteElem)
             this.msnry.appended(noteElem)
 
-            $(noteElem).bind('click', { note: note, callback: this.onNoteClick }, function(event) {
+            $(noteElem).bind('click', {
+                note: note,
+                callback: this.onNoteClick
+            }, function (event) {
                 if (!$(this).hasClass('noclick')) {
                     var data = event.data;
                     data.callback(data.note)
                 }
             });
 
-            $(noteCard.menuButton).bind('click', { note: note, callback: this.onMenuClick }, function(event) {
+            $(noteCard.menuButton).bind('click', {
+                note: note,
+                callback: this.onMenuClick
+            }, function (event) {
                 if (!$(this).hasClass('noclick')) {
                     var data = event.data;
                     data.callback(data.note)
@@ -143,7 +157,10 @@ NoteCardViewGrid.prototype.setNotesAndFolders = function(notes) {
             folderElem.classList.add("demo-card-wide")
             folderElem.classList.add("isotope-item")
 
-            $(folderElem).bind('click', { folder: note, callback: this.onFolderClick }, function(event) {
+            $(folderElem).bind('click', {
+                folder: note,
+                callback: this.onFolderClick
+            }, function (event) {
                 if (!$(this).hasClass('noclick')) {
                     var data = event.data;
                     data.callback(data.folder)
@@ -156,51 +173,29 @@ NoteCardViewGrid.prototype.setNotesAndFolders = function(notes) {
             this.elem.appendChild(folderElem)
             this.msnry.appended(folderElem)
         }
+        this.lastAdded = i + 1;
     }
 
     // make all grid-items draggable
     var grid = this;
-    /*var items = $(this.elem).find('.isotope-item').draggable({
-        start: function(event, ui) {
-            $(this).addClass('noclick');
-            console.log("addclass")
-        },
-        stop: function(event, ui) {
-            var elem = this;
-            setTimeout(function() {
-                console.log("remove class");
-                $(elem).removeClass('noclick')
-            }, 200);
 
-            var elems = grid.msnry.getItemElements();
-            $(elems).each(function(i, itemElem) {
-                console.log(itemElem.note.path)
-            });
-
-        }
-
-    });*/
-   // console.log(items.length)
-    //this.msnry.bindUIDraggableEvents(items)
     this.msnry.layout();
     this.msnry.options.transitionDuration = "0.6s" //restore even when discret
-   // this.msnry.on('dragItemPositioned', this.dragCallback);
 
-    //  this.iso.layout();
 }
 
 
 
-var FolderView = function(elem) {
+var FolderView = function (elem) {
     this.elem = elem;
     this.init();
 }
-FolderView.prototype.setFolder = function(folder) {
+FolderView.prototype.setFolder = function (folder) {
     this.folder = folder;
     this.cardTitle.innerHTML = folder.getName();
 }
 
-FolderView.prototype.init = function() {
+FolderView.prototype.init = function () {
     this.elem.classList.add("mdl-card");
     this.elem.classList.add("folder-card-view");
     this.elem.classList.add("mdl-shadow--2dp");
