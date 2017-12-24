@@ -4,6 +4,9 @@ var Importer = function (destPath) {
     this.destPath = destPath;
     this.importingSpan = document.getElementById("importing");
     this.webview = document.getElementById("webview")
+    var settingsHelper = require("../settings/settings_helper").SettingsHelper
+    var SettingsHelper = new settingsHelper();
+    this.notePath = SettingsHelper.getNotePath();
     var importer = this
     document.getElementById("folder-picker").style.display = "none"
     $("#note-selection-view").hide();
@@ -65,28 +68,33 @@ Importer.prototype.importNotes = function () {
     $("#note-selection-view").hide()
     this.notesToImport = this.getSelectedNotes()
     this.timeStampedNotes = []
+    this.timeStampedKeywords = []
     var importer = this;
     this.importNext(function () {
         console.log(importer.timeStampedNotes.length + " note(s) imported " + document.getElementById("add-to-recent-cb").checked)
         if (document.getElementById("add-to-recent-cb").checked) {
             importer.timeStampedNotes.sort(keysrt('time'))
-            var settingsHelper = require("../settings/settings_helper").SettingsHelper
-            var SettingsHelper = new settingsHelper();
-            var RecentDBManager = require("../recent/recent_db_manager").RecentDBManager
-            var db = new RecentDBManager(SettingsHelper.getNotePath() + "/quickdoc/recentdb/" + SettingsHelper.getAppUid())
+            importer.timeStampedKeywords.sort(keysrt('time'))
             var paths = []
             for (var er of importer.timeStampedNotes) {
-                paths.push(er.path.substring((SettingsHelper.getNotePath() + '/').length))
+                paths.push(er.path)
             }
+            var RecentDBManager = require("../recent/recent_db_manager").RecentDBManager
+            var db = new RecentDBManager(SettingsHelper.getNotePath() + "/quickdoc/recentdb/" + SettingsHelper.getAppUid())
             db.actionArray(paths, "add", function () {
                 importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
 
             })
-
         } else {
             importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
 
         }
+        var KeywordsDBManager = require("../keywords/keywords_db_manager").KeywordsDBManager
+        var db = new KeywordsDBManager(SettingsHelper.getNotePath() + "/quickdoc/keywords/" + SettingsHelper.getAppUid())
+        db.actionArray(importer.timeStampedKeywords, "add", function () {
+            importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
+
+        })
     })
 }
 
@@ -293,13 +301,19 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
         var notePath = destFolder + "/" + (title == date ? "untitled" : "") + FileUtils.stripExtensionFromName(fileName) + ".sqd"
         importer.timeStampedNotes.push({
             time: time,
-            path: notePath
+            path: notePath.substring((importer.notePath + '/').length)
         });
+
         console.log(time)
         if (labels != undefined) {
             for (var label of labels) {
-                keywords.push(label.innerHTML)
-                console.log("label " + label.innerHTML)
+                keywords.push(label.innerText)
+                console.log("label " + label.innerText)
+                importer.timeStampedKeywords.push({
+                    time: time,
+                    path: notePath.substring((importer.notePath + '/').length),
+                    keyword: label.innerText
+                })
 
             }
         }
