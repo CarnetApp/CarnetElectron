@@ -1,23 +1,24 @@
 var fs = require('fs');
 var getParentFolderFromPath = require('path').dirname;
+var lockFile = require('lockfile')
 
-var RecentDBManager = function(path) {
+var RecentDBManager = function (path) {
     this.path = path;
     console.log("RecentDBManager with " + path)
 
 }
 
-RecentDBManager.prototype.getFullDB = function(callback) {
+RecentDBManager.prototype.getFullDB = function (callback) {
     console.log("getFullDB")
-    fs.readFile(this.path, function(err, data) {
-        if(data == undefined||data.length == 0)
+    fs.readFile(this.path, function (err, data) {
+        if (data == undefined || data.length == 0)
             data = "{\"data\":[]}";
         callback(err, data);
     });
 }
 
-RecentDBManager.prototype.getFlatenDB = function(callback) {
-    this.getFullDB(function(err, data) {
+RecentDBManager.prototype.getFlatenDB = function (callback) {
+    this.getFullDB(function (err, data) {
 
         var fullDB = JSON.parse(data)["data"];
         var flaten = [];
@@ -43,21 +44,21 @@ RecentDBManager.prototype.getFlatenDB = function(callback) {
     });
 }
 
-RecentDBManager.prototype.addToDB = function(path) {
+RecentDBManager.prototype.addToDB = function (path) {
     this.action(path, "add")
 }
 
-RecentDBManager.prototype.removeFromDB = function(path,callback) {
-    this.action(path, "remove",callback)
+RecentDBManager.prototype.removeFromDB = function (path, callback) {
+    this.action(path, "remove", callback)
 }
 
-RecentDBManager.prototype.move = function(path,newPath,callback) {
+RecentDBManager.prototype.move = function (path, newPath, callback) {
     var db = this;
-    console.log("move "+path+" to "+newPath)
-    
-    this.getFullDB(function(err, data) {
+    console.log("move " + path + " to " + newPath)
+
+    this.getFullDB(function (err, data) {
         var fullDB = JSON.parse(data);
-        var item = new function() {
+        var item = new function () {
             this.time = new Date().getTime();
             this.action = "move";
             this.path = path;
@@ -66,74 +67,132 @@ RecentDBManager.prototype.move = function(path,newPath,callback) {
 
         fullDB["data"].push(item);
         console.log(JSON.stringify(item))
-        require("mkdirp")(getParentFolderFromPath(db.path), function(){
-            fs.writeFile(db.path, JSON.stringify(fullDB), function(err) {console.log(err)});
-            if(callback)
-                callback()
-            
+        require("mkdirp")(getParentFolderFromPath(db.path), function () {
+            lockFile.lock('recent.lock', {
+                wait: 10000
+            }, function (er) {
+                console.log("lock er " + er)
+                fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
+                    console.log(err)
+                    if (callback)
+                        callback()
+                });
+                lockFile.unlock('recent.lock', function (er) {
+                    console.log("unlock er " + er)
+
+                    // er means that an error happened, and is probably bad. 
+                })
+            })
+
         })
     })
 }
-
-RecentDBManager.prototype.action = function(path, action, callback){
+RecentDBManager.prototype.actionArray = function (paths, action, callback) {
     var db = this;
-    this.getFullDB(function(err, data) {
-        console.log(data)
+    db.getFullDB(function (err, data) {
         var fullDB = JSON.parse(data);
-        var item = new function() {
-            this.time = new Date().getTime();
-            this.action = action;
-            this.path = path;
-        };
+        for (var path of paths) {
+            var item = new function () {
+                this.time = new Date().getTime();
+                this.action = action;
+                this.path = path;
+            };
+            fullDB["data"].push(item);
+        }
+        require("mkdirp")(getParentFolderFromPath(db.path), function () {
+            // opts is optional, and defaults to {} 
 
-        fullDB["data"].push(item);
-        console.log(JSON.stringify(item))
-        require("mkdirp")(getParentFolderFromPath(db.path), function(){
-            fs.writeFile(db.path, JSON.stringify(fullDB), function(err) {console.log(err)});
-            if(callback)
-                callback()
-            
+            console.log("writing")
+            fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
+                if (callback)
+                    callback()
+                lockFile.unlock('recent.lock', function (er) {
+                    console.log("lock er " + er)
+                    // er means that an error happened, and is probably bad. 
+                })
+            });
+
+        })
+    });
+}
+RecentDBManager.prototype.action = function (path, action, callback) {
+    var db = this;
+    lockFile.lock('recent.lock', {
+        wait: 10000
+    }, function (er) {
+        db.getFullDB(function (err, data) {
+            console.log(data)
+            var fullDB = JSON.parse(data);
+            var item = new function () {
+                this.time = new Date().getTime();
+                this.action = action;
+                this.path = path;
+            };
+
+            fullDB["data"].push(item);
+            console.log(JSON.stringify(item))
+            require("mkdirp")(getParentFolderFromPath(db.path), function () {
+                // opts is optional, and defaults to {} 
+
+                console.log("writing")
+                fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
+                    if (callback)
+                        callback()
+                    lockFile.unlock('recent.lock', function (er) {
+                        console.log("lock er " + er)
+                        // er means that an error happened, and is probably bad. 
+                    })
+                });
+
+            })
         })
     })
 }
 
 // sort on key values
-function keysrt(key,desc) {
-    return function(a,b){
-     return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
+function keysrt(key, desc) {
+    return function (a, b) {
+        return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
     }
-  }
+}
 
 //returns last time
-RecentDBManager.prototype.mergeDB = function(path, callback) {
-    console.log("merging with "+path);
+RecentDBManager.prototype.mergeDB = function (path, callback) {
+    console.log("merging with " + path);
     var db = this;
     var hasChanged = false;
-    this.getFullDB(function(err,data){
+    this.getFullDB(function (err, data) {
         var otherDB = new RecentDBManager(path)
-        otherDB.getFullDB(function(err, dataBis){
+        otherDB.getFullDB(function (err, dataBis) {
             var dataJson = JSON.parse(data)
             var dataBisJson = JSON.parse(dataBis)
             for (let itemBis of dataBisJson["data"]) {
                 var isIn = false;
                 for (let item of dataJson["data"]) {
-                    if(itemBis.time == item.time && itemBis.path == item.path && itemBis.action == item.action){
+                    if (itemBis.time == item.time && itemBis.path == item.path && itemBis.action == item.action) {
                         isIn = true;
                         break;
                     }
                 }
-                if(!isIn){
+                if (!isIn) {
                     dataJson["data"].push(itemBis);
                     hasChanged = true;
                 }
             }
             dataJson["data"].sort(keysrt('time'))
-            require("mkdirp")(getParentFolderFromPath(db.path), function(){
-                fs.writeFile(db.path, JSON.stringify(dataJson), function(err) {
-                    console.log(err);
-                    callback(hasChanged);
-                });
-                
+            require("mkdirp")(getParentFolderFromPath(db.path), function () {
+                // opts is optional, and defaults to {} 
+                lockFile.lock('recent.lock', {
+                    wait: 10000
+                }, function (er) {
+                    fs.writeFile(db.path, JSON.stringify(dataJson), function (err) {
+                        console.log(err);
+                        callback(hasChanged);
+                    });
+                    lockFile.unlock('recent.lock', function (er) {
+                        // er means that an error happened, and is probably bad. 
+                    })
+                })
             })
         });
     })

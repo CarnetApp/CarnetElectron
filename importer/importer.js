@@ -2,10 +2,13 @@ var Importer = function (destPath) {
     this.elem = document.getElementById("table-container");
     this.progressView = document.getElementById("progress-view");
     this.destPath = destPath;
+    this.importingSpan = document.getElementById("importing");
     this.webview = document.getElementById("webview")
     var importer = this
     document.getElementById("folder-picker").style.display = "none"
     $("#note-selection-view").hide();
+    $("#importing-view").hide();
+
     document.getElementById("select-folder-button").onclick = function () {
         document.getElementById("folder-picker").style.display = "block"
 
@@ -21,6 +24,7 @@ var Importer = function (destPath) {
             $("#note-selection-view").show()
         }
     })
+
 }
 
 function generateUID() {
@@ -50,12 +54,39 @@ Importer.prototype.listNotes = function (callback) {
     });
 }
 
+function keysrt(key, desc) {
+    return function (a, b) {
+        return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
+    }
+}
+
 Importer.prototype.importNotes = function () {
+    $("#importing-view").show();
+    $("#note-selection-view").hide()
     this.notesToImport = this.getSelectedNotes()
     this.timeStampedNotes = []
     var importer = this;
     this.importNext(function () {
-        console.log(importer.timeStampedNotes.length + " notes imported")
+        console.log(importer.timeStampedNotes.length + " note(s) imported " + document.getElementById("add-to-recent-cb").checked)
+        if (document.getElementById("add-to-recent-cb").checked) {
+            importer.timeStampedNotes.sort(keysrt('time'))
+            var settingsHelper = require("../settings/settings_helper").SettingsHelper
+            var SettingsHelper = new settingsHelper();
+            var RecentDBManager = require("../recent/recent_db_manager").RecentDBManager
+            var db = new RecentDBManager(SettingsHelper.getNotePath() + "/quickdoc/recentdb/" + SettingsHelper.getAppUid())
+            var paths = []
+            for (var er of importer.timeStampedNotes) {
+                paths.push(er.path.substring((SettingsHelper.getNotePath() + '/').length))
+            }
+            db.actionArray(paths, "add", function () {
+                importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
+
+            })
+
+        } else {
+            importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
+
+        }
     })
 }
 
@@ -78,6 +109,7 @@ Importer.prototype.fillNoteList = function (callback) {
     for (var elem of document.getElementsByClassName("import-button")) {
         $(elem).hide();
     }
+    $("#add-to-recent").hide();
     this.listNotes(function (success, notes) {
         var table = document.createElement("table");
         table.classList.add("mdl-data-table")
@@ -117,6 +149,7 @@ Importer.prototype.fillNoteList = function (callback) {
         for (var elem of document.getElementsByClassName("import-button")) {
             $(elem).show();
         }
+        $("#add-to-recent").show();
         callback()
     })
 }
