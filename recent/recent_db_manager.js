@@ -89,11 +89,12 @@ RecentDBManager.prototype.move = function (path, newPath, callback) {
 }
 RecentDBManager.prototype.actionArray = function (paths, action, callback) {
     var db = this;
+    var time = new Date().getTime();
     db.getFullDB(function (err, data) {
         var fullDB = JSON.parse(data);
         for (var path of paths) {
             var item = new function () {
-                this.time = new Date().getTime();
+                this.time = time++;
                 this.action = action;
                 this.path = path;
             };
