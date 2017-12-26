@@ -218,8 +218,10 @@ Importer.prototype.writeNext = function (callback) {
     var fs = require("fs");
     var importer = this;
     var toWrite = this.toWrite.pop()
-    console.log("write to " + toWrite.path)
-    fs.writeFile(toWrite.path, toWrite.data, function (err) {
+    console.log("write to " + toWrite.path + " " + toWrite.type)
+    fs.writeFile(toWrite.path, toWrite.data, {
+        encoding: toWrite.type
+    }, function (err) {
         console.log(err)
         importer.writeNext(callback)
 
@@ -255,7 +257,7 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
         if (textDiv != null)
             text = textDiv.innerHTML;
         importer.toWrite.push({
-            type: "text",
+            type: "utf8",
             path: "importtmp/index.html",
             data: '<div id="text" contenteditable="true" style="height:100%;">\
         <!-- be aware that THIS will be modified in java -->\
@@ -325,7 +327,7 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
         console.log("meta " + JSON.stringify(metadata))
 
         importer.toWrite.push({
-            type: "text",
+            type: "utf8",
             path: "importtmp/metadata.json",
             data: JSON.stringify(metadata)
         })
@@ -339,10 +341,11 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
             if (audioFiles != undefined) {
                 for (var audioFile of audioFiles) {
                     var data = audioFile.getAttribute("href")
+
                     importer.toWrite.push({
                         type: "base64",
                         path: "importtmp/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
-                        data: data
+                        data: data.substr(data.indexOf(',') + 1)
                     })
                 }
             }
@@ -351,10 +354,11 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
             if (imgFiles != undefined) {
                 for (var imageFile of imgFiles) {
                     var data = imageFile.getAttribute("src")
+                    var matches = data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
                     importer.toWrite.push({
                         type: "base64",
                         path: "importtmp/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
-                        data: data
+                        data: data.substr(data.indexOf(',') + 1)
                     })
                 }
             }
