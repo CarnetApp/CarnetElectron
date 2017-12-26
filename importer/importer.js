@@ -309,6 +309,8 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
         console.log(time)
         if (labels != undefined) {
             for (var label of labels) {
+                if (keywords.indexOf(label.innerText) >= 0)
+                    continue;
                 keywords.push(label.innerText)
                 console.log("label " + label.innerText)
                 importer.timeStampedKeywords.push({
