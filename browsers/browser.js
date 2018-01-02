@@ -3,7 +3,10 @@ var currentPath;
 var currentTask = undefined;
 var noteCardViewGrid = undefined;
 var oldNotes = {}
+var notePath = []
+var wasNewNote = false
 var dontOpen = false;
+var currentNotePath = undefined
 var {
     ipcRenderer,
     remote
@@ -15,7 +18,7 @@ var TextGetterTask = function (list) {
     this.list = list;
     this.current = 0;
     this.continue = true;
-    this.stopAt = 45;
+    this.stopAt = 80;
 }
 
 TextGetterTask.prototype.startList = function () {
@@ -92,11 +95,10 @@ String.prototype.replaceAll = function (search, replacement) {
 };
 
 function openNote(notePath) {
+    currentNotePath = notePath
     const electron = require('electron')
     const remote = electron.remote;
     const BrowserWindow = remote.BrowserWindow;
-    var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
-    db.addToDB(NoteUtils.getNoteRelativePath(main.getNotePath(), notePath));
     const path = require('path')
     //var win = new BrowserWindow({ width: 800, height: 600 });
 
@@ -229,6 +231,7 @@ function list(pathToList, discret) {
     })
 
     var notes = [];
+    notePath = [];
 
     var fb = new FileBrowser(pathToList);
     fb.list(function (files) {
@@ -245,6 +248,7 @@ function list(pathToList, discret) {
 
                 notes.push(file)
             }
+            notePath.push(file.path)
         }
         noteCardViewGrid.setNotesAndFolders(notes)
         if (discret) {
@@ -268,6 +272,9 @@ main.setMergeListener(function () {
 document.getElementById("add-note-button").onclick = function () {
     new NewNoteCreationTask(function (path) {
         console.log("found " + path)
+        wasNewNote = true;
+        var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
+        db.addToDB(NoteUtils.getNoteRelativePath(main.getNotePath(), path));
         openNote(path)
     })
 }
@@ -276,8 +283,19 @@ document.getElementById("back_arrow").addEventListener("click", function () {
     list(getParentFolderFromPath(currentPath))
 });
 $(window).focus(function () {
-    list(currentPath, true)
+    if (wasNewNote)
+        list(currentPath, true)
+    else if (currentTask != undefined) {
+        var noteIndex
+        if ((noteIndex = notePath.indexOf(currentNotePath)) == -1) {
+            noteIndex = 0;
+        }
+        currentTask.current = noteIndex;
+        currentTask.getNext()
+    }
+    wasNewNote = false;
     refreshKeywords()
+
 });
 
 function getNotePath() {
@@ -293,7 +311,7 @@ function loadNextNotes() {
 
 var browser = this
 document.getElementById("grid-container").onscroll = function () {
-    if (this.offsetHeight + this.scrollTop == this.scrollHeight) {
+    if (this.offsetHeight + this.scrollTop >= this.scrollHeight - 80) {
         loadNextNotes();
 
     }

@@ -7,7 +7,7 @@
 
 .note-card-view :hover,
 .folder-card-view :hover {
-    background-color: #BFBBBB;
+    background-color: rgb(230, 230, 230);
     -webkit-transition: background-color 250ms linear;
     -ms-transition: background-color 250ms linear;
     transition: background-color 250ms linear;
