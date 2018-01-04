@@ -1,3 +1,4 @@
+var FileUtils = require("../utils/file_utils.js").FileUtils
 var Importer = function (destPath) {
     this.elem = document.getElementById("table-container");
     this.progressView = document.getElementById("progress-view");
@@ -219,6 +220,8 @@ Importer.prototype.writeNext = function (callback) {
     var importer = this;
     var toWrite = this.toWrite.pop()
     console.log("write to " + toWrite.path + " " + toWrite.type)
+    var mkdirp = require('mkdirp');
+    mkdirp.sync(FileUtils.getParentFolderFromPath(toWrite.path));
     fs.writeFile(toWrite.path, toWrite.data, {
         encoding: toWrite.type
     }, function (err) {
@@ -346,7 +349,7 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
 
                     importer.toWrite.push({
                         type: "base64",
-                        path: "importtmp/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
+                        path: "importtmp/data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
                         data: data.substr(data.indexOf(',') + 1)
                     })
                 }
@@ -359,7 +362,7 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
                     var matches = data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
                     importer.toWrite.push({
                         type: "base64",
-                        path: "importtmp/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
+                        path: "importtmp/data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
                         data: data.substr(data.indexOf(',') + 1)
                     })
                 }
