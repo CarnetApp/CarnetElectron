@@ -60,6 +60,13 @@ body {
     overflow-y: auto;
 }
 
+@media (min-width: 1314px) {
+    #grid-container {
+        max-width: 1074px;
+        left: calc(50% - 537px);
+    }
+}
+
 .card-title {
     font-size: 24px;
     font-weight: 300;
