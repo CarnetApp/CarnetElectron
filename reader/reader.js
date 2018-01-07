@@ -1,3 +1,5 @@
+var fs = require('fs');
+
 var Writer = function (elem) {
     this.elem = elem;
     this.seriesTaskExecutor = new SeriesTaskExecutor();
@@ -10,6 +12,106 @@ var Writer = function (elem) {
 Writer.prototype.setNote = function (note) {
     this.note = note;
     this.noteOpener = new NoteOpener(note);
+
+}
+
+Writer.prototype.displayMediaFullscreen = function (index) {
+    var img = document.createElement("img")
+    img.src = this.fullscreenableMedia[index];
+
+    $(img).on('load', function () {
+        img.style.marginTop = "-" + $(this).height() / 2 + "px"
+        img.style.marginLeft = "-" + $(this).width() / 2 + "px"
+
+        console.log(img.height)
+    });
+
+    img.style.top = "50%"
+    img.style.left = "50%"
+
+    img.style.position = "absolute"
+    this.fullscreenViewer.innerHTML = "";
+    this.fullscreenViewer.appendChild(img)
+    $(this.fullscreenViewer).fadeIn("slow");
+    this.fullscreenViewer.style.display = "table-cell"
+    this.currentFullscreen = index;
+}
+
+Writer.prototype.previousMedia = function () {
+    if (this.currentFullscreen > 0)
+        this.displayMediaFullscreen(this.currentFullscreen - 1);
+}
+Writer.prototype.nextMedia = function () {
+    if (this.currentFullscreen < this.fullscreenableMedia.length - 1)
+        this.displayMediaFullscreen(this.currentFullscreen + 1);
+}
+Writer.prototype.refreshMedia = function () {
+    var writer = this;
+    writer.mediaList.innerHTML = "";
+
+    fs.readdir('tmp/data/', (err, dir) => {
+        if (err) {
+            throw err
+        }
+        writer.currentFullscreen = 0;
+        writer.fullscreenableMedia = []
+        var mediaCount = 0;
+        for (let filePath of dir) {
+            console.log("file " + filePath)
+            var el = document.createElement("div")
+            el.classList.add("media")
+            if (FileUtils.isFileImage(filePath)) {
+                var img = document.createElement("img")
+                img.src = "data/" + filePath
+                el.appendChild(img)
+                writer.fullscreenableMedia.push("data/" + filePath)
+
+                img.mediaIndex = mediaCount;
+                el.onclick = function (event) {
+                    console.log(event.target)
+                    writer.displayMediaFullscreen(event.target.mediaIndex)
+
+                }
+                mediaCount++;
+            } else {
+                var img = document.createElement("img")
+                img.src = rootpath + "/img/file.svg"
+                el.appendChild(img)
+                el.innerHTML += "<br /> " + filePath
+                el.classList.add("media-file")
+            }
+            writer.mediaList.appendChild(el)
+        }
+    })
+}
+
+Writer.prototype.addMedia = function () {
+    console.log("add media")
+    var writer = this;
+    FileOpener.selectFile(function (fileNames) {
+
+        if (fileNames === undefined) return;
+
+        var filePath = fileNames[0];
+        console.log("file " + filePath)
+        fs.readFile(filePath, 'base64', function read(err, data) {
+            if (err) {
+                throw err;
+            }
+            //filename
+            require('mkdirp').sync('tmp/data/');
+            var name = FileUtils.getFilename(filePath)
+            fs.writeFile('tmp/data/' + name, data, 'base64', function (err) {
+                if (!err) {
+                    writer.seriesTaskExecutor.addTask(writer.saveNoteTask.saveTxt)
+                    writer.refreshMedia();
+                }
+            })
+
+        })
+
+
+    })
 
 }
 
@@ -32,6 +134,7 @@ Writer.prototype.extractNote = function () {
                     }
                     writer.note.metadata = JSON.parse(decodeURIComponent(escape(atob(metadata))));
                     writer.refreshKeywords()
+                    writer.refreshMedia()
                 });
                 content = data;
                 writer.fillWriter(decodeURIComponent(escape(atob(content))))
@@ -150,6 +253,27 @@ Writer.prototype.init = function () {
     this.oEditor = document.getElementById("editor");
 
     this.backArrow = document.getElementById("back-arrow");
+    this.mediaList = document.getElementById("media-list");
+    this.fullscreenViewer = document.getElementById("fullscreen-viewer");
+    $(document).bind('keydown', function (event) {
+        console.log(event.keyCode);
+        if ($(writer.fullscreenViewer).is(":visible")) {
+            switch (event.keyCode) {
+                case 37:
+                    writer.previousMedia()
+                    break;
+                case 39:
+                    writer.nextMedia()
+                    break;
+                case 27:
+                    $(writer.fullscreenViewer).hide("slow")
+                    break;
+            }
+        }
+    });
+    this.fullscreenViewer.onclick = function () {
+        $(writer.fullscreenViewer).hide("slow")
+    }
     this.backArrow.addEventListener("click", function () {
         Compatibility.onBackPressed();
     });

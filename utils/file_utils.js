@@ -15,21 +15,31 @@ FileUtils.base64MimeType = function (encoded) {
   return result;
 }
 
+FileUtils.isFileImage = function (filePath) {
+  filePath = filePath.toLowerCase()
+  return filePath.endsWith(".png") || filePath.endsWith(".jpg") || filePath.endsWith(".jpeg") || filePath.endsWith(".gif") || filePath.endsWith(".bmp")
+}
+
 FileUtils.getExtensionFromMimetype = function (mimetype) {
   switch (mimetype) {
     case "audio/3gpp":
       return "3gpp"
+    case "image/jpeg":
+      return "jpg"
+    case "image/png":
+      return "png";
 
   }
 }
 
 var fs = require('fs');
 FileUtils.deleteFolderRecursive = function (path) {
+  var utils = this;
   if (fs.existsSync(path)) {
     fs.readdirSync(path).forEach(function (file, index) {
       var curPath = path + "/" + file;
       if (fs.lstatSync(curPath).isDirectory()) { // recurse
-        deleteFolderRecursive(curPath);
+        utils.deleteFolderRecursive(curPath);
       } else { // delete file
         fs.unlinkSync(curPath);
       }
@@ -50,7 +60,6 @@ FileUtils.base64ToBlob = function (base64) {
   var blob = new Blob([view]);
   return blob;
 };
-exports.FileUtils = FileUtils;
 
 FileUtils.getFilename = function (filepath) {
   return filepath.replace(/^.*[\\\/]/, '');
@@ -59,3 +68,7 @@ FileUtils.getFilename = function (filepath) {
 FileUtils.stripExtensionFromName = function (name) {
   return name.replace(/\.[^/.]+$/, "")
 }
+
+FileUtils.getParentFolderFromPath = require('path').dirname;
+
+exports.FileUtils = FileUtils;

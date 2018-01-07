@@ -6,6 +6,7 @@
 	<script src="<!ROOTPATH>compatibility/mkdirp.js"></script>
 	<script src="<!ROOTPATH>compatibility/archiver.js"></script>
 	<script src="<!ROOTPATH>compatibility/path.js"></script>
+	<script src="<!ROOTPATH>compatibility/file-opener.js"></script>
 	<script src="<!ROOTPATH>compatibility/keywords_db_manager.js"></script>
 
 	<script src="<!ROOTPATH>reader/libs/jquery.min.js"></script>
@@ -50,10 +51,12 @@
 	<script src="<!ROOTPATH>libs/jszip.min.js"></script>
 	<script src="<!ROOTPATH>reader/assets/scripts/standalone.js"></script>
 	<script src="<!ROOTPATH>reader/assets/scripts/Countable.js"></script>
+	<script src="<!ROOTPATH>utils/file_utils.js"></script>
 	<script src="<!ROOTPATH>reader/assets/scripts/jquery.ui.touch-punch.min.js"></script>
 	<script type="text/javascript">
 		function resetScreenHeight() {
-			var screen = $(window).height(),
+			console.log("resetScreenHeight")
+			var screen = $(window).innerHeight(),
 				header = $("#header").height() + $("#toolbars").height(),
 				content = screen - header;
 			style = window.getComputedStyle(document.getElementById("header"));
@@ -61,6 +64,7 @@
 				content = screen;
 			$("#center").height(content);
 			$("#editor").height(content - 45);
+			console.log(content - 45)
 		}
 	</script>
 
@@ -112,11 +116,10 @@
 		</div>
 	</dialog>
 
-
 	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
 mdl-layout--fixed-header">
 		<header id="header" class="mdl-layout__header">
-			<div class="mdl-layout__header-row">
+			<div class="mdl-layout__header-row" style="overflow-x: auto">
 				<button id="back-arrow" class="mdl-button mdl-js-button mdl-button--icon" style="left: -15px; ">
 					<i class="material-icons">arrow_back</i>
 				</button>
@@ -126,6 +129,9 @@ mdl-layout--fixed-header">
 
 				<button id="edit-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="edit-toolbar">
 					Edit
+				</button>
+				<button id="media-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="media-toolbar">
+					Media
 				</button>
 				<button id="tools-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="tools-toolbar">
 					Tools
@@ -160,6 +166,14 @@ mdl-layout--fixed-header">
 		</div>
 		<main class="mdl-layout__content">
 			<div id="toolbars">
+				<div id="media-toolbar" class="toolbar">
+					<div id="media-list"></div>
+
+					<button id="add-note-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button" onclick="writer.addMedia()">
+						<i class="material-icons">add</i>
+					</button>
+				</div>
+
 				<div id="format-toolbar" class="toolbar">
 					<button onclick="writer.formatDoc('bold');" class="mdl-button mdl-js-button headerbar-button">
 						<i class="material-icons">format_bold</i>
@@ -222,60 +236,62 @@ mdl-layout--fixed-header">
 				</div>
 			</div>
 		</main>
+	</div>
+	<div id="fullscreen-viewer"></div>
 
-		<script>
-			var writer = undefined;
+	<script>
+		var writer = undefined;
 
-			function loadPath(path) {
-				if (writer == undefined) {
-					writer = new Writer(document);
-					writer.init();
-				}
-				writer.reset();
-				var note = new Note("", "", path, undefined);
-				writer.setNote(note);
-				console.log("extract")
-				writer.extractNote();
+		function loadPath(path) {
+			if (writer == undefined) {
+				writer = new Writer(document);
+				writer.init();
 			}
-			if (loaded == undefined)
-				var loaded = false; //don't know why, loaded twice on android
-			if (!loaded) {
-				console.log("loading html ");
+			writer.reset();
+			var note = new Note("", "", path, undefined);
+			writer.setNote(note);
+			console.log("extract")
+			writer.extractNote();
+		}
+		if (loaded == undefined)
+			var loaded = false; //don't know why, loaded twice on android
+		if (!loaded) {
+			console.log("loading html ");
 
-				function getParameterByName(name, url) {
-					if (!url) {
-						url = window.location.href;
-					}
-					name = name.replace(/[\[\]]/g, "\\$&");
-					var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-						results = regex.exec(url);
-					if (!results) return null;
-					if (!results[2]) return '';
-					return decodeURIComponent(results[2].replace(/\+/g, " ").replace(/%2F/g, "/"));
+			function getParameterByName(name, url) {
+				if (!url) {
+					url = window.location.href;
 				}
-
-				$(window).on('resize', resetScreenHeight);
-				if (isElectron) {
-					var {
-						ipcRenderer,
-						remote
-					} = require('electron');
-					var main = remote.require("./main.js");
-					var win = remote.getCurrentWindow();
-					win.show()
-					main.hideMainWindow();
-				}
-
-				var path = getParameterByName("path");
-				if (path != undefined) {
-					console.log("path " + getParameterByName("path"))
-					loadPath(path)
-
-				}
-				resetScreenHeight();
-				loaded = true;
+				name = name.replace(/[\[\]]/g, "\\$&");
+				var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+					results = regex.exec(url);
+				if (!results) return null;
+				if (!results[2]) return '';
+				return decodeURIComponent(results[2].replace(/\+/g, " ").replace(/%2F/g, "/"));
 			}
-		</script>
+
+			$(window).on('resize', resetScreenHeight);
+			if (isElectron) {
+				var {
+					ipcRenderer,
+					remote
+				} = require('electron');
+				var main = remote.require("./main.js");
+				var win = remote.getCurrentWindow();
+				win.show()
+				main.hideMainWindow();
+			}
+
+			var path = getParameterByName("path");
+			if (path != undefined) {
+				console.log("path " + getParameterByName("path"))
+				loadPath(path)
+
+			}
+
+			loaded = true;
+		}
+	</script>
 
 </body>
 </head>

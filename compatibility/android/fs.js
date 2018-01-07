@@ -1,4 +1,4 @@
-var FSCompatibility = function(){
+var FSCompatibility = function () {
 
 }
 
@@ -13,8 +13,8 @@ function generateUID() {
 }
 
 var callbacks = []
-FSCompatibility.readFile = function(path, encoding, callback){
-    if( typeof encoding === 'function' ){
+FSCompatibility.readFile = function (path, encoding, callback) {
+    if (typeof encoding === 'function') {
         callback = encoding;
         encoding = undefined;
     }
@@ -25,45 +25,56 @@ FSCompatibility.readFile = function(path, encoding, callback){
 
 }
 
-FSCompatibility.resultFileRead = function(callback, error, content){
-    console.log("resultFileRead comatibility ok "+content);
-    callbacks[callback](error,content);
-
-}
-
-FSCompatibility.unlink = function(path, callback){
+FSCompatibility.readdir = function (path, callback) {
     var uid = generateUID();
     callbacks[uid] = callback;
-    app.unlink(path,uid);
+    app.readdir(path, uid)
 }
-FSCompatibility.unlinkResult = function(callback, content){
+
+FSCompatibility.resultReaddir = function (callback, err, data) {
+    console.log("result dir " + data)
+    callbacks[callback](err, JSON.parse(data)['data']);
+}
+
+FSCompatibility.resultFileRead = function (callback, error, content) {
+    console.log("resultFileRead comatibility ok " + content);
+    callbacks[callback](error, content);
+
+}
+
+FSCompatibility.unlink = function (path, callback) {
+    var uid = generateUID();
+    callbacks[uid] = callback;
+    app.unlink(path, uid);
+}
+FSCompatibility.unlinkResult = function (callback, content) {
     callbacks[callback]();
 
 }
 
-FSCompatibility.writeFileResult = function(callback, content){
+FSCompatibility.writeFileResult = function (callback, content) {
     callbacks[callback]();
 
 }
 
-FSCompatibility.writeFile = function(path, content, encoding, callback){
-    if( typeof encoding === 'function' ){
+FSCompatibility.writeFile = function (path, content, encoding, callback) {
+    if (typeof encoding === 'function') {
         callback = encoding;
         encoding = undefined;
     }
-    if(encoding == undefined)
+    if (encoding == undefined)
         encoding = "utf8";
     var uid = generateUID();
     callbacks[uid] = callback;
     app.writeFile(path, content, uid, encoding);
 }
 
-FSCompatibility.writeFileSync = function(path, content, encoding){
-    if(encoding == undefined)
+FSCompatibility.writeFileSync = function (path, content, encoding) {
+    if (encoding == undefined)
         encoding = "utf8";
     app.writeFileSync(path, content, encoding);
 }
 
-FSCompatibility.createWriteStream = function(path){
+FSCompatibility.createWriteStream = function (path) {
     return path;
 }
