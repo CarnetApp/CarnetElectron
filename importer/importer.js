@@ -23,7 +23,7 @@ var Importer = function (destPath) {
             importer.path = event.args[0]
             console.log("event.channel " + event.args[0])
             importer.fillNoteList()
-            $(importer.webview).hide()
+            document.getElementById("folder-picker").style.display = "none"
             $("#select-folder").hide()
             $("#note-selection-view").show()
         }
