@@ -87,16 +87,16 @@ RecentDBManager.prototype.move = function (path, newPath, callback) {
         })
     })
 }
-RecentDBManager.prototype.actionArray = function (paths, action, callback) {
+RecentDBManager.prototype.actionArray = function (items, action, callback) {
     var db = this;
     var time = new Date().getTime();
     db.getFullDB(function (err, data) {
         var fullDB = JSON.parse(data);
-        for (var path of paths) {
+        for (var i of items) {
             var item = new function () {
-                this.time = time++;
+                this.time = i.time;
                 this.action = action;
-                this.path = path;
+                this.path = i.path;
             };
             fullDB["data"].push(item);
         }

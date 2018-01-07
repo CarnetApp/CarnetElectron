@@ -82,7 +82,7 @@ Importer.prototype.importNotes = function () {
             }
             var RecentDBManager = require("../recent/recent_db_manager").RecentDBManager
             var db = new RecentDBManager(SettingsHelper.getNotePath() + "/quickdoc/recentdb/" + SettingsHelper.getAppUid())
-            db.actionArray(paths, "add", function () {
+            db.actionArray(importer.timeStampedNotes, "add", function () {
                 importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
 
             })
@@ -167,7 +167,7 @@ Importer.prototype.getSelectedNotes = function () {
     var toImport = [];
     for (var note of document.getElementsByClassName("value")) {
         if (note.parentElement.getElementsByClassName("mdl-checkbox__input")[0].checked)
-            toImport.push(note.innerHTML)
+            toImport.push(note.innerText)
     }
     return toImport;
 }
@@ -236,12 +236,14 @@ function DateError() {}
 Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
     var FileUtils = require("../utils/file_utils.js").FileUtils
     var fileName = FileUtils.getFilename(keepNotePath);
-    this.importingSpan.innerHTML = fileName;
+    this.importingSpan.innerHTML = fileName + " (" + this.notesToImport.length + " remaining)";
     var fs = require("fs");
     console.log(keepNotePath)
     var importer = this;
     fs.readFile(keepNotePath, 'base64', function (err, data) {
         if (err) {
+            console.log(err)
+
             callback()
             return
         }
@@ -355,11 +357,13 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
                 }
             }
 
-            var imgFiles = attachments.getElementsByTagName("image");
+            var imgFiles = attachments.getElementsByTagName("img");
             if (imgFiles != undefined) {
                 for (var imageFile of imgFiles) {
+                    console.log("adding img1")
+
                     var data = imageFile.getAttribute("src")
-                    var matches = data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                    console.log("adding img")
                     importer.toWrite.push({
                         type: "base64",
                         path: "importtmp/data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
@@ -368,14 +372,10 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
                 }
             }
 
-            console.log("attachments " + base64Files.length)
 
         }
 
-        for (var base64File of base64Files) {
-            console.log("mime " + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(base64File)))
 
-        }
         FileUtils.deleteFolderRecursive("importtmp");
 
         var mkdirp = require('mkdirp');
@@ -383,11 +383,7 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
         importer.writeNext(function () {
             console.log("callback, zip to " + notePath)
             var archiver = require("archiver")
-            var archive = archiver.create('zip', {
-                zlib: {
-                    level: 0
-                } // no compression
-            });
+            var archive = archiver.create('zip');
             mkdirp(destFolder)
 
             var output = fs.createWriteStream(notePath);
