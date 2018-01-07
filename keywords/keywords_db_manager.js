@@ -32,6 +32,8 @@ KeywordsDBManager.prototype.getFlatenDB = function (callback) {
         var flaten = {};
         for (let item of fullDB) {
             var keyword = item.keyword
+            if (keyword == undefined)
+                continue;
             if (keyword != undefined && flaten[keyword] == undefined) {
                 flaten[keyword] = []
             }
