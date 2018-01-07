@@ -9,8 +9,18 @@ NoteCardView.prototype.setNote = function (note) {
     else
         this.cardTitleText.innerHTML = note.title;
     var date = new Date(note.metadata.last_modification_date).toLocaleDateString();
-    this.cardText.innerHTML = note.text + "<br /> <br />" + date;
+    this.cardText.innerHTML = note.text;
+    this.cardDate.innerHTML = date;
     this.cardKeywords.innerHTML = "";
+    this.cardText.classList.remove("big-text")
+    this.cardText.classList.remove("medium-text")
+
+    if (note.text.length < 40 && this.cardTitleText.innerHTML == "")
+        this.cardText.classList.add("big-text")
+    else if (note.text.length < 100 && this.cardTitleText.innerHTML == "") {
+        this.cardText.classList.add("medium-text")
+
+    }
     if (typeof note.metadata.keywords[Symbol.iterator] === 'function')
         for (let keyword of note.metadata.keywords) {
             console.log("keyword " + keyword)
@@ -49,6 +59,10 @@ NoteCardView.prototype.init = function () {
     this.cardTitleText.classList.add("card-title");
     this.cardContent.appendChild(this.cardTitleText)
     this.cardContent.appendChild(this.cardText)
+    this.cardDate = document.createElement('div');
+    this.cardDate.classList.add("card-date");
+    this.cardContent.appendChild(this.cardDate)
+
     this.cardKeywords = document.createElement('div');
     this.cardKeywords.classList.add("keywords");
     this.cardContent.appendChild(this.cardKeywords)
@@ -103,7 +117,6 @@ NoteCardViewGrid.prototype.updateNote = function (note) {
     for (var i = 0; i < this.noteCards.length; i++) {
         var noteCard = this.noteCards[i];
         if (noteCard.note.path == note.path) {
-            console.log(noteCard.note.path + " " + note.text)
             noteCard.setNote(note);
         }
     }
