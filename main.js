@@ -55,8 +55,10 @@ function startKeywordsMerging() {
 function createWindow() {
     startMerging();
     startKeywordsMerging()
-    //observe
 
+
+    //observe
+    
     var chokidar = require('chokidar');
     var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/recentdb/", {
         ignored: /^\./,

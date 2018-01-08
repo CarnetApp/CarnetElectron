@@ -150,3 +150,5 @@ Compressor.prototype.start = function () {
     .finalize();
   this.callback()
 }
+
+exports.NoteOpener = NoteOpener
