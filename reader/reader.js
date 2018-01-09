@@ -4,6 +4,7 @@ var Writer = function (elem) {
     this.elem = elem;
     this.seriesTaskExecutor = new SeriesTaskExecutor();
     this.saveNoteTask = new SaveNoteTask(this)
+    this.hasTextChanged = false;
     resetScreenHeight();
     console.log("create Writer")
 
@@ -155,8 +156,12 @@ Writer.prototype.extractNote = function () {
     })
 }
 
-
-
+saveTextIfChanged = function () {
+    console.log("has text changed ? " + writer.hasTextChanged)
+    if (writer.hasTextChanged)
+        writer.seriesTaskExecutor.addTask(writer.saveNoteTask.saveTxt)
+    writer.hasTextChanged = false;
+}
 Writer.prototype.fillWriter = function (extractedHTML) {
     if (extractedHTML != undefined)
         this.oEditor.innerHTML = extractedHTML;
@@ -164,8 +169,9 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     this.oFloating = document.getElementById("floating");
     var writer = this
     this.oDoc.addEventListener("input", function () {
-        writer.seriesTaskExecutor.addTask(writer.saveNoteTask.saveTxt)
+        writer.hasTextChanged = true;
     }, false);
+    this.saveInterval = setInterval(saveTextIfChanged, 2000);
     this.sDefTxt = this.oDoc.innerHTML;
     /*simple initialization*/
     this.oDoc.focus();
@@ -377,6 +383,8 @@ Writer.prototype.removeKeyword = function (word) {
 }
 
 Writer.prototype.reset = function () {
+    if (this.saveInterval !== undefined)
+        removeInterval(this.saveInterval)
     this.oEditor.innerHTML = '<div id="text" contenteditable="true" style="height:100%;">\
     <!-- be aware that THIS will be modified in java -->\
     <!-- soft won\'t save note if contains donotsave345oL -->\
