@@ -27,7 +27,7 @@ function generateUID() {
 
 var callbacks = []
 
-JSZipTask.prototype.then = function(callback){
+JSZipTask.prototype.then = function(callback, errorCallback){
     var uid = generateUID();
     callbacks[uid] = callback;
     //start
