@@ -281,7 +281,7 @@ Writer.prototype.init = function () {
         $(writer.fullscreenViewer).hide("slow")
     }
     this.backArrow.addEventListener("click", function () {
-        Compatibility.onBackPressed();
+        writer.askToExit()
     });
     this.toolbarManager = new ToolbarManager()
     var toolbarManager = this.toolbarManager
@@ -297,15 +297,15 @@ Writer.prototype.init = function () {
         });
     };
     this.searchInput = document.getElementById("search-input");
-    this.searchInput.onfocus = function(){
+    this.searchInput.onfocus = function () {
         var el = document.getElementById('container-button');
         console.log('test')
         $(el).animate({
-            scrollLeft: el.scrollLeft+300
+            scrollLeft: el.scrollLeft + 300
         }, 200);
     }
-    this.searchInput.onkeyup = function(event){
-        if(event.key === 'Enter') {
+    this.searchInput.onkeyup = function (event) {
+        if (event.key === 'Enter') {
             window.find(this.value);
         }
     }
@@ -313,6 +313,13 @@ Writer.prototype.init = function () {
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 }
 
+Writer.prototype.askToExit = function () {
+    console.log("exec? " + this.seriesTaskExecutor.isExecuting)
+    if (this.seriesTaskExecutor.isExecuting)
+        return
+    else
+        Compatibility.onBackPressed()
+}
 Writer.prototype.copy = function () {
     document.execCommand('copy');
 }
