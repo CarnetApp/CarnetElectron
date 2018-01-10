@@ -13,5 +13,6 @@ if [ "$1" == "android" ]; then
     cp libs "$2"/app/src/main/assets/reader/ -R
     cp note "$2"/app/src/main/assets/reader -R
     cp utils "$2"/app/src/main/assets/reader/ -R
+    cp img "$2"/app/src/main/assets/reader/ -R
 
 fi
