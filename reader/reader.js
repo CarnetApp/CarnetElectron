@@ -292,6 +292,19 @@ Writer.prototype.displayColorPicker = function (callback) {
     document.getElementById('color-picker-div').show();
 }
 Writer.prototype.init = function () {
+    var snackbarContainer = document.querySelector('#snackbar');
+
+    window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+        var data = {
+            message: "Error occured: " + errorMsg,
+            timeout: 5000,
+
+        };
+        if (!(typeof snackbarContainer.MaterialSnackbar == undefined))
+            snackbarContainer.MaterialSnackbar.showSnackbar(data);
+        return false;
+    }
+
     document.execCommand('styleWithCSS', false, true);
     var writer = this;
     this.statsDialog = this.elem.querySelector('#statsdialog');
