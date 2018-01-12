@@ -180,11 +180,3 @@ exports.executeProcess = (process) => {
     process.start();
 }
 
-
-exports.registerFolderPickListener = (listener) => {
-    this.folderPickListener = listener;
-}
-
-exports.onFolderPicked = (folder) => {
-    this.folderPickListener(folder);
-}

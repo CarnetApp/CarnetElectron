@@ -107,10 +107,6 @@ RecentDBManager.prototype.actionArray = function (items, action, callback) {
             fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
                 if (callback)
                     callback()
-                lockFile.unlock('recent.lock', function (er) {
-                    console.log("lock er " + er)
-                    // er means that an error happened, and is probably bad. 
-                })
             });
 
         })

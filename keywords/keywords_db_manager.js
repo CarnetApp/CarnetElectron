@@ -1,4 +1,6 @@
 var fs = require('fs');
+var lockFile = require('lockfile')
+
 var NoteUtils = require("../note/NoteUtils").NoteUtils
 var {
     remote
@@ -79,7 +81,11 @@ KeywordsDBManager.prototype.removeFromDB = function (keyword, path) {
 
 KeywordsDBManager.prototype.action = function (keyword, path, action, callback) {
     var db = this;
-    this.getFullDB(function (err, data) {
+    
+    lockFile.lock('keyword.lock', {
+        wait: 10000
+    }, function (er) {
+        db.getFullDB(function (err, data) {
         console.log(data)
         var fullDB = JSON.parse(data);
         var item = new function () {
@@ -94,10 +100,12 @@ KeywordsDBManager.prototype.action = function (keyword, path, action, callback) 
         require("mkdirp")(getParentFolderFromPath(db.path), function () {
             fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
                 console.log(err)
-            });
-            if (callback)
+                if (callback)
                 callback()
-
+                lockFile.unlock('keyword.lock', function (er) {
+                })
+            });
+        });
         })
     })
 }
@@ -127,18 +135,27 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
             }
             dataJson["data"].sort(keysrt('time'))
             require("mkdirp")(getParentFolderFromPath(db.path), function () {
+                lockFile.lock('recent.lock', {
+                    wait: 10000
+                }, function (er) {
                 fs.writeFile(db.path, JSON.stringify(dataJson), function (err) {
                     console.log(err);
                     callback(hasChanged);
                 });
+                lockFile.unlock('keyword.lock', function (er) {
+                })
 
             })
+        })
         });
     })
 }
 
 KeywordsDBManager.prototype.actionArray = function (items, action, callback) {
-    var db = this;
+    var db = this;    
+    lockFile.lock('keyword.lock', {
+        wait: 10000
+    }, function (er) {
     db.getFullDB(function (err, data) {
         var fullDB = JSON.parse(data);
         for (var i of items) {
@@ -155,11 +172,15 @@ KeywordsDBManager.prototype.actionArray = function (items, action, callback) {
             // opts is optional, and defaults to {} 
 
             console.log("writing")
+            
             fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
                 if (callback)
                     callback()
 
             });
+            lockFile.unlock('keyword.lock', function (er) {
+            })
+        })
 
         })
     });

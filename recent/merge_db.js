@@ -28,6 +28,8 @@ DBMerger.prototype.mergeNext = function(){
     
     var merger = this;
     if(this.pos < this.dir.length){
+        if(this.dir[this.pos].startsWith("."))//skip
+            merger.mergeNext();
         db.mergeDB(merger.recentFolder+"/"+this.dir[this.pos], function(hasChanged){
             if(hasChanged)
                 merger.hasChanged = hasChanged;
