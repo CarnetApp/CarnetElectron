@@ -260,7 +260,6 @@ Writer.prototype.refreshKeywords = function () {
     }
     keywordsDBManager.getFlatenDB(function (error, data) {
         writer.availableKeyword = data;
-       
     })
 
 }
@@ -397,19 +396,19 @@ Writer.prototype.init = function () {
 
     writer.keywordsList.innerHTML = "";
     document.getElementById('keyword-input').addEventListener("input", function(){
+        console.log("input i")
         writer.keywordsList.innerHTML = "";
         if(this.value.length<2)
         return;
+        console.log("input >2")
+        
         var i = 0
         for (let word in writer.availableKeyword) {
-            
             if(i>2)
                 break;
             if(writer.availableKeyword[word]==0)
                 continue;
-            console.log(this.value.toLowerCase()+" "+word)
             if(word.toLowerCase().indexOf(this.value.toLowerCase())>=0){
-                console.log(word)
                 var o = document.createElement("tr")
                 let td = document.createElement("td")
                 td.classList.add("mdl-data-table__cell--non-numeric")
@@ -540,9 +539,12 @@ ToolbarManager.prototype.addToolbar = function (elem) {
 ToolbarManager.prototype.toggleToolbar = function (elem) {
     for (let toolbar of this.toolbars) {
         if (toolbar != elem)
-            $(toolbar).hide()
+            $(toolbar).slideUp(always=resetScreenHeight)
     }
-    $(elem).show()
+    if($(elem).is(":visible"))
+        $(elem).slideUp(always=resetScreenHeight)    
+    else
+        $(elem).slideDown(always=resetScreenHeight)
 
     resetScreenHeight()
 }
