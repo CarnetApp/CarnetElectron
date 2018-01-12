@@ -223,6 +223,11 @@ saveTextIfChanged = function () {
     writer.hasTextChanged = false;
 }
 Writer.prototype.fillWriter = function (extractedHTML) {
+    
+    setTimeout(function(){
+        $(document.getElementById("loading")).fadeOut("slow")
+    },100);
+    
     if (extractedHTML != undefined)
         this.oEditor.innerHTML = extractedHTML;
     this.oDoc = document.getElementById("text");
@@ -300,6 +305,17 @@ Writer.prototype.displayColorPicker = function (callback) {
     document.getElementById('color-picker-div').show();
 }
 Writer.prototype.init = function () {
+    if (isElectron) {
+        var {
+            ipcRenderer,
+            remote
+        } = require('electron');
+        var main = remote.require("./main.js");
+        var win = remote.getCurrentWindow();
+        win.show();
+        main.hideMainWindow();
+        
+    }
     var snackbarContainer = document.querySelector('#snackbar');
 
     window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {

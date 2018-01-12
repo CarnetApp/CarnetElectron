@@ -252,7 +252,10 @@ mdl-layout--fixed-header">
 		</main>
 	</div>
 	<div id="fullscreen-viewer"></div>
-
+	<div id="loading">
+        <div class="mdl-spinner mdl-js-spinner is-active" style="width:200px; height:200px; top:50%; left:50%; margin-top:-150px; margin-left:-100px;"></div>
+        
+    </div>
 	<script>
 		var writer = undefined;
 
@@ -285,16 +288,7 @@ mdl-layout--fixed-header">
 			}
 
 			$(window).on('resize', resetScreenHeight);
-			if (isElectron) {
-				var {
-					ipcRenderer,
-					remote
-				} = require('electron');
-				var main = remote.require("./main.js");
-				var win = remote.getCurrentWindow();
-				win.show()
-				main.hideMainWindow();
-			}
+			
 
 			var path = getParameterByName("path");
 			if (path != undefined) {
