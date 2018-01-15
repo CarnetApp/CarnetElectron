@@ -56,14 +56,22 @@
                 <span class="mdl-layout-title">QuickDoc</span>
                 <div class="mdl-layout-spacer"></div>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
-                      mdl-textfield--floating-label mdl-textfield--align-right">
+                      mdl-textfield--floating-label mdl-textfield--align-right" style="margin-right: 30px; margin-bottom: -7px;">
                     <label class="mdl-button mdl-js-button mdl-button--icon" for="search-input">
                         <i class="material-icons">search</i>
                     </label>
                     <div class="mdl-textfield__expandable-holder">
                         <input class="mdl-textfield__input" type="text" name="sample" id="search-input">
                     </div>
+
+
                 </div>
+                <div style="position:absolute; right:0px;">
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin:15px">
+                        <img src="img/ic_close_white_24px.svg" />
+                    </button>
+                </div>
+
             </div>
         </header>
         <div class="mdl-layout__drawer">
@@ -87,7 +95,7 @@
 
                 </div>
             </div>
-
+            <div id="emty-view" style="display:none;    top:50%; left:50%; margin-left:-170px; position:absolute; text-align:center">No notes to display, please start be creating a new one !</div>
 
         </main>
         <script src="browsers/browser.js">

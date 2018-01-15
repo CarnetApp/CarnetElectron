@@ -162,7 +162,11 @@ RecentDBManager.prototype.mergeDB = function (path, callback) {
         var otherDB = new RecentDBManager(path)
         otherDB.getFullDB(function (err, dataBis) {
             var dataJson = JSON.parse(data)
-            var dataBisJson = JSON.parse(dataBis)
+            try {
+                var dataBisJson = JSON.parse(dataBis)
+            } catch (e) { //bad :(
+                return
+            }
             for (let itemBis of dataBisJson["data"]) {
                 var isIn = false;
                 for (let item of dataJson["data"]) {

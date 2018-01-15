@@ -81,31 +81,30 @@ KeywordsDBManager.prototype.removeFromDB = function (keyword, path) {
 
 KeywordsDBManager.prototype.action = function (keyword, path, action, callback) {
     var db = this;
-    
+
     lockFile.lock('keyword.lock', {
         wait: 10000
     }, function (er) {
         db.getFullDB(function (err, data) {
-        console.log(data)
-        var fullDB = JSON.parse(data);
-        var item = new function () {
-            this.time = new Date().getTime();
-            this.action = action;
-            this.path = path;
-            this.keyword = keyword;
-        };
+            console.log(data)
+            var fullDB = JSON.parse(data);
+            var item = new function () {
+                this.time = new Date().getTime();
+                this.action = action;
+                this.path = path;
+                this.keyword = keyword;
+            };
 
-        fullDB["data"].push(item);
-        console.log(JSON.stringify(item))
-        require("mkdirp")(getParentFolderFromPath(db.path), function () {
-            fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
-                console.log(err)
-                if (callback)
-                callback()
-                lockFile.unlock('keyword.lock', function (er) {
-                })
+            fullDB["data"].push(item);
+            console.log(JSON.stringify(item))
+            require("mkdirp")(getParentFolderFromPath(db.path), function () {
+                fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
+                    console.log(err)
+                    if (callback)
+                        callback()
+                    lockFile.unlock('keyword.lock', function (er) {})
+                });
             });
-        });
         })
     })
 }
@@ -119,7 +118,11 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
         var otherDB = new KeywordsDBManager(path)
         otherDB.getFullDB(function (err, dataBis) {
             var dataJson = JSON.parse(data)
-            var dataBisJson = JSON.parse(dataBis)
+            try {
+                var dataBisJson = JSON.parse(dataBis)
+            } catch (e) { //bad :(
+                return
+            }
             for (let itemBis of dataBisJson["data"]) {
                 var isIn = false;
                 for (let item of dataJson["data"]) {
@@ -138,49 +141,47 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
                 lockFile.lock('recent.lock', {
                     wait: 10000
                 }, function (er) {
-                fs.writeFile(db.path, JSON.stringify(dataJson), function (err) {
-                    console.log(err);
-                    callback(hasChanged);
-                });
-                lockFile.unlock('keyword.lock', function (er) {
-                })
+                    fs.writeFile(db.path, JSON.stringify(dataJson), function (err) {
+                        console.log(err);
+                        callback(hasChanged);
+                    });
+                    lockFile.unlock('keyword.lock', function (er) {})
 
+                })
             })
-        })
         });
     })
 }
 
 KeywordsDBManager.prototype.actionArray = function (items, action, callback) {
-    var db = this;    
+    var db = this;
     lockFile.lock('keyword.lock', {
         wait: 10000
     }, function (er) {
-    db.getFullDB(function (err, data) {
-        var fullDB = JSON.parse(data);
-        for (var i of items) {
-            var item = new function () {
-                this.time = new Date().getTime();
-                this.action = action;
-                this.path = i.path;
-                this.keyword = i.keyword;
+        db.getFullDB(function (err, data) {
+            var fullDB = JSON.parse(data);
+            for (var i of items) {
+                var item = new function () {
+                    this.time = new Date().getTime();
+                    this.action = action;
+                    this.path = i.path;
+                    this.keyword = i.keyword;
 
-            };
-            fullDB["data"].push(item);
-        }
-        require("mkdirp")(getParentFolderFromPath(db.path), function () {
-            // opts is optional, and defaults to {} 
+                };
+                fullDB["data"].push(item);
+            }
+            require("mkdirp")(getParentFolderFromPath(db.path), function () {
+                // opts is optional, and defaults to {} 
 
-            console.log("writing")
-            
-            fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
-                if (callback)
-                    callback()
+                console.log("writing")
 
-            });
-            lockFile.unlock('keyword.lock', function (er) {
+                fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
+                    if (callback)
+                        callback()
+
+                });
+                lockFile.unlock('keyword.lock', function (er) {})
             })
-        })
 
         })
     });
