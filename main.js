@@ -58,11 +58,12 @@ function createWindow() {
 
 
     //observe
-    
+
     var chokidar = require('chokidar');
     var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/recentdb/", {
         ignored: /^\./,
-        persistent: true
+        persistent: true,
+        awaitWriteFinish: true
     });
     watcher
         .on('add', function (path) {
@@ -79,7 +80,8 @@ function createWindow() {
         })
     var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/keywords/", {
         ignored: /^\./,
-        persistent: true
+        persistent: true,
+        awaitWriteFinish: true
     });
     watcher
         .on('add', function (path) {
@@ -179,4 +181,3 @@ exports.executeProcess = (process) => {
 
     process.start();
 }
-
