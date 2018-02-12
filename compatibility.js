@@ -22,13 +22,17 @@ if (typeof require !== "function") {
 var Compatibility = function () {}
 Compatibility.onBackPressed = function () {
 	if (isElectron) {
-		var ipcRenderer = require('electron').ipcRenderer;
-		var remote = require('electron').remote;
-		var main = remote.require("./main.js");
-		var win = remote.getCurrentWindow();
-		main.displayMainWindow(win.getSize(), win.getPosition());
-		win.close()
+		const {
+			ipcRenderer
+		} = require('electron')
+		ipcRenderer.sendToHost('exit', "")
 	}
 
 	app.onBackPressed();
+}
+if (isElectron) {
+	require('electron').ipcRenderer.on('loadnote', function (event, path) {
+		console.log(path); // Prints "whoooooooh!"
+		loadPath(path)
+	});
 }
