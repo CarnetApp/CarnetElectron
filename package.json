@@ -2,6 +2,48 @@
   "name": "QuickDoc",
   "version": "0.1.0",
   "main": "main.js",
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "npm install && electron ./app",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "author": {
+    "name": "Barney Rubble",
+    "email": "b@rubble.com",
+    "url": "http://barnyrubble.tumblr.com/"
+  },
+  "build": {
+    "appId": "yourappid",
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": "squirrel",
+      "icon": "build/icon.ico"
+    }
+  },
   "dependencies": {
     "archiver": "^2.0.3",
     "chokidar": "^1.7.0",
@@ -24,6 +66,7 @@
     "simple-color-picker": "^0.1.2"
   },
   "devDependencies": {
-    "electron": "1.7.9"
+    "electron": "1.7.9",
+    "electron-builder": "^19.56.0"
   }
 }
