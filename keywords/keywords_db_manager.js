@@ -114,43 +114,51 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
     console.log("merging with " + path);
     var db = this;
     var hasChanged = false;
-    this.getFullDB(function (err, data) {
-        var otherDB = new KeywordsDBManager(path)
-        otherDB.getFullDB(function (err, dataBis) {
-            var dataJson = JSON.parse(data)
-            try {
-                var dataBisJson = JSON.parse(dataBis)
-            } catch (e) { //bad :(
-                return
-            }
-            for (let itemBis of dataBisJson["data"]) {
-                var isIn = false;
-                for (let item of dataJson["data"]) {
-                    if (itemBis.time == item.time && itemBis.path == item.path && itemBis.action == item.action) {
-                        isIn = true;
-                        break;
+    lockFile.lock('keyword.lock', {
+        wait: 10000
+    }, function (er) {
+        console.log(er)
+        lockFile.unlock('keyword.lock', function (er) {})
+        db.getFullDB(function (err, data) {
+            var otherDB = new KeywordsDBManager(path)
+            otherDB.getFullDB(function (err, dataBis) {
+                var dataJson = JSON.parse(data)
+                try {
+                    var dataBisJson = JSON.parse(dataBis)
+                } catch (e) { //bad :(
+                    return
+                }
+                for (let itemBis of dataBisJson["data"]) {
+                    var isIn = false;
+                    for (let item of dataJson["data"]) {
+                        if (itemBis.time == item.time && itemBis.path == item.path && itemBis.action == item.action) {
+                            isIn = true;
+                            break;
+                        }
+                    }
+                    if (!isIn) {
+                        dataJson["data"].push(itemBis);
+                        hasChanged = true;
                     }
                 }
-                if (!isIn) {
-                    dataJson["data"].push(itemBis);
-                    hasChanged = true;
-                }
-            }
-            dataJson["data"].sort(keysrt('time'))
-            require("mkdirp")(getParentFolderFromPath(db.path), function () {
-                lockFile.lock('recent.lock', {
-                    wait: 10000
-                }, function (er) {
-                    fs.writeFile(db.path, JSON.stringify(dataJson), function (err) {
-                        console.log(err);
-                        callback(hasChanged);
-                    });
-                    lockFile.unlock('keyword.lock', function (er) {})
+                if (hasChanged) {
+                    dataJson["data"].sort(keysrt('time'))
+                    require("mkdirp")(getParentFolderFromPath(db.path), function () {
+                        lockFile.lock('recent.lock', {
+                            wait: 10000
+                        }, function (er) {
+                            fs.writeFile(db.path, JSON.stringify(dataJson), function (err) {
+                                console.log(err);
+                                callback(hasChanged);
+                            });
+                            lockFile.unlock('keyword.lock', function (er) {})
 
-                })
-            })
-        });
-    })
+                        })
+                    })
+                } else callback(hasChanged);
+            });
+        })
+    });
 }
 
 KeywordsDBManager.prototype.actionArray = function (items, action, callback) {
