@@ -104,6 +104,13 @@ body {
 	margin: 0px;
 }
 
+@media screen and (min-width: 769px) {
+	#editor {
+		padding-left: 70px;
+		padding-right: 70px;
+	}
+}
+
 [is="spi-toolbar"] {
 	width: 100%;
 	background: #3F51B5;
