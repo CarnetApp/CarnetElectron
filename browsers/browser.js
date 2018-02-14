@@ -11,7 +11,8 @@ var {
     ipcRenderer,
     remote
 } = require('electron');
-var SettingsHelper = require("../settings/settings_helper").SettingsHelper
+var main = remote.require("./main.js");
+var SettingsHelper = require("./settings/settings_helper").SettingsHelper
 var settingsHelper = new SettingsHelper()
 var TextGetterTask = function (list) {
     this.list = list;
@@ -58,7 +59,7 @@ TextGetterTask.prototype.getNext = function () {
 var NewNoteCreationTask = function (callback) {
     var path = currentPath;
     if (path == initPath || path.startsWith("keyword://"))
-        path = settingsHelper.getNotePath();
+        path = main.getNotePath();
     var fs = require('fs');
     if (!fs.exists(path)) {
         var mkdirp = require('mkdirp');
@@ -105,25 +106,19 @@ function openNote(notePath) {
     rimraf('tmp', function () {
         var fs = require('fs');
 
-        fs.mkdir(__dirname + "/../tmp", function (e) {
-            fs.readFile(__dirname + '/../reader/reader.html', 'utf8', function (err, data) {
+        fs.mkdir(__dirname + "/tmp", function (e) {
+            fs.readFile(__dirname + '/reader/reader.html', 'utf8', function (err, data) {
                 if (err) {
                     fs.rea
                     console.log("error ")
                     return console.log(err);
                 }
 
-                fs.writeFileSync(__dirname + '/../tmp/reader.html', data.replace(new RegExp('<!ROOTPATH>', 'g'), '../'));
-                const {
-                    ipcRenderer
-                } = require('electron')
-                ipcRenderer.sendToHost('openNote', notePath)
-                console.log("send open to host")
-
-                /*var size = remote.getCurrentWindow().getSize();
+                fs.writeFileSync('tmp/reader.html', data.replace(new RegExp('<!ROOTPATH>', 'g'), '../'));
+                var size = remote.getCurrentWindow().getSize();
                 var pos = remote.getCurrentWindow().getPosition();
                 var win = new BrowserWindow({
-                    width: size[0], 
+                    width: size[0],
                     height: size[1],
                     x: pos[0],
                     y: pos[1],
@@ -138,7 +133,7 @@ function openNote(notePath) {
                         'path': notePath
                     },
                     slashes: true
-                }))*/
+                }))
             });
 
 
@@ -153,20 +148,20 @@ function onDragEnd(gg) {
 }
 
 function refreshKeywords() {
-    var KeywordsDBManager = require("../keywords/keywords_db_manager").KeywordsDBManager;
-    var keywordsDBManager = new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid())
+    var KeywordsDBManager = require("./keywords/keywords_db_manager").KeywordsDBManager;
+    var keywordsDBManager = new KeywordsDBManager(main.getNotePath() + "/quickdoc/keywords/" + main.getAppUid())
     keywordsDBManager.getFlatenDB(function (error, data) {
         var keywordsContainer = document.getElementById("keywords");
         keywordsContainer.innerHTML = "";
         var dataArray = []
         for (let key in data) {
             if (data[key].length == 0)
-                continue;
+            continue;
             dataArray.push(key)
         }
         dataArray.sort(Utils.caseInsensitiveSrt)
         for (let key of dataArray) {
-
+            
             var keywordElem = document.createElement("a");
             keywordElem.classList.add("mdl-navigation__link")
             keywordElem.innerHTML = key;
@@ -182,9 +177,9 @@ function refreshKeywords() {
 
 function searchInNotes(searching) {
     resetGrid(false)
-    var settingsHelper = require("../settings/settings_helper").SettingsHelper
+    var settingsHelper = require("./settings/settings_helper").SettingsHelper
     var SettingsHelper = new settingsHelper();
-    var Search = require("./search").Search
+    var Search = require("./browsers/search").Search
     var browser = this;
     notes = []
     var callback = function () {
@@ -237,8 +232,8 @@ function resetGrid(discret) {
             })
         }
         dialog.querySelector('#archive-button').onclick = function () {
-            var db = new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid())
-            db.removeFromDB(NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), note.path), function () {
+            var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
+            db.removeFromDB(NoteUtils.getNoteRelativePath(main.getNotePath(), note.path), function () {
                 dialog.close();
 
                 list(currentPath, true)
@@ -310,13 +305,18 @@ function list(pathToList, discret) {
     });
 
 }
+list(initPath)
+refreshKeywords();
+main.setMergeListener(function () {
+    list(initPath, true)
+})
 
 document.getElementById("add-note-button").onclick = function () {
     new NewNoteCreationTask(function (path) {
         console.log("found " + path)
         wasNewNote = true;
-        var db = new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid())
-        db.addToDB(NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path));
+        var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
+        db.addToDB(NoteUtils.getNoteRelativePath(main.getNotePath(), path));
         openNote(path)
     })
 }
@@ -348,7 +348,7 @@ $(window).focus(function () {
 
 function getNotePath() {
 
-    return settingsHelper.getNotePath()
+    return main.getNotePath()
 }
 
 function loadNextNotes() {
@@ -364,13 +364,3 @@ document.getElementById("grid-container").onscroll = function () {
 
     }
 }
-
-
-require('electron').ipcRenderer.on('merge', function (event, path) {
-    console.log("on merged")
-    if (currentPath == initPath)
-        list(initPath)
-    refreshKeywords();
-});
-list(initPath)
-refreshKeywords();

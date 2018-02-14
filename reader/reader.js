@@ -225,13 +225,7 @@ saveTextIfChanged = function () {
 Writer.prototype.fillWriter = function (extractedHTML) {
 
     setTimeout(function () {
-        if (isElectron) {
-            const {
-                ipcRenderer
-            } = require('electron')
-            ipcRenderer.sendToHost('loaded', "")
-
-        }
+        $(document.getElementById("loading")).fadeOut("slow")
     }, 100);
 
     if (extractedHTML != undefined)
@@ -322,7 +316,15 @@ Writer.prototype.displayStyleDialog = function () {
     this.styleDialog.showModal()
 }
 Writer.prototype.init = function () {
+    if (isElectron) {
+        var ipcRenderer = require('electron').ipcRenderer;
+        var remote = require('electron').remote;
+        var main = remote.require("./main.js");
+        var win = remote.getCurrentWindow();
+        win.show();
+        main.hideMainWindow();
 
+    }
     var snackbarContainer = document.querySelector('#snackbar');
 
     window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
