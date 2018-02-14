@@ -115,7 +115,7 @@ function openNote(notePath) {
                 }
 
                 fs.writeFileSync('tmp/reader.html', data.replace(new RegExp('<!ROOTPATH>', 'g'), '../'));
-                var size = remote.getCurrentWindow().getSize();
+               /* var size = remote.getCurrentWindow().getSize();
                 var pos = remote.getCurrentWindow().getPosition();
                 var win = new BrowserWindow({
                     width: size[0],
@@ -133,7 +133,26 @@ function openNote(notePath) {
                         'path': notePath
                     },
                     slashes: true
-                }))
+                }))*/
+                const url = require('url')
+                webview.addEventListener('dom-ready', () => {
+                                webview.openDevTools()
+             })
+            if(!hasLoadedOnce){
+                webview.setAttribute("src",url.format({
+                    pathname: path.join(__dirname, 'tmp/reader.html'),
+                    protocol: 'file:',
+                    query: {
+                        'path': notePath
+                    },
+                    slashes: true
+                }));
+            }
+            else
+            webview.send('loadnote', notePath);
+            webview.style="position:fixed; top:0px; left:0px; height:100%; width:100%; z-index:100; right:0; bottom:0;"
+            //to resize properly
+            hasLoadedOnce = true;
             });
 
 
@@ -364,3 +383,16 @@ document.getElementById("grid-container").onscroll = function () {
 
     }
 }
+var webview = document.getElementById("writer-webview")
+
+        webview.addEventListener('ipc-message', event => {
+                if (event.channel == "exit") {
+                 webview.style="position:fixed; top:0px; left:0px; height:0px; width:0px; z-index:100; right:0; bottom:0;"
+                } else if (event.channel == "loaded") {
+                        $(loadingView).fadeOut();
+ }
+});
+var hasLoadedOnce = false
+webview.addEventListener('dom-ready', () => {
+    webview.openDevTools()
+})

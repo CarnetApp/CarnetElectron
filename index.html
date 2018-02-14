@@ -45,9 +45,10 @@
         </div>
     </dialog>
 
+
     <!-- The drawer is always open in large screens. The header is always shown,
       even in small screens. -->
-    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
+    <div id="browser" class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
                 mdl-layout--fixed-header">
         <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
@@ -99,9 +100,14 @@
             <div id="emty-view" style="display:none;    top:50%; left:50%; margin-left:-170px; position:absolute; text-align:center">No notes to display, please start be creating a new one !</div>
 
         </main>
+        
+    </div>
+
+    <webview id="writer-webview" style="position:fixed; top:0px; left:0px;height:0px; width:0px; z-index:100; right:0; bottom:0;"
+        nodeintegration>
+
         <script src="browsers/browser.js">
         </script>
-    </div>
 </body>
 
 </html>
