@@ -18,7 +18,7 @@ var TextGetterTask = function (list) {
     this.list = list;
     this.current = 0;
     this.continue = true;
-    this.stopAt = 80;
+    this.stopAt = 50;
 }
 
 TextGetterTask.prototype.startList = function () {
@@ -101,7 +101,9 @@ function openNote(notePath) {
     const BrowserWindow = remote.BrowserWindow;
     const path = require('path')
     //var win = new BrowserWindow({ width: 800, height: 600 });
-
+    if (!hasLoadedOnce)
+        $(loadingView).fadeIn();
+    //$(browserElem).faceOut();
     var rimraf = require('rimraf');
     rimraf('tmp', function () {
         var fs = require('fs');
@@ -114,45 +116,42 @@ function openNote(notePath) {
                     return console.log(err);
                 }
 
-                fs.writeFileSync('tmp/reader.html', data.replace(new RegExp('<!ROOTPATH>', 'g'), '../'));
-               /* var size = remote.getCurrentWindow().getSize();
-                var pos = remote.getCurrentWindow().getPosition();
-                var win = new BrowserWindow({
-                    width: size[0],
-                    height: size[1],
-                    x: pos[0],
-                    y: pos[1],
-                    frame: false
-                });
-                console.log("w " + remote.getCurrentWindow().getPosition()[0])
+                fs.writeFileSync(__dirname + '/tmp/reader.html', data.replace(new RegExp('<!ROOTPATH>', 'g'), '../'));
+                /* var size = remote.getCurrentWindow().getSize();
+                 var pos = remote.getCurrentWindow().getPosition();
+                 var win = new BrowserWindow({
+                     width: size[0],
+                     height: size[1],
+                     x: pos[0],
+                     y: pos[1],
+                     frame: false
+                 });
+                 console.log("w " + remote.getCurrentWindow().getPosition()[0])
+                 const url = require('url')
+                 win.loadURL(url.format({
+                     pathname: path.join(__dirname, 'tmp/reader.html'),
+                     protocol: 'file:',
+                     query: {
+                         'path': notePath
+                     },
+                     slashes: true
+                 }))*/
                 const url = require('url')
-                win.loadURL(url.format({
-                    pathname: path.join(__dirname, 'tmp/reader.html'),
-                    protocol: 'file:',
-                    query: {
-                        'path': notePath
-                    },
-                    slashes: true
-                }))*/
-                const url = require('url')
-                webview.addEventListener('dom-ready', () => {
-                                webview.openDevTools()
-             })
-            if(!hasLoadedOnce){
-                webview.setAttribute("src",url.format({
-                    pathname: path.join(__dirname, 'tmp/reader.html'),
-                    protocol: 'file:',
-                    query: {
-                        'path': notePath
-                    },
-                    slashes: true
-                }));
-            }
-            else
-            webview.send('loadnote', notePath);
-            webview.style="position:fixed; top:0px; left:0px; height:100%; width:100%; z-index:100; right:0; bottom:0;"
-            //to resize properly
-            hasLoadedOnce = true;
+
+                if (!hasLoadedOnce) {
+                    webview.setAttribute("src", url.format({
+                        pathname: path.join(__dirname, 'tmp/reader.html'),
+                        protocol: 'file:',
+                        query: {
+                            'path': notePath
+                        },
+                        slashes: true
+                    }));
+                } else
+                    webview.send('loadnote', notePath);
+                webview.style = "position:fixed; top:0px; left:0px; height:100%; width:100%; z-index:100; right:0; bottom:0;"
+                //to resize properly
+                hasLoadedOnce = true;
             });
 
 
@@ -175,12 +174,12 @@ function refreshKeywords() {
         var dataArray = []
         for (let key in data) {
             if (data[key].length == 0)
-            continue;
+                continue;
             dataArray.push(key)
         }
         dataArray.sort(Utils.caseInsensitiveSrt)
         for (let key of dataArray) {
-            
+
             var keywordElem = document.createElement("a");
             keywordElem.classList.add("mdl-navigation__link")
             keywordElem.innerHTML = key;
@@ -385,14 +384,19 @@ document.getElementById("grid-container").onscroll = function () {
 }
 var webview = document.getElementById("writer-webview")
 
-        webview.addEventListener('ipc-message', event => {
-                if (event.channel == "exit") {
-                 webview.style="position:fixed; top:0px; left:0px; height:0px; width:0px; z-index:100; right:0; bottom:0;"
-                } else if (event.channel == "loaded") {
-                        $(loadingView).fadeOut();
- }
+webview.addEventListener('ipc-message', event => {
+    if (event.channel == "exit") {
+        webview.style = "position:fixed; top:0px; left:0px; height:0px; width:0px; z-index:100; right:0; bottom:0;"
+        //$(browserElem).faceIn();
+    } else if (event.channel == "loaded") {
+        $(loadingView).fadeOut();
+
+
+    }
 });
 var hasLoadedOnce = false
 webview.addEventListener('dom-ready', () => {
-    webview.openDevTools()
+    // webview.openDevTools()
 })
+var loadingView = document.getElementById("loading-view")
+//var browserElem = document.getElementById("browser")
