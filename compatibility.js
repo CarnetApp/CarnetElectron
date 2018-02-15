@@ -17,6 +17,8 @@ if (typeof require !== "function") {
 		return "";
 	}
 
+}else {
+	module.paths.push(rootpath+'node_modules');	
 }
 
 var Compatibility = function () {}

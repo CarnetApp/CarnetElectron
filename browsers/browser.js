@@ -2,15 +2,23 @@ var initPath = "recentdb://"
 var currentPath;
 var currentTask = undefined;
 var noteCardViewGrid = undefined;
-var oldNotes = {}
 var notePath = []
 var wasNewNote = false
 var dontOpen = false;
 var currentNotePath = undefined
-var {
+const {
     ipcRenderer,
-    remote
+    remote,
+    app
 } = require('electron');
+const Store = require('electron-store');
+const store = new Store();
+var noteCacheStr = String(store.get("note_cache"))
+if (noteCacheStr == "undefined") 
+    noteCacheStr = "{}"
+console.log("cache loaded "+noteCacheStr)
+
+var oldNotes = JSON.parse(noteCacheStr);
 var main = remote.require("./main.js");
 var SettingsHelper = require("./settings/settings_helper").SettingsHelper
 var settingsHelper = new SettingsHelper()
@@ -22,33 +30,40 @@ var TextGetterTask = function (list) {
 }
 
 TextGetterTask.prototype.startList = function () {
-    this.getNext();
+   this.getNext();
 }
 
 TextGetterTask.prototype.getNext = function () {
-    if (this.current >= this.stopAt)
+    if (this.current >= this.stopAt){
+        console.log("save cache")
+        store.set("note_cache",JSON.stringify(oldNotes))
         return;
+    }
     if (this.list[this.current] instanceof Note) {
         var opener = new NoteOpener(this.list[this.current])
         var myTask = this;
         var note = this.list[this.current]
-        try {
-            opener.getMainTextAndMetadata(function (txt, metadata) {
-                if (myTask.continue) {
-                    if (txt != undefined)
-                        note.text = txt.substring(0, 200);
-                    if (metadata != undefined)
-                        note.metadata = metadata;
-                    oldNotes[note.path] = note;
-                    noteCardViewGrid.updateNote(note)
-                    noteCardViewGrid.msnry.layout();
-                    myTask.getNext();
-                }
-            });
-        } catch (error) {
-            console.log(error);
-        }
-        this.current++;
+        setTimeout(function(){
+            try {
+                opener.getMainTextAndMetadata(function (txt, metadata) {
+                    if (myTask.continue) {
+                        if (txt != undefined)
+                            note.text = txt.substring(0, 200);
+                        if (metadata != undefined)
+                            note.metadata = metadata;
+                        oldNotes[note.path] = note;
+                        noteCardViewGrid.updateNote(note)
+                        noteCardViewGrid.msnry.layout();
+    
+                        myTask.getNext();
+                    }
+                });
+            } catch (error) {
+                console.log(error);
+            }
+            myTask.current++;
+        }, oldNotes[note.path]!==undefined?1000:100)
+        
     } else {
         this.current++;
         this.getNext();
@@ -105,18 +120,19 @@ function openNote(notePath) {
         $(loadingView).fadeIn();
     //$(browserElem).faceOut();
     var rimraf = require('rimraf');
-    rimraf('tmp', function () {
+    const tmp = path.join(main.getPath("temp"), "tmp");
+    rimraf(tmp, function () {
         var fs = require('fs');
 
-        fs.mkdir(__dirname + "/tmp", function (e) {
+        fs.mkdir(tmp, function (e) {
             fs.readFile(__dirname + '/reader/reader.html', 'utf8', function (err, data) {
                 if (err) {
                     fs.rea
                     console.log("error ")
                     return console.log(err);
                 }
-
-                fs.writeFileSync(__dirname + '/tmp/reader.html', data.replace(new RegExp('<!ROOTPATH>', 'g'), '../'));
+                const index = path.join(tmp, 'reader.html');
+                fs.writeFileSync(index, data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname+'/'));
                 /* var size = remote.getCurrentWindow().getSize();
                  var pos = remote.getCurrentWindow().getPosition();
                  var win = new BrowserWindow({
@@ -140,7 +156,7 @@ function openNote(notePath) {
 
                 if (!hasLoadedOnce) {
                     webview.setAttribute("src", url.format({
-                        pathname: path.join(__dirname, 'tmp/reader.html'),
+                        pathname: index,
                         protocol: 'file:',
                         query: {
                             'path': notePath

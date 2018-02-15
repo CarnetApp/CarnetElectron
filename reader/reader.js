@@ -249,7 +249,7 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     //  $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 
 }
-var KeywordsDBManager = require("../keywords/keywords_db_manager").KeywordsDBManager;
+var KeywordsDBManager = require(rootpath+"keywords/keywords_db_manager").KeywordsDBManager;
 var keywordsDBManager = new KeywordsDBManager()
 Writer.prototype.refreshKeywords = function () {
     var keywordsContainer = document.getElementById("keywords-list");
@@ -517,7 +517,7 @@ Writer.prototype.surroundSelection = function (element) {
         }
     }
 }
-var KeywordsDBManager = require("../keywords/keywords_db_manager").KeywordsDBManager;
+var KeywordsDBManager = require(rootpath+"keywords/keywords_db_manager").KeywordsDBManager;
 var keywordsDBManager = new KeywordsDBManager()
 Writer.prototype.addKeyword = function (word) {
     if (this.note.metadata.keywords.indexOf(word) < 0 && word.length > 0) {

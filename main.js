@@ -182,3 +182,7 @@ exports.executeProcess = (process) => {
 
     process.start();
 }
+
+exports.getPath = function (path) {
+    return app.getPath(path)
+}
