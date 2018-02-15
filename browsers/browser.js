@@ -404,9 +404,11 @@ webview.addEventListener('ipc-message', event => {
     if (event.channel == "exit") {
         webview.style = "position:fixed; top:0px; left:0px; height:0px; width:0px; z-index:100; right:0; bottom:0;"
         //$(browserElem).faceIn();
+        $("#no-drag-bar").hide()
+
     } else if (event.channel == "loaded") {
         $(loadingView).fadeOut();
-
+        $("#no-drag-bar").show()
 
     }
 });
