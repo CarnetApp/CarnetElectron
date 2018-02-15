@@ -14,9 +14,9 @@ const {
 const Store = require('electron-store');
 const store = new Store();
 var noteCacheStr = String(store.get("note_cache"))
-if (noteCacheStr == "undefined") 
+if (noteCacheStr == "undefined")
     noteCacheStr = "{}"
-console.log("cache loaded "+noteCacheStr)
+console.log("cache loaded " + noteCacheStr)
 
 var oldNotes = JSON.parse(noteCacheStr);
 var main = remote.require("./main.js");
@@ -30,20 +30,20 @@ var TextGetterTask = function (list) {
 }
 
 TextGetterTask.prototype.startList = function () {
-   this.getNext();
+    this.getNext();
 }
 
 TextGetterTask.prototype.getNext = function () {
-    if (this.current >= this.stopAt){
+    if (this.current >= this.stopAt) {
         console.log("save cache")
-        store.set("note_cache",JSON.stringify(oldNotes))
+        store.set("note_cache", JSON.stringify(oldNotes))
         return;
     }
     if (this.list[this.current] instanceof Note) {
         var opener = new NoteOpener(this.list[this.current])
         var myTask = this;
         var note = this.list[this.current]
-        setTimeout(function(){
+        setTimeout(function () {
             try {
                 opener.getMainTextAndMetadata(function (txt, metadata) {
                     if (myTask.continue) {
@@ -54,7 +54,7 @@ TextGetterTask.prototype.getNext = function () {
                         oldNotes[note.path] = note;
                         noteCardViewGrid.updateNote(note)
                         noteCardViewGrid.msnry.layout();
-    
+
                         myTask.getNext();
                     }
                 });
@@ -62,8 +62,8 @@ TextGetterTask.prototype.getNext = function () {
                 console.log(error);
             }
             myTask.current++;
-        }, oldNotes[note.path]!==undefined?1000:100)
-        
+        }, oldNotes[note.path] !== undefined ? 1000 : 100)
+
     } else {
         this.current++;
         this.getNext();
@@ -132,7 +132,7 @@ function openNote(notePath) {
                     return console.log(err);
                 }
                 const index = path.join(tmp, 'reader.html');
-                fs.writeFileSync(index, data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname+'/'));
+                fs.writeFileSync(index, data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/'));
                 /* var size = remote.getCurrentWindow().getSize();
                  var pos = remote.getCurrentWindow().getPosition();
                  var win = new BrowserWindow({
