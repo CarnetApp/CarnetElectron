@@ -120,7 +120,7 @@ function openNote(notePath) {
         $(loadingView).fadeIn();
     //$(browserElem).faceOut();
     var rimraf = require('rimraf');
-    const tmp = path.join(main.getPath("temp"), "tmp");
+    const tmp = path.join(main.getPath("temp"), "tmpquicknote");
     rimraf(tmp, function () {
         var fs = require('fs');
 
@@ -159,7 +159,8 @@ function openNote(notePath) {
                         pathname: index,
                         protocol: 'file:',
                         query: {
-                            'path': notePath
+                            'path': notePath,
+                            'tmppath': tmp + "/"
                         },
                         slashes: true
                     }));

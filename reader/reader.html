@@ -14,6 +14,7 @@
 
 	<script>
 		var rootpath = "<!ROOTPATH>";
+		var tmppath = "tmp/";
 	</script>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="width=device-width, height=device-height, user-scalable=no" />
@@ -30,7 +31,6 @@
 
 <body>
 	<script>
-		
 	</script>
 	<script src="<!ROOTPATH>reader/reader.js"></script>
 	<!--<script src="<!ROOTPATH>reader/libs/simplecolorpicker/index.js"></script>	-->
@@ -325,6 +325,9 @@ mdl-layout--fixed-header">
 
 
 			var path = getParameterByName("path");
+			var tmp = getParameterByName("tmppath");
+			if (tmp != null)
+				tmppath = tmp;
 			if (path != undefined) {
 				console.log("path " + getParameterByName("path"))
 				loadPath(path)
