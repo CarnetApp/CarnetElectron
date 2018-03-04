@@ -365,21 +365,6 @@ document.getElementById("search-input").onkeydown = function (event) {
 document.getElementById("back_arrow").addEventListener("click", function () {
     list(getParentFolderFromPath(currentPath))
 });
-$(window).focus(function () {
-    if (wasNewNote)
-        list(currentPath, true)
-    else if (currentTask != undefined) {
-        var noteIndex
-        if ((noteIndex = notePath.indexOf(currentNotePath)) == -1) {
-            noteIndex = 0;
-        }
-        currentTask.current = noteIndex;
-        currentTask.getNext()
-    }
-    wasNewNote = false;
-    refreshKeywords()
-
-});
 
 function getNotePath() {
 
@@ -406,6 +391,18 @@ webview.addEventListener('ipc-message', event => {
         webview.style = "position:fixed; top:0px; left:0px; height:0px; width:0px; z-index:100; right:0; bottom:0;"
         //$(browserElem).faceIn();
         $("#no-drag-bar").hide()
+        if (wasNewNote)
+            list(currentPath, true)
+        else if (currentTask != undefined) {
+            var noteIndex
+            if ((noteIndex = notePath.indexOf(currentNotePath)) == -1) {
+                noteIndex = 0;
+            }
+            currentTask.current = noteIndex;
+            currentTask.getNext()
+        }
+        wasNewNote = false;
+        refreshKeywords()
 
     } else if (event.channel == "loaded") {
         $(loadingView).fadeOut();
