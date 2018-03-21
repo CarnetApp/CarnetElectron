@@ -126,11 +126,29 @@ function createWindow() {
 
 }
 
+function firstLaunchWindow() {
+
+    // Create the browser window.
+    var win = new BrowserWindow({
+        width: 600,
+        height: 500,
+        frame: false,
+        icon: path.join(__dirname, 'assets/images/QuickDoc.png')
+    })
+
+    // and load the index.html of the app.
+    win.loadURL(url.format({
+        pathname: path.join(__dirname, path.join('firstlaunch', 'slide.html')),
+        protocol: 'file:',
+        slashes: true
+    }))
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
-
+//app.on('ready', createWindow)
+app.on('ready', firstLaunchWindow)
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
