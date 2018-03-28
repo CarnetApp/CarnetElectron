@@ -5,6 +5,12 @@ const {
 } = require('electron');
 const path = require('path')
 const url = require('url')
+
+const Store = require('electron-store');
+const store = new Store();
+var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
+var settingsHelper = new SettingsHelper();
+
 var uid = null;
 var args = process.argv
 var isDebug = args[2]
@@ -23,8 +29,7 @@ function guid() {
 }
 
 
-var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
-var settingsHelper = new SettingsHelper();
+
 if (settingsHelper.getAppUid() == null || settingsHelper.getAppUid() == "undefined")
     settingsHelper.setAppUid(guid());
 uid = settingsHelper.getAppUid();
@@ -53,6 +58,7 @@ function startKeywordsMerging() {
 }
 
 function createWindow() {
+    store.set("first_launch", false)
     setTimeout(function () {
         startMerging();
         startKeywordsMerging()
@@ -148,7 +154,12 @@ function firstLaunchWindow() {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 //app.on('ready', createWindow)
-app.on('ready', firstLaunchWindow)
+
+
+if (store.get("first_launch") == null)
+    app.on('ready', firstLaunchWindow)
+else
+    app.on('ready', createWindow)
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
@@ -204,3 +215,5 @@ exports.executeProcess = (process) => {
 exports.getPath = function (path) {
     return app.getPath(path)
 }
+
+exports.createWindow = createWindow;
