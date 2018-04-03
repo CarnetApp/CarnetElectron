@@ -1,6 +1,7 @@
 var isElectron = true;
-if (typeof require !== "function") {
 
+if (typeof require !== "function") {
+	var exports = function(){}
 	isElectron = false;
 	var require = function (required) {
 		if (required == "fs") {
@@ -11,7 +12,8 @@ if (typeof require !== "function") {
 			return ArchiverCompatibility;
 		} else if (required == "path")
 			return PathCompatibility;
-		else if (required == "../keywords/keywords_db_manager") {
+		else if (required == rootpath + "keywords/keywords_db_manager") {
+			console.log("building keywordsdb compat")
 			return KeywordDBManagerCompatibility;
 		}
 		return "";
@@ -34,7 +36,6 @@ Compatibility.onBackPressed = function () {
 }
 if (isElectron) {
 	require('electron').ipcRenderer.on('loadnote', function (event, path) {
-		console.log(path); // Prints "whoooooooh!"
 		loadPath(path)
 	});
 }
