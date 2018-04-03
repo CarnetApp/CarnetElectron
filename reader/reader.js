@@ -304,11 +304,14 @@ Writer.prototype.setPickerColor = function (picker) {
 }
 Writer.prototype.displayColorPicker = function (callback) {
     currentColorCallback = callback;
-    this.colorPickerDialog.querySelector('.ok').addEventListener('click', function () {
-        callback(currentColor);
+    var call =  function () {
+        writer.colorPickerDialog.querySelector('.ok').removeEventListener('click',call)
         writer.colorPickerDialog.close();
+        callback(currentColor);
 
-    });
+
+    }
+    this.colorPickerDialog.querySelector('.ok').addEventListener('click',call);
     this.colorPickerDialog.showModal()
     document.getElementById('color-picker-div').show();
 }
@@ -555,6 +558,7 @@ Writer.prototype.setColor = function (color) {
 }
 
 Writer.prototype.fillColor = function (color) {
+    document.execCommand('styleWithCSS', false, true);
     document.execCommand('backColor', false, color);
 }
 
