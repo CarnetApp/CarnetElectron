@@ -6,6 +6,10 @@ body {
 	background: rgb(255, 255, 255);
 }
 
+body, html{
+    line-height: initial;
+}
+
 @keyframes fadein {
 	from {
 		opacity: 0;
