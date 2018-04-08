@@ -2,7 +2,8 @@ var SettingsHelper = require("./settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
 var {
   ipcRenderer,
-  remote
+  remote,
+  shell
 } = require('electron');
 document.getElementById("select_note_path_button").onclick = function () {
   var dialog = remote.dialog;
@@ -13,7 +14,14 @@ document.getElementById("select_note_path_button").onclick = function () {
       settingsHelper.setNotePath(path)
   })
 }
+
 document.getElementById("current_root_path").innerHTML = settingsHelper.getNotePath()
+
+document.getElementById("cloudsync").onclick = function () {
+  shell.openExternal('https://github.com/PhieF/QuickDocDocumentation/blob/master/CloudSync.md');
+  return false;
+};
+
 const BrowserWindow = remote.BrowserWindow;
 document.getElementById("import").onclick = function () {
   var win = new BrowserWindow({

@@ -20,15 +20,16 @@
 
 <body>
     <style>
-        .settings-button{
+        .settings-button {
             cursor: pointer;
         }
-        .settings-box{
+
+        .settings-box {
             margin-top: 15px;
-            margin-left:calc(50% - 200px); 
-            width:400px;
+            margin-left: calc(50% - 200px);
+            width: 400px;
         }
-        </style>
+    </style>
 
     <!-- The drawer is always open in large screens. The header is always shown,
       even in small screens. -->
@@ -36,10 +37,10 @@
                 mdl-layout--fixed-header">
         <header class="mdl-layout__header">
             <div class="mdl-layout__header-row">
-             
+
                 <span class="mdl-layout-title">Settings</span>
                 <div class="mdl-layout-spacer"></div>
-               
+
         </header>
         <div class="mdl-layout__drawer">
             <nav class="mdl-navigation">
@@ -49,33 +50,34 @@
             </nav>
         </div>
         <main class="mdl-layout__content" id="page-container" style="text-align:center;">
-            
-                <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp settings-box" style="">
-                      
-                          <tr>
-                            <td class="mdl-data-table__cell--non-numeric settings-button" id="select_note_path_button">
-                                Select note path <br />
-                                <span id="current_root_path"></span>
-                            </td>
-                        </tr>
-                                    <tr>
-                            <td class="mdl-data-table__cell--non-numeric settings-button">
-                                Cloud sync
-                            </td>
-                        </tr>
-                                    <tr>
-                            <td class="mdl-data-table__cell--non-numeric settings-button" id="import">
-                                Import from Google Keep
-                            </td>
-                          </tr>
-                        
-                      </table>
 
-            
+            <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp settings-box" style="">
+
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric settings-button" id="select_note_path_button">
+                        Select note path
+                        <br />
+                        <span id="current_root_path"></span>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric settings-button" id="cloudsync">
+                        Cloud sync
+                    </td>
+                </tr>
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric settings-button" id="import">
+                        Import from Google Keep
+                    </td>
+                </tr>
+
+            </table>
+
+
         </main>
         <script src="settings.js">
         </script>
-    </div>
+        </div>
 </body>
 
 </html>
