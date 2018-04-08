@@ -5,7 +5,7 @@ const Store = require('electron-store');
 const store = new Store();
 SettingsHelper.prototype.getNotePath = function () {
     var path = String(store.get("root_path"))
-    if (path == null) {
+    if (path == null || path == "undefined") {
         const {
             app
         } = require('electron')
