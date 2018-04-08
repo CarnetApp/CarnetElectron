@@ -107,9 +107,9 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1030,
         height: 600,
-        frame: false,
         icon: path.join(__dirname, 'assets/images/QuickDoc.png')
     })
+    win.setMenu(null)
 
     // and load the index.html of the app.
     win.loadURL(url.format({
