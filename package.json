@@ -14,7 +14,7 @@
     "url": "http://barnyrubble.tumblr.com/"
   },
   "build": {
-    "appId": "yourappid",
+    "appId": "QuickDoc",
     "dmg": {
       "contents": [
         {
@@ -34,7 +34,8 @@
         {
           "target": "AppImage",
           "arch": [
-            "ia32"
+            "ia32",
+            "x64"
           ]
         }
       ]
