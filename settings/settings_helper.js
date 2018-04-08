@@ -6,9 +6,12 @@ const store = new Store();
 SettingsHelper.prototype.getNotePath = function () {
     var path = String(store.get("root_path"))
     if (path == null || path == "undefined") {
-        const {
+        var {
+            remote,
             app
         } = require('electron')
+        if (app == undefined)
+            app = remote.app
         path = app.getPath('documents') + "/QuickNote";
         store.set("root_path", path);
     }
