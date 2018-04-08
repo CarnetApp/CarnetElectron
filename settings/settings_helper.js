@@ -12,7 +12,7 @@ SettingsHelper.prototype.getNotePath = function () {
         } = require('electron')
         if (app == undefined)
             app = remote.app
-        path = app.getPath('documents') + "/QuickNote";
+        path = app.getPath('documents') + "/QuickDoc";
         store.set("root_path", path);
     }
     require("mkdirp")(path)
