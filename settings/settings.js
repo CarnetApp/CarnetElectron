@@ -10,8 +10,16 @@ document.getElementById("select_note_path_button").onclick = function () {
   dialog.showOpenDialog({
     properties: ['openDirectory']
   }, function (path) {
-    if (path != undefined)
+    if (path != undefined) {
       settingsHelper.setNotePath(path)
+
+      document.getElementById("restarting").style.display = "block";
+      setTimeout(function () {
+        remote.app.relaunch();
+        remote.app.exit(0);
+      }, 3000)
+    }
+
   })
 }
 
