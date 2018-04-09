@@ -43,6 +43,14 @@ TextGetterTask.prototype.getNext = function () {
         var opener = new NoteOpener(this.list[this.current])
         var myTask = this;
         var note = this.list[this.current]
+        var fast = false;
+        //should we go fast or slow refresh ?
+        for (var i = this.current; i < this.stopAt; i++) {
+            if (oldNotes[this.list[i].path] == undefined) {
+                fast = true;
+                break;
+            }
+        }
         setTimeout(function () {
             try {
                 opener.getMainTextAndMetadata(function (txt, metadata) {
@@ -62,7 +70,7 @@ TextGetterTask.prototype.getNext = function () {
                 console.log(error);
             }
             myTask.current++;
-        }, oldNotes[note.path] !== undefined ? 1000 : 100)
+        }, !fast ? 1000 : 100)
 
     } else {
         this.current++;
