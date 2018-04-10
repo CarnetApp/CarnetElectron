@@ -350,6 +350,28 @@ function list(pathToList, discret) {
 }
 list(initPath)
 refreshKeywords();
+
+function minimize() {
+    remote.BrowserWindow.getFocusedWindow().minimize();
+}
+
+function maximize() {
+    if (remote.BrowserWindow.getFocusedWindow().isMaximized())
+        remote.BrowserWindow.getFocusedWindow().unmaximize();
+    else
+        remote.BrowserWindow.getFocusedWindow().maximize();
+}
+
+function closeW() {
+    remote.app.exit(0);
+    console.log("cloose")
+}
+
+function toggleSearch() {
+    $("#search-container").slideToggle();
+}
+
+
 main.setMergeListener(function () {
     list(initPath, true)
 })

@@ -56,23 +56,21 @@
                     <i class="material-icons">arrow_back</i>
                 </button>
                 <span class="mdl-layout-title">QuickDoc</span>
-                <div class="mdl-layout-spacer"></div>
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
-                      mdl-textfield--floating-label mdl-textfield--align-right" style="margin-right: 3px; margin-bottom: -7px;">
-                    <label class="mdl-button mdl-js-button mdl-button--icon" for="search-input">
-                        <i class="material-icons">search</i>
-                    </label>
-                    <div class="mdl-textfield__expandable-holder">
-                        <input class="mdl-textfield__input" type="text" name="sample" id="search-input">
-                    </div>
 
-
-                </div>
-                <!--<div style="position:absolute; right:0px;">
-                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin:15px">
+                <div style="position:absolute; right:0px;">
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px" onclick="toggleSearch()">
+                        <img src="img/ic_search_white_24px.svg" />
+                    </button>
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px" onclick="minimize()">
+                        <img src="img/ic_remove_white_24px.svg" />
+                    </button>
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px" onclick="maximize()">
+                        <img src="img/ic_aspect_ratio_white_24px.svg" />
+                    </button>
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:15px" onclick="closeW()">
                         <img src="img/ic_close_white_24px.svg" />
                     </button>
-                </div>-->
+                </div>
                 <div id="no-drag-bar" style="position:absolute; top : 20px; height:20px; width:100%; display:none; -webkit-app-region: no-drag;"></div>
 
             </div>
@@ -90,27 +88,36 @@
             </div>
         </div>
         <main class="mdl-layout__content" id="page-container">
-            <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button" style="z-index:10000;position:absolute; bottom:30px; right:30px">
-                <i class="material-icons">add</i>
+            <div style="display:none;height:50px;width:100%;text-align:center; background:#fafafa; position:absolute;z-index:10;left:0px;;"
+                id="search-container">
+                <input style="max-width:300px;width:100%;margin-top:10px;" type="text " name="sample " id="search-input" />
+
+            </div>
+
+            <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button
+                    " style="z-index:10000;position:absolute; bottom:30px; right:30px ">
+                <i class="material-icons ">add</i>
             </button>
             <div id="grid-container">
                 <div id="page-content" class="page-content">
 
                 </div>
             </div>
-            <div id="emty-view" style="display:none;    top:50%; left:50%; margin-left:-170px; position:absolute; text-align:center">No notes to display, please start be creating a new one !</div>
+            <div id="emty-view" style="display:none; top:50%; left:50%; margin-left:-170px; position:absolute; text-align:center ">No notes to display, please start be creating a new one !</div>
 
         </main>
 
     </div>
 
-    <webview id="writer-webview" style="position:fixed; top:0px; left:0px;height:0px; width:0px; z-index:100; right:0; bottom:0;"
-        nodeintegration> </webview>
+    <webview id="writer-webview" style="position:fixed; top:0px; left:0px;height:0px; width:0px; z-index:100; right:0;
+                    bottom:0; " nodeintegration> </webview>
 
-    <div id="loading-view" style="position:fixed; top:0px; display:none; left:0px;height:100%; width:100%; z-index:100; right:0; bottom:0; background:white;">
-        <div class="mdl-spinner mdl-js-spinner is-active" style="position:absolute; top:50%; margin-top:-150px; left:50%; margin-left:-150px;width:300px; height:300px;"></div>
+    <div id="loading-view" style="position:fixed; top:0px; display:none; left:0px;height:100%; width:100%; z-index:100;
+                    right:0; bottom:0; background:white; ">
+        <div class="mdl-spinner mdl-js-spinner is-active " style="position:absolute; top:50%; margin-top:-150px; left:50%;
+                    margin-left:-150px;width:300px; height:300px; "></div>
     </div>
-    <script src="browsers/browser.js">
+    <script src="browsers/browser.js ">
     </script>
 </body>
 

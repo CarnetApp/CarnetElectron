@@ -107,6 +107,7 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1030,
         height: 600,
+        frame: false,
         icon: path.join(__dirname, 'assets/images/QuickDoc.png')
     })
     win.setMenu(null)
