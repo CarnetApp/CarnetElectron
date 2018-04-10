@@ -68,24 +68,29 @@ function createWindow() {
         var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/recentdb/", {
             ignored: /^\./,
             persistent: true,
+            ignoreInitial: true,
             awaitWriteFinish: true
         });
         watcher
             .on('add', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid)
+                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid) {
                     startMerging()
+                }
             })
             .on('change', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid)
+                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid) {
                     startMerging()
+                }
             })
             .on('unlink', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid)
+                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid) {
                     startMerging()
+                }
             })
         var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/keywords/", {
             ignored: /^\./,
             persistent: true,
+            ignoreInitial: true,
             awaitWriteFinish: true
         });
         watcher
