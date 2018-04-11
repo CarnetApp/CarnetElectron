@@ -177,7 +177,6 @@ Importer.prototype.readNext = function (callback) {
 
         return;
     }
-    var base64 = require("../utils/base64")
     var importer = this;
     var fileName = this.dir.pop()
     var fs = require("fs");
