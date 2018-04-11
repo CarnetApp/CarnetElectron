@@ -45,5 +45,4 @@ document.getElementById("import").onclick = function () {
     slashes: true
   }))
   win.setMenu(null)
-  win.webContents.openDevTools()
 }
