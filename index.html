@@ -45,6 +45,22 @@
         </div>
     </dialog>
 
+    <dialog class="mdl-dialog" id="folder-dialog">
+        <div style="text-align: center">
+            <button type="button" class="mdl-button delete-button">Delete</button>
+        </div>
+        <div class="mdl-dialog__content">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="name-input">
+                <label class="mdl-textfield__label" for="sample3" style="top:4px; color: rgb(63,81,181); font-size: 12px;">Rename</label>
+            </div>
+        </div>
+        <div class="mdl-dialog__actions">
+            <button type="button" class="mdl-button ok">OK</button>
+            <button type="button" class="mdl-button cancel">Cancel</button>
+
+        </div>
+    </dialog>
 
     <!-- The drawer is always open in large screens. The header is always shown,
       even in small screens. -->
@@ -93,11 +109,14 @@
                 <input style="max-width:300px;width:100%;margin-top:10px;" type="text " name="sample " id="search-input" />
 
             </div>
-
-            <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button
-                    " style="z-index:10000;position:absolute; bottom:30px; right:30px ">
-                <i class="material-icons ">add</i>
-            </button>
+            <div style="z-index:10000;position:absolute; bottom:30px; right:30px ;width:50px;">
+                <button id="add-directory-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button" style="margin-bottom:10px;">
+                    <img style="width: 30px;" src="img/directory.png" />
+                </button>
+                <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button">
+                    <img style="width: 30px;" src="img/ic_note_add_black_24px.svg" />
+                </button>
+            </div>
             <div id="grid-container">
                 <div id="page-content" class="page-content">
 
