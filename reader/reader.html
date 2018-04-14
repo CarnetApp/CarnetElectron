@@ -191,7 +191,7 @@ mdl-layout--fixed-header">
 
 				<a class="mdl-navigation__link" href="" onclick="writer.warnNotYetImplemented(); return false;">Export note</a>
 				<a class="mdl-navigation__link" href="" onclick="writer.warnNotYetImplemented(); return false;">Rename</a>
-				<a class="mdl-navigation__link" href="" onclick="writer.askToExit(); return false;">Exit</a>
+				<a class="mdl-navigation__link" href="" onclick="var layout = document.querySelector('.mdl-layout');layout.MaterialLayout.toggleDrawer();writer.askToExit(); return false;">Exit</a>
 				<span style="text-align:center; margin:10px;"> Keywords</span>
 
 				<a class="mdl-navigation__link" href="" onclick="writer.newKeywordDialog.showModal();return false;">Add a keyword</a>
