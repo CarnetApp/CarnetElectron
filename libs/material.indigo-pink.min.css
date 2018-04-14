@@ -3829,7 +3829,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     }
 }
 
-@media screen and (min-width:1024px) {
+@media screen and (min-width:900px) {
     .mdl-mega-footer--drop-down-section,
     .mdl-mega-footer--drop-down-section:nth-child(3),
     .mdl-mega-footer--drop-down-section:nth-child(4),
@@ -4794,7 +4794,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     padding-left: 40px
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__drawer>.mdl-layout__title,
     .mdl-layout__drawer>.mdl-layout-title {
         line-height: 56px;
@@ -4822,7 +4822,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     color: #757575
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__drawer .mdl-navigation .mdl-navigation__link {
         padding: 16px
     }
@@ -4837,7 +4837,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     color: #000
 }
 
-@media screen and (min-width:1025px) {
+@media screen and (min-width:901px) {
     .mdl-layout--fixed-drawer>.mdl-layout__drawer {
         -webkit-transform: translateX(0);
         transform: translateX(0)
@@ -4872,20 +4872,20 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     background-color: inherit
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header .mdl-layout__drawer-button {
         margin: 4px
     }
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__drawer-button {
         margin: 4px;
         color: rgba(0, 0, 0, .5)
     }
 }
 
-@media screen and (min-width:1025px) {
+@media screen and (min-width:901px) {
     .mdl-layout__drawer-button {
         line-height: 54px
     }
@@ -4928,7 +4928,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     transition-property: max-height, box-shadow
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header {
         min-height: 56px
     }
@@ -4939,7 +4939,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     width: calc(100% - 240px)
 }
 
-@media screen and (min-width:1025px) {
+@media screen and (min-width:901px) {
     .mdl-layout--fixed-drawer>.mdl-layout__header .mdl-layout__header-row {
         padding-left: 40px
     }
@@ -4956,7 +4956,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     display: block
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header>.mdl-layout-icon {
         left: 16px;
         top: 12px
@@ -4971,7 +4971,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     max-height: 64px
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header.is-compact {
         max-height: 56px
     }
@@ -4981,13 +4981,13 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     height: 112px
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header.is-compact.has-tabs {
         min-height: 104px
     }
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header {
         display: none
     }
@@ -5052,13 +5052,13 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     padding-left: 40px
 }
 
-@media screen and (min-width:1025px) {
+@media screen and (min-width:901px) {
     .mdl-layout--no-desktop-drawer-button .mdl-layout__header-row {
         padding-left: 40px
     }
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header-row {
         height: 56px;
         padding: 0 16px 0 72px
@@ -5090,7 +5090,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     align-items: center
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header-row .mdl-navigation {
         height: 56px
     }
@@ -5103,7 +5103,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     padding: 0 24px
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__header-row .mdl-navigation__link {
         line-height: 56px;
         padding: 0 16px
@@ -5164,7 +5164,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     overflow: visible
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout--fixed-drawer>.mdl-layout__content {
         margin-left: 0
     }
@@ -5196,14 +5196,14 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     width: calc(100% - 32px)
 }
 
-@media screen and (min-width:1025px) {
+@media screen and (min-width:901px) {
     .mdl-layout--no-desktop-drawer-button .mdl-layout__tab-bar {
         padding-left: 16px;
         width: calc(100% - 32px)
     }
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__tab-bar {
         width: calc(100% - 60px);
         padding: 0 0 0 60px
@@ -5270,7 +5270,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     left: -4px
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__tab-bar-button {
         width: 60px
     }
@@ -5320,7 +5320,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     overflow: hidden
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width:900px) {
     .mdl-layout__tab {
         padding: 0 12px
     }

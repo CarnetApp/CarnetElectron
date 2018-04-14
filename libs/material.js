@@ -3182,7 +3182,7 @@
      * @private
      */
     MaterialLayout.prototype.Constant_ = {
-        MAX_WIDTH: '(max-width: 3000px)',
+        MAX_WIDTH: '(max-width: 900px)',
         TAB_SCROLL_PIXELS: 100,
         RESIZE_TIMEOUT: 100,
         MENU_ICON: '&#xE5D2;',
