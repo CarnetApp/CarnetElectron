@@ -1,12 +1,12 @@
 var fs = require("fs");
-const path = require('path')
+const pathTool = require('path')
 var getParentFolderFromPath = require('path').dirname;
 var FileBrowser = function (path) {
     this.path = path;
 }
 
 FileBrowser.prototype.createFolder = function (name, callback) {
-    fs.mkdir(path.join(this.path, name), function (e) {
+    fs.mkdir(pathTool.join(this.path, name), function (e) {
         callback();
     });
 
