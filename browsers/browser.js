@@ -360,9 +360,16 @@ function list(pathToList, discret) {
     console.log("listing path " + pathToList);
     currentPath = pathToList;
     if (pathToList == settingsHelper.getNotePath() || pathToList == initPath || pathToList.startsWith("keyword://")) {
+        if (pathToList != settingsHelper.getNotePath()) {
+            $("#add-directory-button").hide()
+        } else
+            $("#add-directory-button").show()
+
         $("#back_arrow").hide()
-    } else
+    } else {
         $("#back_arrow").show()
+        $("#add-directory-button").show()
+    }
 
     resetGrid(discret);
     var noteCardViewGrid = this.noteCardViewGrid
