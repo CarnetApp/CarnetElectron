@@ -45,7 +45,7 @@ TextGetterTask.prototype.getNext = function () {
         var note = this.list[this.current]
         var fast = false;
         //should we go fast or slow refresh ?
-        for (var i = this.current; i < this.stopAt; i++) {
+        for (var i = this.current; i < this.stopAt && i < this.list.length && i < oldNotes.length; i++) {
             if (oldNotes[this.list[i].path] == undefined) {
                 fast = true;
                 break;
