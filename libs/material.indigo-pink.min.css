@@ -4917,7 +4917,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     margin: 0;
     padding: 0;
     border: none;
-    min-height: 64px;
+    min-height: 56px;
     max-height: 1000px;
     z-index: 3;
     background-color: rgb(63, 81, 181);
@@ -5043,7 +5043,7 @@ fieldset[disabled] .mdl-checkbox .mdl-checkbox__ripple-container .mdl-ripple,
     -webkit-align-items: center;
     -ms-flex-align: center;
     align-items: center;
-    height: 64px;
+    height: 56px;
     margin: 0;
     padding: 0 40px 0 80px
 }
