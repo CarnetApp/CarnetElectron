@@ -22,8 +22,12 @@ RecentDBManager.prototype.getFlatenDB = function (callback) {
 
         var fullDB = JSON.parse(data)["data"];
         var flaten = [];
+        var pin = [];
+
         for (let item of fullDB) {
             var index = flaten.indexOf(item.path);
+            var indexPin = pin.indexOf(item.path);
+
             if (item.action == "add") {
                 if (index > -1) {
                     flaten.splice(index, 1);
@@ -33,14 +37,30 @@ RecentDBManager.prototype.getFlatenDB = function (callback) {
                 if (index > -1) {
                     flaten.splice(index, 1);
                 }
+                if (indexPin > -1) {
+                    pin.splice(indexPin, 1);
+                }
             } else if (item.action == "move") {
                 if (index > -1) {
                     flaten[index] = item.newPath;
                 }
+                if (indexPin > -1) {
+                    pin[indexPin] = item.newPath;
+                }
+            } else if (item.action == "pin") {
+                if (indexPin > -1) {
+                    pin.splice(indexPin, 1);
+                }
+                pin.push(item.path)
+            } else if (item.action == "unpin") {
+                if (indexPin > -1) {
+                    pin.splice(indexPin, 1);
+                }
             }
         }
         flaten.reverse()
-        callback(false, flaten);
+        pin.reverse()
+        callback(false, flaten, pin);
     });
 }
 
@@ -50,6 +70,14 @@ RecentDBManager.prototype.addToDB = function (path) {
 
 RecentDBManager.prototype.removeFromDB = function (path, callback) {
     this.action(path, "remove", callback)
+}
+
+RecentDBManager.prototype.pin = function (path, callback) {
+    this.action(path, "pin", callback)
+}
+
+RecentDBManager.prototype.unpin = function (path, callback) {
+    this.action(path, "unpin", callback)
 }
 
 RecentDBManager.prototype.move = function (path, newPath, callback) {
