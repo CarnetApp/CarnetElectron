@@ -11,7 +11,8 @@ NoteCardView.prototype.setNote = function (note) {
     var date = new Date(note.metadata.last_modification_date).toLocaleDateString();
     this.cardText.innerHTML = note.text;
     this.cardDate.innerHTML = date;
-    this.cardRating.innerHTML = note.metadata.rating+"★"
+    if(note.metadata.rating>0)
+        this.cardRating.innerHTML = note.metadata.rating+"★"
     this.cardKeywords.innerHTML = "";
     this.cardText.classList.remove("big-text")
     this.cardText.classList.remove("medium-text")
