@@ -31,6 +31,13 @@ NoteCardView.prototype.setNote = function (note) {
             keywordSpan.classList.add("keyword");
             this.cardKeywords.appendChild(keywordSpan)
         }
+    this.cardMedias.innerHTML = "";
+    if(note.previews != undefined)
+    for (let preview of note.previews) {
+        var img = document.createElement('img');
+        img.src = preview;
+        this.cardMedias.appendChild(img);
+    }
 
 }
 
@@ -71,6 +78,10 @@ NoteCardView.prototype.init = function () {
     this.cardKeywords = document.createElement('div');
     this.cardKeywords.classList.add("keywords");
     this.cardContent.appendChild(this.cardKeywords)
+
+    this.cardMedias = document.createElement('div');
+    this.cardMedias.classList.add("card-medias");
+    this.cardContent.appendChild(this.cardMedias)
 
     this.elem.appendChild(this.cardContent);
 
