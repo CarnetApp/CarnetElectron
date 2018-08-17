@@ -1,4 +1,5 @@
 var isElectron = true;
+var rootpath = "";
 
 if (typeof require !== "function") {
 	var exports = function () {}

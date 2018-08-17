@@ -6,22 +6,22 @@ var notePath = []
 var wasNewNote = false
 var dontOpen = false;
 var currentNotePath = undefined
-const {
+var root_url="http://localhost/nextcloud/index.php/apps/quickdoc/";
+new RequestBuilder(root_url);
+/*const {
     ipcRenderer,
     remote,
     app
-} = require('electron');
-const Store = require('electron-store');
+} = require('electron');*/
 const store = new Store();
 var noteCacheStr = String(store.get("note_cache"))
 if (noteCacheStr == "undefined")
     noteCacheStr = "{}"
 console.log("cache loaded " + noteCacheStr)
-
 var oldNotes = JSON.parse(noteCacheStr);
-var main = remote.require("./main.js");
+/*var main = remote.require("./main.js");
 var SettingsHelper = require("./settings/settings_helper").SettingsHelper
-var settingsHelper = new SettingsHelper()
+var settingsHelper = new SettingsHelper()*/
 var TextGetterTask = function (list) {
     this.list = list;
     this.current = 0;
@@ -34,12 +34,32 @@ TextGetterTask.prototype.startList = function () {
 }
 
 TextGetterTask.prototype.getNext = function () {
-    if (this.current >= this.stopAt) {
-        console.log("save cache")
+    console.log(this.current)
+    if (this.current >= this.stopAt || this.current >= this.list.length) {
+        console.log("save cache ")
         store.set("note_cache", JSON.stringify(oldNotes))
         return;
     }
-    if (this.list[this.current] instanceof Note) {
+
+    var paths = "";
+    var start = this.current;
+    for(var i = start; i<this.stopAt && i <this.list.length && i - start < 10; i++){ //do it ten by ten
+        paths+=this.list[i].path+",";
+        if(oldNotes[this.list[i].path] == undefined)
+            oldNotes[this.list[i].path] = this.list[i];
+        this.current = i + 1
+    }
+    var myTask = this;
+    RequestBuilder.sRequestBuilder.get("/metadata?paths="+encodeURIComponent(paths), function(error,data){
+        for(var meta in data){
+            oldNotes[meta].metadata = data[meta].metadata;
+            oldNotes[meta].text = data[meta].shorttext;
+            noteCardViewGrid.updateNote(oldNotes[meta])
+            noteCardViewGrid.msnry.layout();
+        }
+        myTask.getNext();
+    });
+   /* if (this.list[this.current] instanceof Note) {
         var opener = new NoteOpener(this.list[this.current])
         var myTask = this;
         var note = this.list[this.current]
@@ -76,9 +96,11 @@ TextGetterTask.prototype.getNext = function () {
     } else {
         this.current++;
         this.getNext();
-    }
+    }*/
 
 }
+
+
 
 var NewNoteCreationTask = function (callback) {
     var path = currentPath;
@@ -336,8 +358,8 @@ class NoteContextualDialog extends ContextualDialog {
             })
         }
         this.archiveButton.onclick = function () {
-            var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
-            db.removeFromDB(NoteUtils.getNoteRelativePath(main.getNotePath(), note.path), function () {
+            var db = new RecentDBManager()
+            db.removeFromDB(note.path, function () {
                 context.dialog.close();
                 list(currentPath, true)
             });
@@ -382,6 +404,8 @@ function list(pathToList, discret) {
         pathToList = currentPath;
     console.log("listing path " + pathToList);
     currentPath = pathToList;
+    var settingsHelper= {};
+    settingsHelper.getNotePath = function(){return "pet"};
     if (pathToList == settingsHelper.getNotePath() || pathToList == initPath || pathToList.startsWith("keyword://")) {
         if (pathToList != settingsHelper.getNotePath()) {
             $("#add-directory-button").hide()
@@ -435,7 +459,7 @@ function list(pathToList, discret) {
 
 }
 list(initPath)
-refreshKeywords();
+//refreshKeywords();
 
 function minimize() {
     remote.BrowserWindow.getFocusedWindow().minimize();
@@ -458,9 +482,9 @@ function toggleSearch() {
 }
 
 
-main.setMergeListener(function () {
+/*main.setMergeListener(function () {
     list(initPath, true)
-})
+})*/
 
 document.getElementById("add-note-button").onclick = function () {
     new NewNoteCreationTask(function (path) {
@@ -533,7 +557,13 @@ webview.addEventListener('ipc-message', event => {
 });
 var hasLoadedOnce = false
 webview.addEventListener('dom-ready', () => {
-    // webview.openDevTools()
+    webview.openDevTools()
 })
 var loadingView = document.getElementById("loading-view")
 //var browserElem = document.getElementById("browser")
+console.log("pet")
+
+
+for(var dia of document.getElementsByClassName("mdl-dialog")){
+    dialogPolyfill.registerDialog(dia);
+}

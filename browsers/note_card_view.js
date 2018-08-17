@@ -87,7 +87,7 @@ NoteCardView.prototype.init = function () {
 
 }
 
-var Masonry = require('masonry-layout');
+//var Masonry = require('masonry-layout');
 var NoteCardViewGrid = function (elem, discret, dragCallback) {
 
     this.elem = elem;

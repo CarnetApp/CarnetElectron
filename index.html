@@ -3,11 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <script>
-        window.jQuery = window.$ = require('jquery');
-    </script>
+    <script src="compatibility.js"></script>
+    <script src="compatibility/android/fs.js"></script>
+    <script src="compatibility/android/path.js"></script>
+    <script src="compatibility/android/mkdirp.js"></script>
+    <script src="compatibility/nextcloud/store.js"></script>
+
     <link rel="stylesheet" href="browsers/design.css">
+    <script src="libs/polyfill.js"></script>
+
     <script src="libs/material.js"></script>
+    <script src="libs/masonry.js"></script>
 
     <script src="browsers/note_card_view.js"></script>
     <script src="browsers/note.js"></script>
@@ -15,12 +21,14 @@
     <script src="note/note-opener.js"></script>
     <script src="note/NoteUtils.js"></script>
     <script src="utils/utils.js"></script>
+    <script src="requests/request_builder.js"></script>
     <script src="reader/assets/scripts/jquery-ui.min.js"></script>
 
-    <script src="reader/reader.js"></script>
     <script src="recent/recent_db_manager.js"></script>
 
     <link rel="stylesheet" href="libs/material.indigo-pink.min.css">
+    <link rel="stylesheet" href="libs/polyfill.css">
+
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
@@ -75,16 +83,16 @@
                 <span class="mdl-layout-title">QuickDoc</span>
 
                 <div style="position:absolute; right:0px;">
-                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px" onclick="toggleSearch()">
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px">
                         <img src="img/ic_search_white_24px.svg" />
                     </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px" onclick="minimize()">
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px">
                         <img src="img/ic_remove_white_24px.svg" />
                     </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px" onclick="maximize()">
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px" >
                         <img src="img/ic_aspect_ratio_white_24px.svg" />
                     </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:15px" onclick="closeW()">
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:15px">
                         <img src="img/ic_close_white_24px.svg" />
                     </button>
                 </div>
@@ -94,8 +102,8 @@
         </header>
         <div class="mdl-layout__drawer">
             <nav class="mdl-navigation">
-                <a class="mdl-navigation__link" href="" onclick="list('recentdb://',false); return false">Recent</a>
-                <a class="mdl-navigation__link" href="" onclick="list(getNotePath(),false); return false">Browser</a>
+                <a class="mdl-navigation__link" href="">Recent</a>
+                <a class="mdl-navigation__link" href="">Browser</a>
                 <a class="mdl-navigation__link" href="settings/index.html">Settings</a>
             </nav>
             <span style="text-align:center; margin:10px;"> Keywords</span>
@@ -137,7 +145,7 @@
         <div class="mdl-spinner mdl-js-spinner is-active " style="position:absolute; top:50%; margin-top:-150px; left:50%;
                     margin-left:-150px;width:300px; height:300px; "></div>
     </div>
-    <script src="browsers/browser.js ">
+    <script src="browsers/browser.js">
     </script>
 </body>
 

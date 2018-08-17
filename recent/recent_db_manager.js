@@ -2,25 +2,18 @@ var fs = require('fs');
 var getParentFolderFromPath = require('path').dirname;
 var lockFile = require('lockfile')
 
-var RecentDBManager = function (path) {
-    this.path = path;
-    console.log("RecentDBManager with " + path)
+var RecentDBManager = function () {
 
 }
 
 RecentDBManager.prototype.getFullDB = function (callback) {
-    console.log("getFullDB")
-    fs.readFile(this.path, function (err, data) {
-        if (data == undefined || data.length == 0)
-            data = "{\"data\":[]}";
-        callback(err, data);
-    });
+    RequestBuilder.sRequestBuilder.get("/recentdb", callback)
 }
 
 RecentDBManager.prototype.getFlatenDB = function (callback) {
     this.getFullDB(function (err, data) {
 
-        var fullDB = JSON.parse(data)["data"];
+        var fullDB = data["data"];
         var flaten = [];
         var pin = [];
 
@@ -140,38 +133,23 @@ RecentDBManager.prototype.actionArray = function (items, action, callback) {
         })
     });
 }
+RecentDBManager.prototype.actionArray = function (items, callback) {
+    RequestBuilder.sRequestBuilder.post("/recentdb/action", {
+        data: items
+    }, function (error, data) {
+        console.log(data)
+        callback();
+    });
+
+}
+
 RecentDBManager.prototype.action = function (path, action, callback) {
-    var db = this;
-    lockFile.lock('recent.lock', {
-        wait: 10000
-    }, function (er) {
-        db.getFullDB(function (err, data) {
-            console.log(data)
-            var fullDB = JSON.parse(data);
-            var item = new function () {
-                this.time = new Date().getTime();
-                this.action = action;
-                this.path = path;
-            };
 
-            fullDB["data"].push(item);
-            console.log(JSON.stringify(item))
-            require("mkdirp")(getParentFolderFromPath(db.path), function () {
-                // opts is optional, and defaults to {} 
-
-                console.log("writing")
-                fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
-                    if (callback)
-                        callback()
-                    lockFile.unlock('recent.lock', function (er) {
-                        console.log("lock er " + er)
-                        // er means that an error happened, and is probably bad. 
-                    })
-                });
-
-            })
-        })
-    })
+    this.actionArray([{
+        time: new Date().getTime(),
+        action: action,
+        path: path
+    }], callback)
 }
 
 // sort on key values

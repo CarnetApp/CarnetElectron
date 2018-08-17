@@ -13,22 +13,17 @@ FileBrowser.prototype.createFolder = function (name, callback) {
 }
 
 FileBrowser.prototype.list = function (callback) {
-    var {
-        ipcRenderer,
-        remote
-    } = require('electron');
-    var main = remote.require("./main.js");
-    var mainPath = main.getNotePath();
+
 
     if (this.path == "recentdb://") {
         console.log("getting recent")
-        var db = new RecentDBManager(mainPath + "/quickdoc/recentdb/" + main.getAppUid())
+        var db = new RecentDBManager()
         db.getFlatenDB(function (err, flaten, pin) {
             console.log(JSON.stringify(flaten))
             var files = [];
             for (let filePath of pin) {
                 var filename = filePath;
-                filePath = mainPath + "/" + filePath
+                filePath = filePath
                 file = new File(filePath, true, filename);
                 file.isPinned = true;
                 files.push(file)
@@ -37,7 +32,7 @@ FileBrowser.prototype.list = function (callback) {
                 if (pin.indexOf(filePath) != -1)
                     continue;
                 var filename = filePath;
-                filePath = mainPath + "/" + filePath
+                filePath = filePath
                 file = new File(filePath, true, filename);
                 files.push(file)
             }
