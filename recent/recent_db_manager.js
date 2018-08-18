@@ -1,7 +1,3 @@
-var fs = require('fs');
-var getParentFolderFromPath = require('path').dirname;
-var lockFile = require('lockfile')
-
 var RecentDBManager = function () {
 
 }

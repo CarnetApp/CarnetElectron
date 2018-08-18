@@ -1,6 +1,3 @@
-var fs = require("fs");
-const pathTool = require('path')
-var getParentFolderFromPath = require('path').dirname;
 var FileBrowser = function (path) {
     this.path = path;
 }

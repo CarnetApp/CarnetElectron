@@ -514,7 +514,7 @@ document.getElementById("search-input").onkeydown = function (event) {
 }
 
 document.getElementById("back_arrow").addEventListener("click", function () {
-    list(getParentFolderFromPath(currentPath))
+    list(FileUtils.getParentFolderFromPath(currentPath))
 });
 
 function getNotePath() {
