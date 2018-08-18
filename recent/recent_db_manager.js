@@ -12,7 +12,7 @@ RecentDBManager.prototype.getFullDB = function (callback) {
 
 RecentDBManager.prototype.getFlatenDB = function (callback) {
     this.getFullDB(function (err, data) {
-
+        console.log(data)
         var fullDB = data["data"];
         var flaten = [];
         var pin = [];

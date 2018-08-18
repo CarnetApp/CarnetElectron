@@ -11,8 +11,8 @@ NoteCardView.prototype.setNote = function (note) {
     var date = new Date(note.metadata.last_modification_date).toLocaleDateString();
     this.cardText.innerHTML = note.text;
     this.cardDate.innerHTML = date;
-    if(note.metadata.rating>0)
-        this.cardRating.innerHTML = note.metadata.rating+"★"
+    if (note.metadata.rating > 0)
+        this.cardRating.innerHTML = note.metadata.rating + "★"
     this.cardKeywords.innerHTML = "";
     this.cardText.classList.remove("big-text")
     this.cardText.classList.remove("medium-text")
@@ -32,12 +32,12 @@ NoteCardView.prototype.setNote = function (note) {
             this.cardKeywords.appendChild(keywordSpan)
         }
     this.cardMedias.innerHTML = "";
-    if(note.previews != undefined)
-    for (let preview of note.previews) {
-        var img = document.createElement('img');
-        img.src = preview;
-        this.cardMedias.appendChild(img);
-    }
+    if (note.previews != undefined)
+        for (let preview of note.previews) {
+            var img = document.createElement('img');
+            img.src = preview;
+            this.cardMedias.appendChild(img);
+        }
 
 }
 
@@ -147,10 +147,10 @@ NoteCardViewGrid.prototype.setNotesAndFolders = function (notes) {
     this.lastAdded = 0;
     this.addNext(45);
 }
-NoteCardViewGrid.prototype.addNote = function(note){
+NoteCardViewGrid.prototype.addNote = function (note) {
     this.notes.push(note)
     this.addNext(1);
-    
+
 }
 NoteCardViewGrid.prototype.addNext = function (num) {
     var lastAdded = this.lastAdded
@@ -238,7 +238,7 @@ FolderView.prototype.init = function () {
     this.cardContent.classList.add("mdl-card__supporting-text");
     this.img = document.createElement('img');
     this.img.classList.add("folder-icon")
-    this.img.src = "img/directory.png";
+    this.img.src = root_url + "img/directory.png";
     this.cardContent.appendChild(this.img);
 
     this.cardTitle = document.createElement('h2');

@@ -6,8 +6,10 @@ var notePath = []
 var wasNewNote = false
 var dontOpen = false;
 var currentNotePath = undefined
-var root_url="http://localhost/nextcloud/index.php/apps/quickdoc/";
-new RequestBuilder(root_url);
+var root_url = document.getElementById("root-url") != undefined ? document.getElementById("root-url").innerHTML : "";
+var api_url = "./";
+
+new RequestBuilder(api_url);
 /*const {
     ipcRenderer,
     remote,
@@ -43,15 +45,17 @@ TextGetterTask.prototype.getNext = function () {
 
     var paths = "";
     var start = this.current;
-    for(var i = start; i<this.stopAt && i <this.list.length && i - start < 10; i++){ //do it ten by ten
-        paths+=this.list[i].path+",";
-        if(oldNotes[this.list[i].path] == undefined)
-            oldNotes[this.list[i].path] = this.list[i];
+    for (var i = start; i < this.stopAt && i < this.list.length && i - start < 10; i++) { //do it ten by ten
         this.current = i + 1
+        if (!(this.list[i] instanceof Note))
+            continue;
+        paths += this.list[i].path + ",";
+        if (oldNotes[this.list[i].path] == undefined)
+            oldNotes[this.list[i].path] = this.list[i];
     }
     var myTask = this;
-    RequestBuilder.sRequestBuilder.get("/metadata?paths="+encodeURIComponent(paths), function(error,data){
-        for(var meta in data){
+    RequestBuilder.sRequestBuilder.get("/metadata?paths=" + encodeURIComponent(paths), function (error, data) {
+        for (var meta in data) {
             oldNotes[meta].metadata = data[meta].metadata;
             oldNotes[meta].text = data[meta].shorttext;
             noteCardViewGrid.updateNote(oldNotes[meta])
@@ -59,44 +63,44 @@ TextGetterTask.prototype.getNext = function () {
         }
         myTask.getNext();
     });
-   /* if (this.list[this.current] instanceof Note) {
-        var opener = new NoteOpener(this.list[this.current])
-        var myTask = this;
-        var note = this.list[this.current]
-        var fast = false;
-        //should we go fast or slow refresh ?
-        for (var i = this.current; i < this.stopAt && i < this.list.length && i < oldNotes.length; i++) {
-            if (oldNotes[this.list[i].path] == undefined) {
-                fast = true;
-                break;
-            }
-        }
-        setTimeout(function () {
-            try {
-                opener.getMainTextMetadataAndPreviews(function (txt, metadata, previews) {
-                    if (myTask.continue) {
-                        if (txt != undefined)
-                            note.text = txt.substring(0, 200);
-                        if (metadata != undefined)
-                            note.metadata = metadata;
-                        note.previews = previews;
-                        oldNotes[note.path] = note;
-                        noteCardViewGrid.updateNote(note)
-                        noteCardViewGrid.msnry.layout();
+    /* if (this.list[this.current] instanceof Note) {
+         var opener = new NoteOpener(this.list[this.current])
+         var myTask = this;
+         var note = this.list[this.current]
+         var fast = false;
+         //should we go fast or slow refresh ?
+         for (var i = this.current; i < this.stopAt && i < this.list.length && i < oldNotes.length; i++) {
+             if (oldNotes[this.list[i].path] == undefined) {
+                 fast = true;
+                 break;
+             }
+         }
+         setTimeout(function () {
+             try {
+                 opener.getMainTextMetadataAndPreviews(function (txt, metadata, previews) {
+                     if (myTask.continue) {
+                         if (txt != undefined)
+                             note.text = txt.substring(0, 200);
+                         if (metadata != undefined)
+                             note.metadata = metadata;
+                         note.previews = previews;
+                         oldNotes[note.path] = note;
+                         noteCardViewGrid.updateNote(note)
+                         noteCardViewGrid.msnry.layout();
 
-                        myTask.getNext();
-                    }
-                });
-            } catch (error) {
-                console.log(error);
-            }
-            myTask.current++;
-        }, !fast ? 1000 : 100)
+                         myTask.getNext();
+                     }
+                 });
+             } catch (error) {
+                 console.log(error);
+             }
+             myTask.current++;
+         }, !fast ? 1000 : 100)
 
-    } else {
-        this.current++;
-        this.getNext();
-    }*/
+     } else {
+         this.current++;
+         this.getNext();
+     }*/
 
 }
 
@@ -370,15 +374,15 @@ class NoteContextualDialog extends ContextualDialog {
         } else this.pinButton.innerHTML = "Pin"
 
         this.pinButton.onclick = function () {
-            var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
+            var db = new RecentDBManager()
             if (note.isPinned == true)
-                db.unpin(NoteUtils.getNoteRelativePath(main.getNotePath(), note.path), function () {
+                db.unpin(note.path, function () {
                     context.dialog.close();
                     list(currentPath, true)
                 });
 
             else
-                db.pin(NoteUtils.getNoteRelativePath(main.getNotePath(), note.path), function () {
+                db.pin(note.path, function () {
                     context.dialog.close();
                     list(currentPath, true)
                 });
@@ -404,8 +408,10 @@ function list(pathToList, discret) {
         pathToList = currentPath;
     console.log("listing path " + pathToList);
     currentPath = pathToList;
-    var settingsHelper= {};
-    settingsHelper.getNotePath = function(){return "pet"};
+    var settingsHelper = {};
+    settingsHelper.getNotePath = function () {
+        return "pet"
+    };
     if (pathToList == settingsHelper.getNotePath() || pathToList == initPath || pathToList.startsWith("keyword://")) {
         if (pathToList != settingsHelper.getNotePath()) {
             $("#add-directory-button").hide()
@@ -564,6 +570,17 @@ var loadingView = document.getElementById("loading-view")
 console.log("pet")
 
 
-for(var dia of document.getElementsByClassName("mdl-dialog")){
+for (var dia of document.getElementsByClassName("mdl-dialog")) {
     dialogPolyfill.registerDialog(dia);
+}
+
+
+//nav buttons
+document.getElementById("browser-button").onclick = function () {
+    list("/");
+    return false;
+}
+document.getElementById("recent-button").onclick = function () {
+    list("recentdb://");
+    return false;
 }

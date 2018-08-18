@@ -57,30 +57,29 @@ FileBrowser.prototype.list = function (callback) {
             callback(files)
         })
     } else {
-        fs.readdir(this.path, (err, dir) => {
-            //console.log(dir);
+        RequestBuilder.sRequestBuilder.get("/browser/list?path=" + encodeURIComponent(this.path), function (error, data) {
+            if (error) {
+                callback(error);
+                return;
+            }
             var files = [];
             var dirs_in = [];
             var files_in = [];
-            for (let filePath of dir) {
-                var filename = filePath;
-                if (filename == "quickdoc" || filename.startsWith("."))
+            for (let node of data) {
+                if (node.path == "quickdoc")
                     continue;
-                filePath = this.path + "/" + filePath
-                var stat = fs.statSync(filePath);
-                file = new File(filePath, stat.isFile(), filename);
-                console.log(filePath)
-                if (stat.isFile())
+                file = new File(node.path, !node.isDir, node.name);
+                if (!node.isDir)
                     files_in.push(file)
                 else
                     dirs_in.push(file)
-
             }
             files = files.concat(dirs_in)
             files = files.concat(files_in)
-
             callback(files)
+
         });
+
     }
 }
 
