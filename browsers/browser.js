@@ -144,6 +144,12 @@ String.prototype.replaceAll = function (search, replacement) {
 
 function openNote(notePath) {
     currentNotePath = notePath
+    window.location.assign("writer?path=" + encodeURIComponent(notePath));
+}
+
+
+function oldOpenNote(notePath) {
+    currentNotePath = notePath
     const electron = require('electron')
     const remote = electron.remote;
     const BrowserWindow = remote.BrowserWindow;

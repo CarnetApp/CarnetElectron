@@ -1,4 +1,8 @@
-var fs = require('fs');
+function require() {
+    return "pet"
+}
+rootpath = "";
+new RequestBuilder();
 var Writer = function (elem) {
     this.elem = elem;
     this.seriesTaskExecutor = new SeriesTaskExecutor();
@@ -11,7 +15,6 @@ var Writer = function (elem) {
 
 Writer.prototype.setNote = function (note) {
     this.note = note;
-    this.noteOpener = new NoteOpener(note);
 
 }
 
@@ -125,7 +128,7 @@ Writer.prototype.refreshMedia = function () {
             var el = document.createElement("div")
             el.classList.add("media")
             if (FileUtils.isFileImage(filePath)) {
-                if(!filePath.startsWith("preview_")){
+                if (!filePath.startsWith("preview_")) {
                     var img = document.createElement("img")
                     img.src = "data/" + filePath
                     el.appendChild(img)
@@ -172,43 +175,43 @@ Writer.prototype.addMedia = function () {
                 if (!err) {
                     console.log("write ok !")
 
-                    if(FileUtils.isFileImage(filePath)){
+                    if (FileUtils.isFileImage(filePath)) {
                         console.log("creating thumb")
 
                         var img = document.createElement("img");
-                        img.src = 'data:'+FileUtils.geMimetypeFromExtension(FileUtils.getExtensionFromPath(filePath))+';base64,' +data
-                        img.onload = function(){
+                        img.src = 'data:' + FileUtils.geMimetypeFromExtension(FileUtils.getExtensionFromPath(filePath)) + ';base64,' + data
+                        img.onload = function () {
                             var canvas = document.createElement('canvas');
                             var MAX_WIDTH = 200;
                             var MAX_HEIGHT = 200;
                             var width = img.width;
                             var height = img.height;
-    
+
                             if (width > height) {
-                            if (width > MAX_WIDTH) {
-                                height *= MAX_WIDTH / width;
-                                width = MAX_WIDTH;
-                            }
+                                if (width > MAX_WIDTH) {
+                                    height *= MAX_WIDTH / width;
+                                    width = MAX_WIDTH;
+                                }
                             } else {
-                            if (height > MAX_HEIGHT) {
-                                width *= MAX_HEIGHT / height;
-                                height = MAX_HEIGHT;
-                            }
+                                if (height > MAX_HEIGHT) {
+                                    width *= MAX_HEIGHT / height;
+                                    height = MAX_HEIGHT;
+                                }
                             }
                             canvas.width = width;
                             canvas.height = height;
                             var ctx = canvas.getContext("2d");
                             ctx.drawImage(img, 0, 0, width, height);
-                            console.log("data width "+width)
-    
+                            console.log("data width " + width)
+
                             var dataurl = canvas.toDataURL("image/jpeg");
-                            console.log("data url"+dataurl)
-                            fs.writeFile(tmppath + 'data/' + 'preview_'+name, dataurl.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
+                            console.log("data url" + dataurl)
+                            fs.writeFile(tmppath + 'data/' + 'preview_' + name, dataurl.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
                                 writer.seriesTaskExecutor.addTask(writer.saveNoteTask.saveTxt)
                                 writer.refreshMedia();
                             })
                         }
-                        
+
                     }
                 }
             })
@@ -220,10 +223,36 @@ Writer.prototype.addMedia = function () {
 
 }
 
+Writer.prototype.setDoNotEdit = function (b) {
+
+}
+
+Writer.prototype.displayErrorLarge = function (error) {
+
+}
+
 Writer.prototype.extractNote = function () {
     console.log("Writer.prototype.extractNote")
+    const writer = this;
+    RequestBuilder.sRequestBuilder.get("/note/open?path=" + encodeURIComponent(this.note.path), function (error, data) {
+        if (error) {
+            writer.setDoNotEdit(true);
+            writer.displayErrorLarge("Error");
+            return;
+        }
+        console.log(data)
 
-    var writer = this;
+        writer.fillWriter(data.html)
+        writer.note.metadata = data.metadata;
+        //   writer.refreshKeywords()
+        //writer.refreshMedia()
+        var ratingStars = document.querySelectorAll("input.star")
+        for (var i = 0; i < ratingStars.length; i++) {
+            ratingStars[i].checked = writer.note.metadata.rating == (5 - i);
+        };
+        writer.updateRating(writer.note.metadata.rating)
+    });
+    /*var writer = this;
     console.log("extractNote to " + tmppath)
     writer.noteOpener.extractTo(tmppath, function (noSuchFile) {
         console.log("done")
@@ -242,7 +271,7 @@ Writer.prototype.extractNote = function () {
                     writer.refreshMedia()
                     var ratingStars = document.querySelectorAll("input.star")
                     for (var i = 0; i < ratingStars.length; i++) {
-                        ratingStars[i].checked = writer.note.metadata.rating == (5-i);
+                        ratingStars[i].checked = writer.note.metadata.rating == (5 - i);
                     };
                     writer.updateRating(writer.note.metadata.rating)
                 });
@@ -261,8 +290,8 @@ Writer.prototype.extractNote = function () {
             console.log(data)
             this.note.metadata = JSON.parse(content)
         });*/
-        //copying reader.html
-    })
+    //copying reader.html
+    /* })*/
 }
 
 saveTextIfChanged = function () {
@@ -294,12 +323,12 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     if (typeof app == 'object')
         app.hideProgress();
     resetScreenHeight();
-    this.refreshKeywords();
+    //this.refreshKeywords();
     //  $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 
 }
-var KeywordsDBManager = require(rootpath + "keywords/keywords_db_manager").KeywordsDBManager;
-var keywordsDBManager = new KeywordsDBManager()
+//var KeywordsDBManager = require(rootpath + "keywords/keywords_db_manager").KeywordsDBManager;
+//var keywordsDBManager = new KeywordsDBManager()
 Writer.prototype.refreshKeywords = function () {
     var keywordsContainer = document.getElementById("keywords-list");
     keywordsContainer.innerHTML = "";
@@ -491,7 +520,7 @@ Writer.prototype.init = function () {
     var ratingStars = document.getElementsByClassName("star")
     for (var i = 0; i < ratingStars.length; i++) {
         ratingStars[i].checked = false;
-        ratingStars[i].onclick=function(){
+        ratingStars[i].onclick = function () {
             writer.saveRating(this.value);
             writer.updateRating(this.value);
         }
@@ -594,8 +623,8 @@ Writer.prototype.surroundSelection = function (element) {
         }
     }
 }
-var KeywordsDBManager = require(rootpath + "keywords/keywords_db_manager").KeywordsDBManager;
-var keywordsDBManager = new KeywordsDBManager()
+//var KeywordsDBManager = require(rootpath + "keywords/keywords_db_manager").KeywordsDBManager;
+//var keywordsDBManager = new KeywordsDBManager()
 Writer.prototype.addKeyword = function (word) {
     if (this.note.metadata.keywords.indexOf(word) < 0 && word.length > 0) {
         this.note.metadata.keywords.push(word);
@@ -638,18 +667,18 @@ Writer.prototype.fillColor = function (color) {
 
 Writer.prototype.saveRating = function (rating) {
     this.note.metadata.rating = rating;
-    console.log("new rating "+this.note.metadata.rating)
+    console.log("new rating " + this.note.metadata.rating)
     writer.hasTextChanged = true;
 }
 
 Writer.prototype.updateRating = function (rating) {
     var ratingStars = document.querySelectorAll("label.star")
     for (var i = 0; i < ratingStars.length; i++) {
-        if(5-i <=this.note.metadata.rating){
+        if (5 - i <= this.note.metadata.rating) {
             ratingStars[i].classList.add("checked");
 
-        }else
-        ratingStars[i].classList.remove("checked");
+        } else
+            ratingStars[i].classList.remove("checked");
 
     };
 }
@@ -744,4 +773,66 @@ SaveNoteTask.prototype.saveTxt = function (onEnd) {
 
 
     })
+}
+
+
+
+function resetScreenHeight() {
+    console.log("resetScreenHeight")
+    var screen = $(window).innerHeight(),
+        header = $("#header-carnet").height() + $("#toolbars").height(),
+        content = screen - header;
+    style = window.getComputedStyle(document.getElementById("header-carnet"));
+    if (style.getPropertyValue('display') == "none")
+        content = screen;
+    $("#center").height(content);
+    $("#editor").height(content - 45);
+    console.log(content - 45)
+}
+
+var writer = undefined;
+if (writer == undefined) {
+    writer = new Writer(document);
+    writer.init();
+}
+
+function loadPath(path) {
+
+    writer.reset();
+    var note = new Note("", "", path, undefined);
+    writer.setNote(note);
+    console.log("extract")
+    writer.extractNote();
+}
+if (loaded == undefined)
+    var loaded = false; //don't know why, loaded twice on android
+if (!loaded) {
+    console.log("loading html ");
+
+    function getParameterByName(name, url) {
+        if (!url) {
+            url = window.location.href;
+        }
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " ").replace(/%2F/g, "/"));
+    }
+
+    $(window).on('resize', resetScreenHeight);
+
+
+    var path = getParameterByName("path");
+    var tmp = getParameterByName("tmppath");
+    if (tmp != null)
+        tmppath = tmp;
+    if (path != undefined) {
+        console.log("path " + getParameterByName("path"))
+        loadPath(path)
+
+    }
+
+    loaded = true;
 }
