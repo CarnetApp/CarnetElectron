@@ -526,6 +526,35 @@ Writer.prototype.init = function () {
         }
     };
 
+    var inToolbarButtons = document.getElementsByClassName("in-toolbar-button");
+
+    for (var button of inToolbarButtons) {
+        button.onclick = function (ev) {
+            console.log("on click " + this.id);
+            switch (this.id) {
+                case "bold":
+                case "italic":
+                case "underline":
+                case "justifyleft":
+                case "justifycenter":
+                case "justifyright":
+                    writer.formatDoc(this.id);
+                    break;
+                case "text-color":
+                    writer.displayTextColorPicker();
+                    break;
+                case "fill-color":
+                    writer.displayFillColorPicker();
+                    break;
+                case "size-minus":
+                    writer.decreaseFontSize();
+                    break;
+                case "size-plus":
+                    writer.increaseFontSize();
+                    break;
+            }
+        }
+    }
 
     this.keywordsList = document.getElementById("keywords")
 
