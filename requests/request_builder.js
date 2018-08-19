@@ -1,5 +1,5 @@
-var RequestBuilder = function (api_url) {
-    this.api_url = api_url;
+var RequestBuilder = function () {
+    this.api_url = "./";
     RequestBuilder.sRequestBuilder = this;
 }
 

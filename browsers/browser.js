@@ -7,9 +7,7 @@ var wasNewNote = false
 var dontOpen = false;
 var currentNotePath = undefined
 var root_url = document.getElementById("root-url") != undefined ? document.getElementById("root-url").innerHTML : "";
-var api_url = "./";
-
-new RequestBuilder(api_url);
+new RequestBuilder();
 /*const {
     ipcRenderer,
     remote,
