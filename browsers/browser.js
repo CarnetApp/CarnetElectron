@@ -497,13 +497,26 @@ function toggleSearch() {
 })*/
 
 document.getElementById("add-note-button").onclick = function () {
-    new NewNoteCreationTask(function (path) {
+    var path = currentPath;
+    if (path == initPath || path.startsWith("keyword://"))
+        path = "";
+    RequestBuilder.sRequestBuilder.get("/note/create?path=" + encodeURIComponent(path), function (error, data) {
+        if (error) return;
+        console.log("found " + data)
+        wasNewNote = true;
+        var db = new RecentDBManager()
+        db.addToDB(data, function () {
+            openNote(data)
+        });
+
+    })
+    /*new NewNoteCreationTask(function (path) {
         console.log("found " + path)
         wasNewNote = true;
         var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
         db.addToDB(NoteUtils.getNoteRelativePath(main.getNotePath(), path));
         openNote(path)
-    })
+    })*/
 }
 
 document.getElementById("add-directory-button").onclick = function () {

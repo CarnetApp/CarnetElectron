@@ -53,8 +53,8 @@ RecentDBManager.prototype.getFlatenDB = function (callback) {
     });
 }
 
-RecentDBManager.prototype.addToDB = function (path) {
-    this.action(path, "add")
+RecentDBManager.prototype.addToDB = function (path, callback) {
+    this.action(path, "add", callback)
 }
 
 RecentDBManager.prototype.removeFromDB = function (path, callback) {
