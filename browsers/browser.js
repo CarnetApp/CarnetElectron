@@ -601,3 +601,8 @@ document.getElementById("recent-button").onclick = function () {
     list("recentdb://");
     return false;
 }
+
+RequestBuilder.sRequestBuilder.get("/recentdb/merge", function (error, data) {
+    if (data == true)
+        list("recentdb://");
+})
