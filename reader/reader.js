@@ -207,7 +207,7 @@ Writer.prototype.addMedia = function () {
                             var dataurl = canvas.toDataURL("image/jpeg");
                             console.log("data url" + dataurl)
                             fs.writeFile(tmppath + 'data/' + 'preview_' + name, dataurl.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
-                                writer.seriesTaskExecutor.addTask(writer.saveNoteTask.saveTxt)
+                                writer.seriesTaskExecutor.addTask(writer.saveNoteTask)
                                 writer.refreshMedia();
                             })
                         }
@@ -224,7 +224,7 @@ Writer.prototype.addMedia = function () {
 }
 
 Writer.prototype.setDoNotEdit = function (b) {
-
+    document.getElementById("text").contentEditable = !b;
 }
 
 Writer.prototype.displayErrorLarge = function (error) {
@@ -241,11 +241,14 @@ Writer.prototype.extractNote = function () {
             return;
         }
         console.log(data)
-
+        writer.saveID = data.id;
         writer.fillWriter(data.html)
-        writer.note.metadata = data.metadata;
+        if (data.metadata == null)
+            writer.note.metadata = new NoteMetadata();
+        else
+            writer.note.metadata = data.metadata;
         //   writer.refreshKeywords()
-        //writer.refreshMedia()
+        //writer.refreshMedia()/op
         var ratingStars = document.querySelectorAll("input.star")
         for (var i = 0; i < ratingStars.length; i++) {
             ratingStars[i].checked = writer.note.metadata.rating == (5 - i);
@@ -297,7 +300,7 @@ Writer.prototype.extractNote = function () {
 saveTextIfChanged = function () {
     console.log("has text changed ? " + writer.hasTextChanged)
     if (writer.hasTextChanged)
-        writer.seriesTaskExecutor.addTask(writer.saveNoteTask.saveTxt)
+        writer.seriesTaskExecutor.addTask(writer.saveNoteTask)
     writer.hasTextChanged = false;
 }
 Writer.prototype.fillWriter = function (extractedHTML) {
@@ -587,10 +590,14 @@ Writer.prototype.init = function () {
                 i++;
             }
         }
+
         try {
             new MaterialDataTable(writer.keywordsList)
         } catch (e) {}
     })
+    document.getElementById("exit").onclick = function () {
+        writer.askToExit();
+    }
 
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 }
@@ -598,10 +605,11 @@ Writer.prototype.init = function () {
 Writer.prototype.askToExit = function () {
     console.log("exec? " + this.seriesTaskExecutor.isExecuting)
     if (this.seriesTaskExecutor.isExecuting)
-        return
+        return false;
     else {
-        Compatibility.onBackPressed()
+        window.location.assign("./");
     }
+    return false;
 }
 Writer.prototype.copy = function () {
     document.execCommand('copy');
@@ -658,7 +666,7 @@ Writer.prototype.addKeyword = function (word) {
     if (this.note.metadata.keywords.indexOf(word) < 0 && word.length > 0) {
         this.note.metadata.keywords.push(word);
         keywordsDBManager.addToDB(word, this.note.path)
-        this.seriesTaskExecutor.addTask(this.saveNoteTask.saveTxt)
+        this.seriesTaskExecutor.addTask(this.saveNoteTask)
         this.refreshKeywords();
     }
 }
@@ -667,7 +675,7 @@ Writer.prototype.removeKeyword = function (word) {
     if (this.note.metadata.keywords.indexOf(word) >= 0) {
         this.note.metadata.keywords.splice(this.note.metadata.keywords.indexOf(word), 1);
         keywordsDBManager.removeFromDB(word, this.note.path)
-        this.seriesTaskExecutor.addTask(this.saveNoteTask.saveTxt)
+        this.seriesTaskExecutor.addTask(this.saveNoteTask)
         this.refreshKeywords();
     }
 }
@@ -760,7 +768,7 @@ SeriesTaskExecutor.prototype.execNext = function () {
         return;
     }
     var executor = this;
-    this.task.shift()(function () {
+    this.task.shift().run(function () {
         executor.execNext()
     })
     console.log("this.task length " + this.task.length)
@@ -771,39 +779,38 @@ var SaveNoteTask = function (writer) {
     this.writer = writer;
 
 }
-
-SaveNoteTask.prototype.saveTxt = function (onEnd) {
-
-    var fs = require('fs');
-    var writer = this.writer;
-    console.log("saving")
-    fs.unlink(tmppath + "reader.html", function () {
-        fs.writeFile(tmppath + 'index.html', writer.oEditor.innerHTML, function (err) {
-            if (err) {
-                onEnd()
-                return console.log(err);
-            }
-            writer.note.metadata.last_modification_date = Date.now();
-            console.log("saving meta  " + writer.note.metadata.keywords[0])
-            fs.writeFile(tmppath + 'metadata.json', JSON.stringify(writer.note.metadata), function (err) {
-                if (err) {
-                    onEnd()
-                    return console.log(err);
-                }
-                console.log("compress")
-                writer.noteOpener.compressFrom(tmppath, function () {
-                    console.log("compressed")
-
-                    onEnd()
+SaveNoteTask.prototype.trySave = function (onEnd, trial) {
+    const task = this;
+    this.writer.note.metadata.last_modification_date = Date.now();
+    RequestBuilder.sRequestBuilder.post("/note/saveText", {
+        id: this.writer.saveID,
+        path: this.writer.note.path,
+        html: this.writer.oEditor.innerHTML,
+        metadata: JSON.stringify(this.writer.note.metadata)
+    }, function (error, data) {
+        if (error) {
+            if (trial < 3) {
+                setTimeout(function () {
+                    task.trySave(onEnd, trial + 1);
+                }, 1000)
+            } else {
+                writer.displaySnack({
+                    message: 'An error occured, please save your text and check it is not open in another tab',
+                    timeout: 60000 * 300,
                 })
-            });
-
-        });
-
-
-    })
+                writer.setDoNotEdit(true)
+                onEnd();
+            }
+        } else
+            onEnd();
+    });
 }
 
+SaveNoteTask.prototype.saveTxt = function (onEnd) {
+    this.trySave(onEnd, 0);
+}
+
+SaveNoteTask.prototype.run = SaveNoteTask.prototype.saveTxt;
 
 
 function resetScreenHeight() {
