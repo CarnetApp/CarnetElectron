@@ -54,7 +54,7 @@ TextGetterTask.prototype.getNext = function () {
     var myTask = this;
     RequestBuilder.sRequestBuilder.get("/metadata?paths=" + encodeURIComponent(paths), function (error, data) {
         for (var meta in data) {
-            oldNotes[meta].metadata = data[meta].metadata;
+            oldNotes[meta].metadata = data[meta].metadata != undefined ? data[meta].metadata : new NoteMetadata();
             oldNotes[meta].text = data[meta].shorttext;
             noteCardViewGrid.updateNote(oldNotes[meta])
             noteCardViewGrid.msnry.layout();
