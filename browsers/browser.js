@@ -601,6 +601,22 @@ document.getElementById("recent-button").onclick = function () {
     list("recentdb://");
     return false;
 }
+var oldPadding = undefined;
+var oldDisplay = undefined;
+
+document.getElementById("size-button").onclick = function () {
+    if (document.getElementById("header").style.display != "none") {
+        oldPadding = document.getElementById("content-wrapper").style.paddingTop;
+        oldDisplay = document.getElementById("header").style.display;
+        document.getElementById("header").style.display = "none";
+        document.getElementById("content-wrapper").style.paddingTop = "0px";
+    } else {
+        document.getElementById("header").style.display = oldDisplay;
+        document.getElementById("content-wrapper").style.paddingTop = oldPadding;
+    }
+
+}
+
 
 RequestBuilder.sRequestBuilder.get("/recentdb/merge", function (error, data) {
     if (data == true)
