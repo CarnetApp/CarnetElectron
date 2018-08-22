@@ -56,6 +56,10 @@ body {
     margin: 0 auto;
 }
 
+#page-container {
+    background: #fafafa;
+}
+
 #grid-container {
     margin: 0 auto;
     position: absolute;
