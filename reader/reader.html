@@ -48,6 +48,7 @@
 	<script src="<!ROOTPATH>reader/libs/jquery.mousewheel.min.js"></script>
 	<script src="<!ROOTPATH>reader/libs/imgViewer.js"></script>
 
+	<script src="<!ROOTPATH>keywords/keywords_db_manager.js"></script>
 
 	<script src="<!ROOTPATH>reader/reader.js"></script>
 
@@ -129,7 +130,7 @@
 
 		</div>
 		<div class="mdl-dialog__actions">
-			<button type="button" class="mdl-button ok">OK</button>
+			<button type="button" id="button-add-keyword-ok" class="mdl-button ok">OK</button>
 		</div>
 	</dialog>
 
@@ -187,7 +188,7 @@ mdl-layout--fixed-header">
 				</div>
 				<span style="text-align:center; margin:10px;"> Keywords</span>
 
-				<a class="mdl-navigation__link" href="">Add a keyword</a>
+				<a class="mdl-navigation__link" href="" id="button-add-keyword">Add a keyword</a>
 				<span id="keywords-list">
 				</span>
 

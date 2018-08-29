@@ -50,7 +50,7 @@ KeywordsDBManager.prototype.addToDB = function (keyword, path) {
         path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
     console.log("path 2 " + path)
 
-    this.action(keyword, path, "add")
+    this.action(keyword, path, "add", undefined)
 }
 
 KeywordsDBManager.prototype.removeFromDB = function (keyword, path) {
@@ -60,33 +60,22 @@ KeywordsDBManager.prototype.removeFromDB = function (keyword, path) {
 }
 
 KeywordsDBManager.prototype.action = function (keyword, path, action, callback) {
-    var db = this;
+    this.actionArray([{
+        keyword,
+        time: new Date().getTime(),
+        action: action,
+        path: path
+    }], callback)
+}
 
-    lockFile.lock('keyword.lock', {
-        wait: 10000
-    }, function (er) {
-        db.getFullDB(function (err, data) {
-            console.log(data)
-            var fullDB = JSON.parse(data);
-            var item = new function () {
-                this.time = new Date().getTime();
-                this.action = action;
-                this.path = path;
-                this.keyword = keyword;
-            };
+KeywordsDBManager.prototype.actionArray = function (items, callback) {
+    RequestBuilder.sRequestBuilder.post("/keywordsdb/action", {
+        data: items
+    }, function (error, data) {
+        console.log(data)
+        callback();
+    });
 
-            fullDB["data"].push(item);
-            console.log(JSON.stringify(item))
-            require("mkdirp")(getParentFolderFromPath(db.path), function () {
-                fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
-                    console.log(err)
-                    if (callback)
-                        callback()
-                    lockFile.unlock('keyword.lock', function (er) {})
-                });
-            });
-        })
-    })
 }
 
 //returns last time
@@ -141,7 +130,7 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
     });
 }
 
-KeywordsDBManager.prototype.actionArray = function (items, action, callback) {
+/*KeywordsDBManager.prototype.actionArray = function (items, action, callback) {
     var db = this;
     lockFile.lock('keyword.lock', {
         wait: 10000
@@ -173,7 +162,7 @@ KeywordsDBManager.prototype.actionArray = function (items, action, callback) {
 
         })
     });
-}
+}*/
 
 
 // sort on key values

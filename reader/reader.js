@@ -247,7 +247,7 @@ Writer.prototype.extractNote = function () {
             writer.note.metadata = new NoteMetadata();
         else
             writer.note.metadata = data.metadata;
-        //   writer.refreshKeywords()
+        writer.refreshKeywords()
         //writer.refreshMedia()/op
         var ratingStars = document.querySelectorAll("input.star")
         for (var i = 0; i < ratingStars.length; i++) {
@@ -326,12 +326,12 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     if (typeof app == 'object')
         app.hideProgress();
     resetScreenHeight();
-    //this.refreshKeywords();
+    this.refreshKeywords();
     //  $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 
 }
 //var KeywordsDBManager = require(rootpath + "keywords/keywords_db_manager").KeywordsDBManager;
-//var keywordsDBManager = new KeywordsDBManager()
+var keywordsDBManager = new KeywordsDBManager()
 Writer.prototype.refreshKeywords = function () {
     var keywordsContainer = document.getElementById("keywords-list");
     keywordsContainer.innerHTML = "";
@@ -529,6 +529,14 @@ Writer.prototype.init = function () {
         }
     };
 
+    document.getElementById("button-add-keyword").onclick = function () {
+        writer.newKeywordDialog.showModal();
+        return false;
+    }
+    document.getElementById("button-add-keyword-ok").onclick = function () {
+        writer.addKeyword(document.getElementById('keyword-input').value);
+        writer.newKeywordDialog.close();
+    }
     var inToolbarButtons = document.getElementsByClassName("in-toolbar-button");
 
     for (var button of inToolbarButtons) {
