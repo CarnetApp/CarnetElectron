@@ -37,8 +37,7 @@ FileBrowser.prototype.list = function (callback) {
         })
     } else if (this.path.startsWith("keyword://")) {
         console.log("getting keyword")
-        var KeywordsDBManager = require("./keywords/keywords_db_manager").KeywordsDBManager;
-        var keywordsDBManager = new KeywordsDBManager(main.getNotePath() + "/quickdoc/keywords/" + main.getAppUid())
+        var keywordsDBManager = new KeywordsDBManager()
         var filebrowser = this;
         keywordsDBManager.getFlatenDB(function (error, data) {
             var files = [];
@@ -47,7 +46,7 @@ FileBrowser.prototype.list = function (callback) {
                 var filename = filePath;
                 console.log("file " + filePath)
 
-                filePath = mainPath + "/" + filePath
+                filePath = filePath
                 file = new File(filePath, true, filename);
                 files.push(file)
             }

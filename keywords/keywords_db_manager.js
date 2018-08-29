@@ -1,36 +1,16 @@
-var fs = require('fs');
-var lockFile = require('lockfile')
-
-var NoteUtils = require("../note/NoteUtils").NoteUtils
-var {
-    remote
-} = require('electron');
-var main = undefined
-if (remote != undefined)
-    main = remote.require("./main.js");
-var SettingsHelper = require("../settings/settings_helper.js").SettingsHelper;
-var settingsHelper = new SettingsHelper()
-var getParentFolderFromPath = require('path').dirname;
 var KeywordsDBManager = function (path) {
-    if (path == undefined) {
-        path = settingsHelper.getNotePath() + "/quickdoc/keywords/" + main.getAppUid()
-    }
-    this.path = path;
+
 }
 
 KeywordsDBManager.prototype.getFullDB = function (callback) {
     console.log("getFullDB")
-    fs.readFile(this.path, function (err, data) {
-        if (data == undefined || data.length == 0)
-            data = "{\"data\":[]}";
-        callback(err, data);
-    });
+    RequestBuilder.sRequestBuilder.get("/keywordsdb", callback)
 }
 
 KeywordsDBManager.prototype.getFlatenDB = function (callback) {
     this.getFullDB(function (err, data) {
-
-        var fullDB = JSON.parse(data)["data"];
+        console.log(data)
+        var fullDB = data["data"];
         var flaten = {};
         for (let item of fullDB) {
             var keyword = item.keyword

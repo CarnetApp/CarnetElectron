@@ -222,8 +222,7 @@ function onDragEnd(gg) {
 }
 
 function refreshKeywords() {
-    var KeywordsDBManager = require("./keywords/keywords_db_manager").KeywordsDBManager;
-    var keywordsDBManager = new KeywordsDBManager(main.getNotePath() + "/quickdoc/keywords/" + main.getAppUid())
+    var keywordsDBManager = new KeywordsDBManager()
     keywordsDBManager.getFlatenDB(function (error, data) {
         var keywordsContainer = document.getElementById("keywords");
         keywordsContainer.innerHTML = "";
@@ -469,7 +468,7 @@ function list(pathToList, discret) {
 
 }
 list(initPath)
-//refreshKeywords();
+refreshKeywords();
 
 function minimize() {
     remote.BrowserWindow.getFocusedWindow().minimize();
