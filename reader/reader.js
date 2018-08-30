@@ -563,6 +563,9 @@ Writer.prototype.init = function () {
                 case "size-plus":
                     writer.increaseFontSize();
                     break;
+                case "statistics-button":
+                    writer.displayCountDialog();
+                    break;
             }
         }
     }
