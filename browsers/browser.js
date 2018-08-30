@@ -640,6 +640,10 @@ RequestBuilder.sRequestBuilder.get("/recentdb/merge", function (error, data) {
         list("recentdb://");
 })
 
+RequestBuilder.sRequestBuilder.get("/keywordsdb/merge", function (error, data) {
+    if (data == true)
+        refreshKeywords()
+})
 
 
 const isWeb = true;
