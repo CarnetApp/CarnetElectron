@@ -144,7 +144,12 @@ String.prototype.replaceAll = function (search, replacement) {
 
 function openNote(notePath) {
     currentNotePath = notePath
-    window.location.assign("writer?path=" + encodeURIComponent(notePath));
+    writerFrame.src = "writer?path=" + encodeURIComponent(notePath);
+    writerFrame.style.display = "block"
+
+    loadingView.style.display = "block"
+
+    //window.location.assign("writer?path=" + encodeURIComponent(notePath));
 }
 
 
@@ -633,4 +638,76 @@ document.getElementById("size-button").onclick = function () {
 RequestBuilder.sRequestBuilder.get("/recentdb/merge", function (error, data) {
     if (data == true)
         list("recentdb://");
+})
+
+
+
+const isWeb = true;
+const ncFull = true;
+
+const right = document.getElementById("right-bar");
+if (ncFull) {
+    const settings = document.getElementById("settings");
+    settings.parentNode.removeChild(settings)
+    right.appendChild(settings)
+    const header = document.getElementById("header")
+    header.parentNode.removeChild(header)
+    document.getElementById("content-wrapper").style.paddingTop = "0px"
+    const ex = document.getElementById("expanddiv")
+    ex.style.top = "55px";
+    ex.style.position = "absolute";
+}
+if (isWeb) {
+    right.removeChild(document.getElementById("minus-button"))
+    right.removeChild(document.getElementById("close-button"))
+
+}
+
+
+
+
+
+//writer frame
+
+var isElectron = typeof require === "function";
+var writerFrame = undefined;
+events = []
+
+if (isElectron) {
+
+
+} else {
+    writerFrame = document.getElementById("writer-iframe");
+    //iframe events
+
+    var eventMethod = window.addEventListener ?
+        "addEventListener" :
+        "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod === "attachEvent" ?
+        "onmessage" :
+        "message";
+    eventer(messageEvent, function (e) {
+        if (events[e.data] !== undefined) {
+            for (var callback of events[e.data])
+                callback();
+        }
+
+    });
+}
+
+function registerWriterEvent(event, callback) {
+    if (events[event] == null) {
+        events[event] = []
+    }
+    events[event].push(callback)
+}
+
+
+registerWriterEvent("exit", function () {
+    document.getElementById("writer-iframe").style.display = "none";
+})
+
+registerWriterEvent("loaded", function () {
+    loadingView.style.display = "none"
 })

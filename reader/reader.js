@@ -304,12 +304,14 @@ saveTextIfChanged = function () {
     writer.hasTextChanged = false;
 }
 Writer.prototype.fillWriter = function (extractedHTML) {
-
+    console.log("fill")
     if (isElectron) {
         const {
             ipcRenderer
         } = require('electron')
         ipcRenderer.sendToHost('loaded', "")
+    } else if (typeof app !== "function") {
+        parent.postMessage("loaded", "*")
     }
     if (extractedHTML != undefined)
         this.oEditor.innerHTML = extractedHTML;
@@ -618,7 +620,7 @@ Writer.prototype.askToExit = function () {
     if (this.seriesTaskExecutor.isExecuting)
         return false;
     else {
-        window.location.assign("./");
+        parent.postMessage("exit", "*")
     }
     return false;
 }
@@ -882,4 +884,13 @@ if (!loaded) {
     }
 
     loaded = true;
+}
+const ncFull = true;
+if (ncFull) {
+    const header = document.getElementById("header")
+    header.parentNode.removeChild(header)
+    document.getElementById("content-wrapper").style.paddingTop = "0px"
+    const ex = document.getElementById("expanddiv")
+    ex.style.top = "55px";
+    ex.style.position = "absolute";
 }
