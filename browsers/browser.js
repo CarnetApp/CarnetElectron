@@ -710,6 +710,17 @@ function registerWriterEvent(event, callback) {
 
 registerWriterEvent("exit", function () {
     document.getElementById("writer-iframe").style.display = "none";
+    if (wasNewNote)
+        list();
+    else {
+        if (currentTask != undefined) {
+            const index = notePath.indexOf(currentNotePath)
+            currentTask.current = index
+            currentTask.stopAt = index + 1;
+            currentTask.startList()
+        }
+
+    }
 })
 
 registerWriterEvent("loaded", function () {
