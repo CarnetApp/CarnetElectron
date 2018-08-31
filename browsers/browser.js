@@ -636,8 +636,8 @@ document.getElementById("size-button").onclick = function () {
 
 
 RequestBuilder.sRequestBuilder.get("/recentdb/merge", function (error, data) {
-    if (data == true)
-        list("recentdb://");
+    if (data == true && currentPath == "recentdb://")
+        list("recentdb://", true);
 })
 
 RequestBuilder.sRequestBuilder.get("/keywordsdb/merge", function (error, data) {
