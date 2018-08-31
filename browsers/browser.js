@@ -144,7 +144,12 @@ String.prototype.replaceAll = function (search, replacement) {
 
 function openNote(notePath) {
     currentNotePath = notePath
-    writerFrame.src = "writer?path=" + encodeURIComponent(notePath);
+    if (writerFrame.src == "")
+        writerFrame.src = "writer?path=" + encodeURIComponent(notePath);
+    else {
+        console.log("reuse old iframe");
+        writerFrame.contentWindow.loadPath(notePath);
+    }
     writerFrame.style.display = "block"
 
     loadingView.style.display = "block"
