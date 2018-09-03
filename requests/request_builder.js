@@ -39,3 +39,34 @@ RequestBuilder.prototype.post = function (path, data, callback) {
         }
     });
 }
+
+RequestBuilder.prototype.postFiles = function (path, data, files, callback) {
+    var formData = new FormData();
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        // Add the file to the request.
+        formData.append('media[]', file, file.name);
+    }
+    for (var da in data) {
+        formData.append(da, data[da]);
+    }
+    $.ajax({
+        url: this.api_url + path,
+        data: formData,
+        processData: false,
+        contentType: false,
+        type: "POST",
+        success: function (data) {
+            console.log("success")
+            callback(null, data);
+        },
+        fail: function () {
+            console.log("post error");
+            callback("error", undefined);
+        },
+        error: function (e) {
+            console.log("post error " + e);
+            callback(e, undefined);
+        }
+    });
+}

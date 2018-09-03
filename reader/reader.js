@@ -111,52 +111,85 @@ Writer.prototype.nextMedia = function () {
     if (this.currentFullscreen < this.fullscreenableMedia.length - 1)
         this.displayMediaFullscreen(this.currentFullscreen + 1);
 }
-Writer.prototype.refreshMedia = function () {
-    var writer = this;
+
+Writer.prototype.setMediaList = function (list) {
+    writer.currentFullscreen = 0;
+    writer.fullscreenableMedia = []
     writer.mediaList.innerHTML = "";
 
-    fs.readdir(tmppath + 'data/', function (err, dir) {
-        if (err) {
-            return
-        }
-        writer.currentFullscreen = 0;
-        writer.fullscreenableMedia = []
-        var mediaCount = 0;
-        for (var i = 0; i < dir.length; i++) {
-            var filePath = dir[i]
-            console.log("file " + filePath)
-            var el = document.createElement("div")
-            el.classList.add("media")
-            if (FileUtils.isFileImage(filePath)) {
-                if (!filePath.startsWith("preview_")) {
-                    var img = document.createElement("img")
-                    img.src = "data/" + filePath
-                    el.appendChild(img)
-                    writer.fullscreenableMedia.push("data/" + filePath)
-
-                    img.mediaIndex = mediaCount;
-                    el.onclick = function (event) {
-                        console.log(event.target)
-                        writer.displayMediaFullscreen(event.target.mediaIndex)
-
-                    }
-                    mediaCount++;
-                }
-            } else {
+    var mediaCount = 0;
+    for (var i = 0; i < list.length; i++) {
+        var filePath = list[i]
+        console.log("file " + filePath)
+        var el = document.createElement("div")
+        el.classList.add("media")
+        if (FileUtils.isFileImage(filePath)) {
+            if (!filePath.startsWith("preview_")) {
                 var img = document.createElement("img")
-                img.src = rootpath + "/img/file.svg"
+                img.src = filePath
                 el.appendChild(img)
-                el.innerHTML += "<br /> " + filePath
-                el.classList.add("media-file")
+                writer.fullscreenableMedia.push(filePath)
+
+                img.mediaIndex = mediaCount;
+                el.onclick = function (event) {
+                    console.log(event.target)
+                    writer.displayMediaFullscreen(event.target.mediaIndex)
+
+                }
+                mediaCount++;
             }
-            writer.mediaList.appendChild(el)
+        } else {
+            var img = document.createElement("img")
+            img.src = rootpath + "/img/file.svg"
+            el.appendChild(img)
+            el.innerHTML += "<br /> " + filePath
+            el.classList.add("media-file")
         }
+        writer.mediaList.appendChild(el)
+    }
+}
+Writer.prototype.refreshMedia = function () {
+    var writer = this;
+    if (!isElectron) {
+        RequestBuilder.sRequestBuilder.get("/note/open/" + this.saveID + "/listMedia", function (error, data) {
+            if (error) {
+
+            }
+            writer.setMediaList(data);
+
+        })
+
+    } else
+        fs.readdir(tmppath + 'data/', function (err, dir) {
+            if (err) {
+                return
+            }
+            writer.currentFullscreen = 0;
+            writer.fullscreenableMedia = []
+            var mediaCount = 0;
+
+        })
+}
+
+Writer.prototype.sendFiles = function (files) {
+    var writer = this;
+    RequestBuilder.sRequestBuilder.postFiles("/note/open/" + this.saveID + "/addMedia", {
+        path: this.note.path,
+    }, files, function (error, data) {
+        if (error) {
+
+        }
+        writer.setMediaList(data);
+
     })
 }
 
 Writer.prototype.addMedia = function () {
     console.log("add media")
     var writer = this;
+    if (!isElectron) {
+        document.getElementById("input_file").click();
+    }
     FileOpener.selectFile(function (fileNames) {
 
         if (fileNames === undefined) return;
@@ -248,7 +281,7 @@ Writer.prototype.extractNote = function () {
         else
             writer.note.metadata = data.metadata;
         writer.refreshKeywords()
-        //writer.refreshMedia()/op
+        writer.refreshMedia();
         var ratingStars = document.querySelectorAll("input.star")
         for (var i = 0; i < ratingStars.length; i++) {
             ratingStars[i].checked = writer.note.metadata.rating == (5 - i);
@@ -430,7 +463,9 @@ Writer.prototype.init = function () {
 
     }
     var writer = this;
-
+    document.getElementById("input_file").onchange = function () {
+        writer.sendFiles(this.files);
+    }
     window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
         if (errorMsg.indexOf("parentElement") >= 0) //ignore that one
             return;
@@ -611,6 +646,7 @@ Writer.prototype.init = function () {
     document.getElementById("exit").onclick = function () {
         writer.askToExit();
     }
+    document.getElementById("add-media-button").onclick = writer.addMedia;
 
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 }
