@@ -652,20 +652,7 @@ RequestBuilder.sRequestBuilder.get("/keywordsdb/merge", function (error, data) {
 
 
 const isWeb = true;
-const ncFull = true;
-
 const right = document.getElementById("right-bar");
-if (ncFull) {
-    const settings = document.getElementById("settings");
-    settings.parentNode.removeChild(settings)
-    right.appendChild(settings)
-    const header = document.getElementById("header")
-    header.parentNode.removeChild(header)
-    document.getElementById("content-wrapper").style.paddingTop = "0px"
-    const ex = document.getElementById("expanddiv")
-    ex.style.top = "55px";
-    ex.style.position = "absolute";
-}
 if (isWeb) {
     right.removeChild(document.getElementById("minus-button"))
     right.removeChild(document.getElementById("close-button"))
