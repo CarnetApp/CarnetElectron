@@ -656,6 +656,7 @@ const right = document.getElementById("right-bar");
 if (isWeb) {
     right.removeChild(document.getElementById("minus-button"))
     right.removeChild(document.getElementById("close-button"))
+    document.getElementById("settings-button").href = "./settings"
 
 }
 

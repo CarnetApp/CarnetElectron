@@ -1,3 +1,5 @@
+if (right == undefined)
+    var right = document.getElementById("right-bar");
 const settings = document.getElementById("settings");
 settings.parentNode.removeChild(settings)
 right.appendChild(settings)

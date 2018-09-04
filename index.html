@@ -102,7 +102,8 @@
             <nav class="mdl-navigation">
                 <a class="mdl-navigation__link" href="" id="recent-button">Recent</a>
                 <a class="mdl-navigation__link" href="" id="browser-button">Browser</a>
-                <a class="mdl-navigation__link" href="settings/index.html">Settings</a>
+                <!--can be modified in browser.js -->
+                <a class="mdl-navigation__link" href="settings/index.html" id="settings-button">Settings</a>
             </nav>
             <span style="text-align:center; margin:10px;"> Keywords</span>
             <div id="keywords-scrollview">
@@ -117,7 +118,8 @@
 
             </div>
             <div style="z-index:10000;position:absolute; bottom:30px; right:30px ;width:50px;">
-                <button id="add-directory-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button" style="margin-bottom:10px;">
+                <button id="add-directory-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button"
+                    style="margin-bottom:10px;">
                     <img style="width: 30px;" src="img/ic_create_new_folder_black_24px.svg" />
                 </button>
                 <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button">

@@ -1,37 +1,62 @@
-var SettingsHelper = require("./settings_helper").SettingsHelper;
-var settingsHelper = new SettingsHelper();
-var {
-  ipcRenderer,
-  remote,
-  shell
-} = require('electron');
+var currentPath;
 document.getElementById("select_note_path_button").onclick = function () {
-  var dialog = remote.dialog;
-  dialog.showOpenDialog({
-    properties: ['openDirectory']
-  }, function (path) {
-    if (path != undefined) {
-      settingsHelper.setNotePath(path)
+  if (isElectron) {
+    var dialog = remote.dialog;
+    dialog.showOpenDialog({
+      properties: ['openDirectory']
+    }, function (path) {
+      if (path != undefined) {
+        settingsHelper.setNotePath(path)
 
-      document.getElementById("restarting").style.display = "block";
-      setTimeout(function () {
-        remote.app.relaunch();
-        remote.app.exit(0);
-      }, 3000)
-    }
+        document.getElementById("restarting").style.display = "block";
+        setTimeout(function () {
+          remote.app.relaunch();
+          remote.app.exit(0);
+        }, 3000)
+      }
 
-  })
+    })
+  } else {
+    var newPath = window.prompt("Please enter a new path. Be aware that this won't move your notes, so be careful", currentPath);
+    if (newPath != currentPath && newPath !== null && newPath !== "")
+      RequestBuilder.sRequestBuilder.post("/settings/note_path", {
+        path: newPath
+      }, function (error, data) {
+        window.location.href = "./";
+      });
+  }
 }
+new RequestBuilder();
+RequestBuilder.sRequestBuilder.get("/settings/note_path", function (error, data) {
+  if (!error) {
+    document.getElementById("current_root_path").innerHTML = data
+    currentPath = data;
+  }
 
-document.getElementById("current_root_path").innerHTML = settingsHelper.getNotePath()
+})
 
 document.getElementById("cloudsync").onclick = function () {
-  shell.openExternal('https://github.com/PhieF/QuickDocDocumentation/blob/master/CloudSync.md');
+  console.log("pet")
+  const url = 'https://github.com/PhieF/QuickDocDocumentation/blob/master/README.md';
+  if (isElectron) {
+    var {
+      shell
+    } = require('electron');
+    shell.openExternal(url);
+  } else {
+    var win = window.open(url, '_blank');
+    win.focus();
+  }
   return false;
 };
 
-const BrowserWindow = remote.BrowserWindow;
 document.getElementById("import").onclick = function () {
+  var settingsHelper = new SettingsHelper();
+  var {
+    remote
+  } = require('electron');
+  const BrowserWindow = remote.BrowserWindow;
+
   var win = new BrowserWindow({
     width: 600,
     height: 700,
@@ -45,4 +70,9 @@ document.getElementById("import").onclick = function () {
     slashes: true
   }))
   win.setMenu(null)
+}
+const isWeb = true;
+if (isWeb) {
+  document.getElementById("recent-button").href = "./"
+  document.getElementById("browser-button").href = "./"
 }
