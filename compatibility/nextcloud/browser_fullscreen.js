@@ -1,8 +1,7 @@
-if (right == undefined)
-    var right = document.getElementById("right-bar");
+var right2 = document.getElementById("right-bar");
 const settings = document.getElementById("settings");
 settings.parentNode.removeChild(settings)
-right.appendChild(settings)
+right2.appendChild(settings)
 const header = document.getElementById("header")
 header.parentNode.removeChild(header)
 document.getElementById("content-wrapper").style.paddingTop = "0px"
