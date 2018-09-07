@@ -444,13 +444,14 @@ function list(pathToList, discret) {
         $("#add-directory-button").show()
     }
 
-    resetGrid(discret);
-    var noteCardViewGrid = this.noteCardViewGrid
-    var notes = [];
-    notePath = [];
+
 
     var fb = new FileBrowser(pathToList);
     fb.list(function (files) {
+        resetGrid(discret);
+        var noteCardViewGrid = this.noteCardViewGrid
+        var notes = [];
+        notePath = [];
         if (currentTask != undefined)
             currentTask.continue = false
         if (files.length > 0) {
