@@ -369,10 +369,15 @@ class NoteContextualDialog extends ContextualDialog {
         var context = this;
         this.nameInput.value = note.title;
         this.deleteButton.onclick = function () {
-            NoteUtils.deleteNote(note.path, function () {
-                context.dialog.close();
-                list(currentPath, true)
-            })
+            var db = new RecentDBManager()
+            context.dialog.close();
+            db.removeFromDB(note.path, function (error, data) {
+                if (!error)
+                    RequestBuilder.sRequestBuilder.delete("/notes?path=" + encodeURIComponent(note.path), function () {
+                        list(currentPath, true)
+                    })
+            });
+
         }
         this.archiveButton.onclick = function () {
             var db = new RecentDBManager()

@@ -19,6 +19,22 @@ RequestBuilder.prototype.get = function (path, callback) {
         }
     });
 }
+RequestBuilder.prototype.delete = function (path, callback) {
+    $.ajax({
+        url: this.api_url + path,
+        type: "DELETE",
+        success: function (data) {
+            callback(null, data);
+        },
+        fail: function () {
+            callback("error", undefined);
+        },
+        error: function (e) {
+            console.log("post error " + e);
+            callback(e, undefined);
+        }
+    });
+}
 
 RequestBuilder.prototype.post = function (path, data, callback) {
     $.ajax({
