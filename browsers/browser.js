@@ -260,28 +260,13 @@ function refreshKeywords() {
 
 function searchInNotes(searching) {
     resetGrid(false)
-    var settingsHelper = require("./settings/settings_helper").SettingsHelper
-    var SettingsHelper = new settingsHelper();
-    var Search = require("./browsers/search").Search
-    var browser = this;
-    notes = []
-    var callback = function () {
+    notes = [];
 
-    }
-    callback.update = function (note) {
-        console.log("found " + note.path)
-        note = new Note(note.title, note.text.substring(0, 200), note.path, note.metadata)
-        browser.noteCardViewGrid.addNote(note)
-        notes.push(note)
-
-    }
-    callback.onEnd = function (list) {
-        console.log("onEnd " + list.length)
-
-
-    }
-    search = new Search(searching, SettingsHelper.getNotePath(), callback)
-    search.start()
+    RequestBuilder.sRequestBuilder.get("/notes/search?path=." + "&query=" + encodeURIComponent(searching), function (error, data) {
+        if (!error) {
+            list("search://", true);
+        }
+    });
 
 }
 
@@ -447,7 +432,7 @@ function list(pathToList, discret) {
 
 
     var fb = new FileBrowser(pathToList);
-    fb.list(function (files) {
+    fb.list(function (files, endOfSearch) {
         resetGrid(discret);
         var noteCardViewGrid = this.noteCardViewGrid
         var notes = [];
@@ -456,7 +441,7 @@ function list(pathToList, discret) {
             currentTask.continue = false
         if (files.length > 0) {
             $("#emty-view").fadeOut("fast");
-        } else
+        } else if (endOfSearch)
             $("#emty-view").fadeIn("fast");
         for (let file of files) {
             var filename = getFilenameFromPath(file.path);
@@ -481,6 +466,11 @@ function list(pathToList, discret) {
         currentTask = new TextGetterTask(notes);
         console.log("stopping and starting task")
         currentTask.startList();
+        if (!endOfSearch) {
+            setTimeout(function () {
+                list(pathToList, true);
+            }, 1000);
+        }
 
     });
 
@@ -506,6 +496,8 @@ function closeW() {
 
 function toggleSearch() {
     $("#search-container").slideToggle();
+    if ($("#search-container").css("display") != "none")
+        $("#search-input").focus();
 }
 
 
@@ -543,6 +535,7 @@ document.getElementById("add-directory-button").onclick = function () {
 
 document.getElementById("search-input").onkeydown = function (event) {
     if (event.key === 'Enter') {
+        toggleSearch();
         searchInNotes(this.value)
     }
 }
@@ -608,6 +601,9 @@ for (var dia of document.getElementsByClassName("mdl-dialog")) {
     dialogPolyfill.registerDialog(dia);
 }
 
+document.getElementById("search-button").onclick = function () {
+    toggleSearch();
+}
 
 //nav buttons
 document.getElementById("browser-button").onclick = function () {

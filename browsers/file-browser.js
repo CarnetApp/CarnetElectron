@@ -33,7 +33,7 @@ FileBrowser.prototype.list = function (callback) {
                 file = new File(filePath, true, filename);
                 files.push(file)
             }
-            callback(files)
+            callback(files, true)
         })
     } else if (this.path.startsWith("keyword://")) {
         console.log("getting keyword")
@@ -50,10 +50,11 @@ FileBrowser.prototype.list = function (callback) {
                 file = new File(filePath, true, filename);
                 files.push(file)
             }
-            callback(files)
+            callback(files, true)
         })
     } else {
-        RequestBuilder.sRequestBuilder.get("/browser/list?path=" + encodeURIComponent(this.path), function (error, data) {
+        var fbrowser = this;
+        RequestBuilder.sRequestBuilder.get(this.path.startsWith("search://") ? "/notes/getSearchCache" : "/browser/list?path=" + encodeURIComponent(this.path), function (error, data) {
             if (error) {
                 callback(error);
                 return;
@@ -61,7 +62,14 @@ FileBrowser.prototype.list = function (callback) {
             var files = [];
             var dirs_in = [];
             var files_in = [];
+            var endOfSearch = !fbrowser.path.startsWith("search://");
             for (let node of data) {
+                console.log(node);
+                if (node == "end_of_search") {
+                    endOfSearch = true;
+                    continue;
+                }
+
                 if (node.path == "quickdoc")
                     continue;
                 file = new File(node.path, !node.isDir, node.name);
@@ -72,7 +80,7 @@ FileBrowser.prototype.list = function (callback) {
             }
             files = files.concat(dirs_in)
             files = files.concat(files_in)
-            callback(files)
+            callback(files, endOfSearch)
 
         });
 
