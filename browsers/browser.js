@@ -406,10 +406,12 @@ class NoteContextualDialog extends ContextualDialog {
                 });
         }
         this.ok.onclick = function () {
-            NoteUtils.renameNote(note.path, context.nameInput.value + ".sqd", function () {
-                list(currentPath, true)
-            })
-
+            RequestBuilder.sRequestBuilder.post("/notes/move", {
+                from: note.path,
+                to: FileUtils.getParentFolderFromPath(note.path) + "/" + context.nameInput.value + ".sqd"
+            }, function () {
+                list(currentPath, true);
+            });
             context.dialog.close();
         }
         super.show()
