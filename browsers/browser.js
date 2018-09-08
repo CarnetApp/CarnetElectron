@@ -56,6 +56,7 @@ TextGetterTask.prototype.getNext = function () {
         for (var meta in data) {
             oldNotes[meta].metadata = data[meta].metadata != undefined ? data[meta].metadata : new NoteMetadata();
             oldNotes[meta].text = data[meta].shorttext;
+            oldNotes[meta].previews = data[meta].previews;
             noteCardViewGrid.updateNote(oldNotes[meta])
             noteCardViewGrid.msnry.layout();
         }
