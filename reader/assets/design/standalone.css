@@ -267,6 +267,15 @@ label.star:before {
 	content: '★';
 }
 
+#media-loading {
+	display: none;
+	height: 50px;
+	width: 50px;
+	margin-left: 30px;
+	margin-right: 30px;
+	margin-bottom: -25px;
+}
+
 /* Nextcloud */
 
 #text {

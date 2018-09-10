@@ -172,6 +172,7 @@ Writer.prototype.refreshMedia = function () {
 }
 
 Writer.prototype.sendFiles = function (files) {
+    $("#media-loading").fadeIn();
     var writer = this;
     RequestBuilder.sRequestBuilder.postFiles("/note/open/" + this.saveID + "/addMedia", {
         path: this.note.path,
@@ -179,6 +180,7 @@ Writer.prototype.sendFiles = function (files) {
         if (error) {
 
         }
+        $("#media-loading").fadeOut();
         writer.setMediaList(data);
 
     })
