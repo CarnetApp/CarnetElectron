@@ -1,7 +1,7 @@
 function require() {
     return "pet"
 }
-rootpath = "";
+rootpath = document.getElementById("root-url").innerHTML;
 new RequestBuilder();
 var Writer = function (elem) {
     this.elem = elem;
