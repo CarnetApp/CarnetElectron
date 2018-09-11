@@ -61,8 +61,13 @@ Writer.prototype.displayMediaFullscreen = function (index) {
 
     //download
     var a = document.createElement("a")
-    a.href = this.fullscreenableMedia[index];
-    a.download = "" // force download, not view
+    a.href = "#";
+    a.download = "true"; // force download, not view
+    a.target = "_blank";
+    a.onclick = function () {
+        window.open(writer.fullscreenableMedia[index], '_blank');;
+        return false;
+    }
     var downloadButton = document.createElement("button")
 
     downloadButton.classList.add('mdl-button');
