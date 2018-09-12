@@ -397,9 +397,19 @@ class NoteContextualDialog extends ContextualDialog {
                 });
         }
         this.ok.onclick = function () {
+            var path = FileUtils.getParentFolderFromPath(note.path);
+            var hasOrigin = false;
+            for (let part of context.nameInput.value.split("/")) {
+                if (part == ".." && !hasOrigin) {
+                    path = FileUtils.getParentFolderFromPath(path)
+                } else {
+                    hasOrigin = true;
+                    path += "/" + part;
+                }
+            }
             RequestBuilder.sRequestBuilder.post("/notes/move", {
                 from: note.path,
-                to: FileUtils.getParentFolderFromPath(note.path) + "/" + context.nameInput.value + ".sqd"
+                to: path + ".sqd"
             }, function () {
                 list(currentPath, true);
             });
