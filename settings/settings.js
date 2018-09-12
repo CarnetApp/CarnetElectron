@@ -50,6 +50,12 @@ document.getElementById("cloudsync").onclick = function () {
   return false;
 };
 
+document.getElementById("export").onclick = function () {
+  const url = RequestBuilder.sRequestBuilder.buildUrl("/notes/export");
+  var win = window.open(url, '_blank');
+  win.focus();
+}
+
 document.getElementById("import").onclick = function () {
   var settingsHelper = new SettingsHelper();
   var {

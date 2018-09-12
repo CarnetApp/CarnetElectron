@@ -86,3 +86,7 @@ RequestBuilder.prototype.postFiles = function (path, data, files, callback) {
         }
     });
 }
+
+RequestBuilder.prototype.buildUrl = function (path) {
+    return this.api_url + path;
+}
