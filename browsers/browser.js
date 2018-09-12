@@ -335,8 +335,13 @@ class NewFolderDialog extends ContextualDialog {
         var context = this;
 
         this.ok.onclick = function () {
-            var fb = new FileBrowser(currentPath);
-            fb.createFolder(context.nameInput.value, function () {
+            RequestBuilder.sRequestBuilder.post("/browser/newfolder", {
+                path: currentPath + "/" + context.nameInput.value
+            }, function (error) {
+                if (error) {
+
+
+                }
                 list(currentPath, true)
                 context.dialog.close();
             })
