@@ -276,6 +276,11 @@ label.star:before {
 	margin-bottom: -25px;
 }
 
+/* hide chrome scrollbar */
+div#container-button::-webkit-scrollbar {
+	display: none;
+}
+
 /* Nextcloud */
 
 #text {
