@@ -1,11 +1,10 @@
 .demo-card-wide.mdl-card {
-    width: 202px;
     min-height: 0px;
     margin: 5px;
     cursor: pointer;
 }
 
-.mdl-card__supporting-text{
+.mdl-card__supporting-text {
     padding-bottom: 0px !important;
 }
 

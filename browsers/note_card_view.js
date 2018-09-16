@@ -103,11 +103,20 @@ NoteCardViewGrid.prototype.init = function () {
     this.noteCards = [];
     this.lastAdded = 0;
     this.notes = []
+    //calculating card width
+    this.width = 200;
+    if (document.body.clientWidth / 2 - 10 < 200) {
+        if (document.body.clientWidth > 300)
+            this.width = document.body.clientWidth / 2 - 10;
+        else
+            this.width = document.body.clientWidth - 10;
+    }
+    console.log("width " + document.body.clientWidth)
     this.msnry = new Masonry(this.elem, {
         // options
         itemSelector: '.demo-card-wide.mdl-card',
         fitWidth: true,
-        columnWidth: 212,
+        columnWidth: this.width + 10,
         transitionDuration: this.discret ? 0 : "0.6s",
         animationOptions: {
 
@@ -160,6 +169,7 @@ NoteCardViewGrid.prototype.addNext = function (num) {
             var noteElem = document.createElement("div");
             noteElem.classList.add("demo-card-wide")
             noteElem.classList.add("isotope-item")
+            noteElem.style.width = this.width + "px";
             var noteCard = new NoteCardView(noteElem);
             noteCard.setNote(note);
             noteElem.note = note;
@@ -191,6 +201,7 @@ NoteCardViewGrid.prototype.addNext = function (num) {
             var folderElem = document.createElement("div");
             folderElem.classList.add("demo-card-wide")
             folderElem.classList.add("isotope-item")
+            folderElem.style.width = this.width + "px";
 
             $(folderElem).bind('click', {
                 folder: note,
