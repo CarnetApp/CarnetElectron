@@ -140,17 +140,51 @@ body {
     display: inline-block;
 }
 
-.card-rating{
-    margin-right:10px;
-    float:right;
+.card-rating {
+    margin-right: 10px;
+    float: right;
 }
 
-.card-medias{
-    margin-left:-20px;
-    margin-right:-5px;
+.card-medias {
+    margin-left: -20px;
+    margin-right: -5px;
     background: black;
     border-radius: 2px;
 }
-.card-medias img{
-    width:100%;
+
+.card-medias img {
+    width: 100%;
+}
+
+#contextual-dialog .mdl-button {
+    padding: 0 5px;
+}
+
+
+#firstrun {
+    display: none;
+    position: relative;
+    margin: auto;
+    top: 50%;
+    margin-top: -270px;
+    max-width: 500px;
+    max-height: 500px;
+    padding: 10px;
+    height: calc(100% - 20px);
+    width: calc(100% - 20px);
+    background: rgb(63, 81, 181);
+    box-shadow: 0px 0px 10px grey;
+    overflow-y: auto;
+}
+
+
+
+@media (max-width: 600px) {
+    #firstrun {
+        top: 0;
+        margin-top: 0;
+        max-width: 100%;
+        max-height: calc(100% - 20px);
+        overflow-y: auto;
+    }
 }

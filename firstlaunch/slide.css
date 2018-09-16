@@ -1,7 +1,3 @@
-* {
-    box-sizing: border-box
-}
-
 /* Slideshow container */
 
 body {
@@ -29,9 +25,8 @@ body {
 .next {
     cursor: pointer;
     position: absolute;
-    bottom: 0%;
+    bottom: 0;
     width: auto;
-    margin-top: -22px;
     padding: 16px;
     color: white;
     font-weight: bold;

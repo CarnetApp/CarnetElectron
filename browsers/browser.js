@@ -739,3 +739,20 @@ registerWriterEvent("exit", function () {
 registerWriterEvent("loaded", function () {
     loadingView.style.display = "none"
 })
+
+
+setTimeout(function () {
+    RequestBuilder.sRequestBuilder.get("/settings/isfirstrun", function (error, data) {
+        if (!error && data == true) {
+            const elem = document.getElementById("firstrun-container");
+            $(elem).show();
+            $(("#firstrun")).slideToggle();
+            new Slides(elem, function () {
+                $(("#firstrun")).slideToggle(function () {
+                    $(elem).hide();
+                });
+            });
+        }
+
+    })
+}, 2000);
