@@ -107,7 +107,7 @@ NoteCardViewGrid.prototype.init = function () {
     this.width = 200;
     if (document.body.clientWidth / 2 - 10 < 200) {
         if (document.body.clientWidth > 300)
-            this.width = document.body.clientWidth / 2 - 10;
+            this.width = document.body.clientWidth / 2 - 13;
         else
             this.width = document.body.clientWidth - 10;
     }
