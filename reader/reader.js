@@ -578,6 +578,7 @@ Writer.prototype.init = function () {
     };
 
     document.getElementById("button-add-keyword").onclick = function () {
+        writer.toggleDrawer();
         writer.newKeywordDialog.showModal();
         return false;
     }
@@ -655,6 +656,7 @@ Writer.prototype.init = function () {
         } catch (e) {}
     })
     document.getElementById("exit").onclick = function () {
+        writer.toggleDrawer();
         writer.askToExit();
     }
     document.getElementById("add-media-button").onclick = writer.addMedia;
@@ -666,6 +668,11 @@ Writer.prototype.init = function () {
 
 
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
+}
+
+Writer.prototype.toggleDrawer = function () {
+    if (document.getElementsByClassName("is-small-screen").length > 0)
+        document.getElementsByClassName("mdl-layout__drawer-button")[0].click()
 }
 
 Writer.prototype.askToExit = function () {

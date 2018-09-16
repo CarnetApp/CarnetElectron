@@ -623,12 +623,19 @@ document.getElementById("search-button").onclick = function () {
 
 //nav buttons
 document.getElementById("browser-button").onclick = function () {
+    toggleDrawer();
     list("/");
     return false;
 }
 document.getElementById("recent-button").onclick = function () {
+    toggleDrawer();
     list("recentdb://");
     return false;
+}
+
+function toggleDrawer() {
+    if (document.getElementsByClassName("is-small-screen").length > 0)
+        document.getElementsByClassName("mdl-layout__drawer-button")[0].click()
 }
 
 function isFullScreen() {
