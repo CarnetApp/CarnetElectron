@@ -2,7 +2,9 @@ function require() {
     return "pet"
 }
 rootpath = document.getElementById("root-url").innerHTML;
-new RequestBuilder();
+api_url = document.getElementById("api-url").innerHTML;
+
+new RequestBuilder(api_url);
 var Writer = function (elem) {
     this.elem = elem;
     this.seriesTaskExecutor = new SeriesTaskExecutor();
@@ -124,7 +126,7 @@ Writer.prototype.setMediaList = function (list) {
 
     var mediaCount = 0;
     for (var i = 0; i < list.length; i++) {
-        var filePath = list[i]
+        var filePath = api_url + list[i]
         console.log("file " + filePath)
         var el = document.createElement("div")
         el.classList.add("media")
