@@ -44,19 +44,19 @@ KeywordsDBManager.prototype.getFlatenDB = function (callback) {
     });
 }
 
-KeywordsDBManager.prototype.addToDB = function (keyword, path) {
+KeywordsDBManager.prototype.addToDB = function (keyword, path, callback) {
     console.log("path 1 " + path)
     if (path.startsWith("/"))
         path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
     console.log("path 2 " + path)
 
-    this.action(keyword, path, "add", undefined)
+    this.action(keyword, path, "add", callback)
 }
 
-KeywordsDBManager.prototype.removeFromDB = function (keyword, path) {
+KeywordsDBManager.prototype.removeFromDB = function (keyword, path, callback) {
     if (path.startsWith("/"))
         path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
-    this.action(keyword, path, "remove")
+    this.action(keyword, path, "remove", callback)
 }
 
 KeywordsDBManager.prototype.action = function (keyword, path, action, callback) {
