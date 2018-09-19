@@ -952,3 +952,5 @@ if (!loaded) {
 
     loaded = true;
 }
+
+initDragAreas();
