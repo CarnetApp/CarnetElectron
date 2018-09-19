@@ -145,15 +145,23 @@ String.prototype.replaceAll = function (search, replacement) {
 
 function openNote(notePath) {
     currentNotePath = notePath
-    if (writerFrame.src == "")
-        writerFrame.src = root_url + "../writer.php?path=" + encodeURIComponent(notePath);
+    if (writerFrame.src == ""){
+        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1){//open in new tab for firefox android
+            window.open(root_url + "../writer.php?path=" + encodeURIComponent(notePath), "_blank");
+        }
+        else{
+            writerFrame.src = root_url + "../writer.php?path=" + encodeURIComponent(notePath);
+            writerFrame.style.display = "block"
+            loadingView.style.display = "block"
+        }
+    }
     else {
         console.log("reuse old iframe");
         writerFrame.contentWindow.loadPath(notePath);
+        writerFrame.style.display = "block"
+        loadingView.style.display = "block"
     }
-    writerFrame.style.display = "block"
-
-    loadingView.style.display = "block"
+    
 
     //window.location.assign("writer?path=" + encodeURIComponent(notePath));
 }
