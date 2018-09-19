@@ -8,6 +8,8 @@ function initDragAreas() {
     var elem_width = 0;
 
     function _drag_init(elem, event) {
+        if (document.getElementsByClassName("is-small-screen").length <= 0)
+            return;
         selected = elem;
         original_event = event;
         var boundingRectangle = selected.getBoundingClientRect();
