@@ -259,6 +259,7 @@ function refreshKeywords() {
             keywordElem.innerHTML = key;
             keywordElem.setAttribute("href", "");
             keywordElem.onclick = function () {
+                toggleDrawer();
                 list("keyword://" + key, false);
                 return false;
             }

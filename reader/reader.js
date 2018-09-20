@@ -664,6 +664,7 @@ Writer.prototype.init = function () {
     document.getElementById("add-media-button").onclick = writer.addMedia;
 
     document.getElementById("rename-button").onclick = document.getElementById("export-button").onclick = function () {
+        writer.toggleDrawer();
         writer.warnNotYetImplemented()
         return false;
     }
