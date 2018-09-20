@@ -99,6 +99,7 @@ function initDragAreas() {
     insideDragArea.style.height = "100%";
     insideDragArea.style.width = "100%";
     insideDragArea.style.left = "0";
+    insideDragArea.style.display = "none";
     drawer.appendChild(insideDragArea);
 }
 
