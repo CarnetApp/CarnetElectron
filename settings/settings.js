@@ -56,6 +56,16 @@ document.getElementById("export").onclick = function () {
   win.focus();
 }
 
+document.getElementById("liberapay").onclick = function () {
+  var win = window.open("https://liberapay.com/~34946", '_blank');
+  win.focus();
+}
+
+document.getElementById("paypal").onclick = function () {
+  var win = window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YMHT55NSCLER6", '_blank');
+  win.focus();
+}
+
 document.getElementById("import").onclick = function () {
   var settingsHelper = new SettingsHelper();
   var {
