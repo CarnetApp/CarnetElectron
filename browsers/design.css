@@ -4,8 +4,10 @@
     cursor: pointer;
 }
 
+
 .mdl-card__supporting-text {
     padding-bottom: 0px !important;
+    box-sizing: content-box !important;
 }
 
 .note-card-view :hover,
@@ -14,7 +16,9 @@
     -webkit-transition: background-color 250ms linear;
     -ms-transition: background-color 250ms linear;
     transition: background-color 250ms linear;
+    cursor: pointer;
 }
+
 
 .demo-card-wide>.mdl-card__title {
     color: black;
