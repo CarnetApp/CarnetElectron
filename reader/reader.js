@@ -1,10 +1,9 @@
 function require() {
     return "pet"
 }
-rootpath = document.getElementById("root-url").innerHTML;
-api_url = document.getElementById("api-url").innerHTML;
+var rootpath = undefined;
+var api_url = undefined;
 
-new RequestBuilder(api_url);
 var Writer = function (elem) {
     this.elem = elem;
     this.seriesTaskExecutor = new SeriesTaskExecutor();
@@ -330,7 +329,7 @@ Writer.prototype.extractNote = function () {
             if (err) {
                 throw err;
             }
-            
+
             content = data;
             console.log(data)
             this.note.metadata = JSON.parse(content)
@@ -742,11 +741,11 @@ Writer.prototype.addKeyword = function (word) {
     const writer = this;
     if (this.note.metadata.keywords.indexOf(word) < 0 && word.length > 0) {
         this.note.metadata.keywords.push(word);
-        keywordsDBManager.addToDB(word, this.note.path, function(){
+        keywordsDBManager.addToDB(word, this.note.path, function () {
             writer.refreshKeywords();
         })
         this.seriesTaskExecutor.addTask(this.saveNoteTask)
-        
+
     }
 }
 
@@ -754,7 +753,7 @@ Writer.prototype.removeKeyword = function (word) {
     const writer = this;
     if (this.note.metadata.keywords.indexOf(word) >= 0) {
         this.note.metadata.keywords.splice(this.note.metadata.keywords.indexOf(word), 1);
-        keywordsDBManager.removeFromDB(word, this.note.path, function(){
+        keywordsDBManager.removeFromDB(word, this.note.path, function () {
             writer.refreshKeywords();
         })
         this.seriesTaskExecutor.addTask(this.saveNoteTask)
@@ -907,14 +906,10 @@ function resetScreenHeight() {
     console.log(content - 45)
 }
 
-var writer = undefined;
-if (writer == undefined) {
-    writer = new Writer(document);
-    writer.init();
-}
 
 function loadPath(path) {
-
+    if (writer == undefined)
+        return;
     writer.reset();
     var note = new Note("", "", path, undefined);
     writer.setNote(note);
@@ -923,35 +918,46 @@ function loadPath(path) {
 }
 if (loaded == undefined)
     var loaded = false; //don't know why, loaded twice on android
-if (!loaded) {
-    console.log("loading html ");
 
-    function getParameterByName(name, url) {
-        if (!url) {
-            url = window.location.href;
+var writer = undefined;
+
+
+
+$(document).ready(function () {
+    rootpath = document.getElementById("root-url").innerHTML;
+    api_url = document.getElementById("api-url").innerHTML;
+
+    new RequestBuilder(api_url);
+    if (writer == undefined) {
+        writer = new Writer(document);
+        writer.init();
+    }
+    initDragAreas();
+
+    if (!loaded) {
+        function getParameterByName(name, url) {
+            if (!url) {
+                url = window.location.href;
+            }
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " ").replace(/%2F/g, "/"));
         }
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-            results = regex.exec(url);
-        if (!results) return null;
-        if (!results[2]) return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " ").replace(/%2F/g, "/"));
+        $(window).on('resize', resetScreenHeight);
+
+        var path = getParameterByName("path");
+        var tmp = getParameterByName("tmppath");
+        if (tmp != null)
+            tmppath = tmp;
+        if (path != undefined) {
+            console.log("path " + getParameterByName("path"))
+            loadPath(path)
+
+        }
+
+        loaded = true;
     }
-
-    $(window).on('resize', resetScreenHeight);
-
-
-    var path = getParameterByName("path");
-    var tmp = getParameterByName("tmppath");
-    if (tmp != null)
-        tmppath = tmp;
-    if (path != undefined) {
-        console.log("path " + getParameterByName("path"))
-        loadPath(path)
-
-    }
-
-    loaded = true;
-}
-
-initDragAreas();
+});
