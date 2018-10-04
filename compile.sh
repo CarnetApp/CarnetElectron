@@ -6,7 +6,7 @@ fi
 
 if [ "$1" == "android" ]; then
     echo "compiling for android"
-    mkdir ../build/
+    mkdir build/
     
     cp reader build/ -R
     mkdir build/compatibility
