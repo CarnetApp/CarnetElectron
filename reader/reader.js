@@ -703,7 +703,7 @@ Writer.prototype.askToExit = function () {
 Writer.prototype.exit = function () {
     if(window.self !== window.top) //in iframe
         parent.postMessage("exit", "*")
-    else if(typeof app === "function") app.postMessage("exit", "*");
+    else if(typeof app === "object") app.postMessage("exit", "*");
 }
 
 Writer.prototype.copy = function () {
@@ -713,7 +713,7 @@ Writer.prototype.copy = function () {
 
 Writer.prototype.paste = function () {
     if(!document.execCommand('paste')){
-        if(typeof app === "function")
+        if(typeof app === "object")
             app.paste(); //for android app
         else
             document.execCommand('insertHTML', false, this.copied)
