@@ -1,9 +1,12 @@
 var RequestBuilder = function (api_url = "./") {
+    if (!api_url.endsWith("/"))
+        api_url += "/";
     this.api_url = api_url;
     RequestBuilder.sRequestBuilder = this;
 }
 
 RequestBuilder.prototype.get = function (path, callback) {
+    path = this.cleanPath(path);
     $.ajax({
         url: this.api_url + path,
         type: "GET",
@@ -20,6 +23,7 @@ RequestBuilder.prototype.get = function (path, callback) {
     });
 }
 RequestBuilder.prototype.delete = function (path, callback) {
+    path = this.cleanPath(path);
     $.ajax({
         url: this.api_url + path,
         type: "DELETE",
@@ -37,6 +41,7 @@ RequestBuilder.prototype.delete = function (path, callback) {
 }
 
 RequestBuilder.prototype.post = function (path, data, callback) {
+    path = this.cleanPath(path);
     $.ajax({
         url: this.api_url + path,
         data: data,
@@ -57,6 +62,7 @@ RequestBuilder.prototype.post = function (path, data, callback) {
 }
 
 RequestBuilder.prototype.postFiles = function (path, data, files, callback) {
+    path = this.cleanPath(path);
     var formData = new FormData();
     for (var i = 0; i < files.length; i++) {
         var file = files[i];
@@ -89,4 +95,10 @@ RequestBuilder.prototype.postFiles = function (path, data, files, callback) {
 
 RequestBuilder.prototype.buildUrl = function (path) {
     return this.api_url + path;
+}
+
+RequestBuilder.prototype.cleanPath = function (path) {
+    if (path.startsWith("/"))
+        path = path.substr(1);
+    return path;
 }

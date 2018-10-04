@@ -338,7 +338,7 @@ Writer.prototype.extractNote = function () {
     /* })*/
 }
 
-saveTextIfChanged = function () {
+var saveTextIfChanged = function () {
     console.log("has text changed ? " + writer.hasTextChanged)
     if (writer.hasTextChanged)
         writer.seriesTaskExecutor.addTask(writer.saveNoteTask)
@@ -431,7 +431,6 @@ Writer.prototype.setPickerColor = function (picker) {
     currentColor = "#" + picker.toString();
 }
 Writer.prototype.displayColorPicker = function (callback) {
-    currentColorCallback = callback;
     var call = function () {
         writer.colorPickerDialog.querySelector('.ok').removeEventListener('click', call)
         writer.colorPickerDialog.close();
@@ -593,45 +592,47 @@ Writer.prototype.init = function () {
     }
     var inToolbarButtons = document.getElementsByClassName("in-toolbar-button");
 
-    for (var button of inToolbarButtons) {
-        button.onclick = function (ev) {
-            console.log("on click " + this.id);
-            switch (this.id) {
-                case "bold":
-                case "italic":
-                case "underline":
-                case "justifyleft":
-                case "justifycenter":
-                case "justifyright":
-                    writer.formatDoc(this.id);
-                    break;
-                case "text-color":
-                    writer.displayTextColorPicker();
-                    break;
-                case "fill-color":
-                    writer.displayFillColorPicker();
-                    break;
-                case "size-minus":
-                    writer.decreaseFontSize();
-                    break;
-                case "size-plus":
-                    writer.increaseFontSize();
-                    break;
-                case "statistics-button":
-                    writer.displayCountDialog();
-                    break;
-                case "copy-button":
-                    writer.copy();
-                    break;
-                case "paste-button":
-                    writer.paste();
-                    break;
-                case "select-all-button":
-                    document.execCommand("selectAll");
-                    break;
+     for (var i = 0; i < inToolbarButtons.length; i++) {
+                var button = inToolbarButtons[i];
+
+                button.onclick = function (ev) {
+                    console.log("on click " + this.id);
+                    switch (this.id) {
+                        case "bold":
+                        case "italic":
+                        case "underline":
+                        case "justifyleft":
+                        case "justifycenter":
+                        case "justifyright":
+                            writer.formatDoc(this.id);
+                            break;
+                        case "text-color":
+                            writer.displayTextColorPicker();
+                            break;
+                        case "fill-color":
+                            writer.displayFillColorPicker();
+                            break;
+                        case "size-minus":
+                            writer.decreaseFontSize();
+                            break;
+                        case "size-plus":
+                            writer.increaseFontSize();
+                            break;
+                        case "statistics-button":
+                            writer.displayCountDialog();
+                            break;
+                        case "copy-button":
+                            writer.copy();
+                            break;
+                        case "paste-button":
+                            writer.paste();
+                            break;
+                        case "select-all-button":
+                            document.execCommand("selectAll");
+                            break;
+                    }
+                };
             }
-        }
-    }
 
     this.keywordsList = document.getElementById("keywords")
 
@@ -880,12 +881,12 @@ ToolbarManager.prototype.toggleToolbar = function (elem) {
     for (var i = 0; i < this.toolbars.length; i++) {
         var toolbar = this.toolbars[i]
         if (toolbar != elem)
-            $(toolbar).slideUp(always = resetScreenHeight)
+            $(toolbar).slideUp("fast", resetScreenHeight)
     }
     if ($(elem).is(":visible"))
-        $(elem).slideUp(always = resetScreenHeight)
+        $(elem).slideUp("fast", resetScreenHeight)
     else
-        $(elem).slideDown(always = resetScreenHeight)
+        $(elem).slideDown("fast", resetScreenHeight)
 
     resetScreenHeight()
 }
@@ -970,7 +971,7 @@ function resetScreenHeight() {
     var screen = $(window).innerHeight(),
         header = $("#header-carnet").height() + $("#toolbars").height(),
         content = screen - header;
-    style = window.getComputedStyle(document.getElementById("header-carnet"));
+    var style = window.getComputedStyle(document.getElementById("header-carnet"));
     if (style.getPropertyValue('display') == "none")
         content = screen;
     $("#center").height(content);

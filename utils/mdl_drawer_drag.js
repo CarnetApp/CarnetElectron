@@ -2,11 +2,12 @@ function initDragAreas() {
 
     var selected = null, // Object of the element to be moved
         x_pos = 0, y_pos = 0, // Stores x & y coordinates of the mouse pointer
-        x_elem = 0, y_elem = 0; // Stores top, left values (edge) of the element
+        x_elem = 0, y_elem = 0, x_init = 0; // Stores top, left values (edge) of the element
 
     var elem_height = 0;
     var elem_width = 0;
-
+    var original_event = undefined;
+    var init_translation = undefined;
     function _drag_init(elem, event) {
         if (document.getElementsByClassName("is-small-screen").length <= 0)
             return;
