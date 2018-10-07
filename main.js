@@ -222,7 +222,10 @@ exports.getPath = function (path) {
     return app.getPath(path)
 }
 
+exports.sendRequestToServer = function (method, path, data, callback) {
+    server.handle(method, path, data, callback);
+}
+
 exports.createWindow = createWindow;
 
 var server = require("./server/server");
-server.startListening();

@@ -156,25 +156,13 @@ Writer.prototype.setMediaList = function (list) {
 }
 Writer.prototype.refreshMedia = function () {
     var writer = this;
-    if (!isElectron) {
-        RequestBuilder.sRequestBuilder.get("/note/open/" + this.saveID + "/listMedia", function (error, data) {
-            if (error) {
+    RequestBuilder.sRequestBuilder.get("/note/open/" + this.saveID + "/listMedia", function (error, data) {
+        if (error) {
 
-            }
-            writer.setMediaList(data);
+        }
+        writer.setMediaList(data);
 
-        })
-
-    } else
-        fs.readdir(tmppath + 'data/', function (err, dir) {
-            if (err) {
-                return
-            }
-            writer.currentFullscreen = 0;
-            writer.fullscreenableMedia = []
-            var mediaCount = 0;
-
-        })
+    })
 }
 
 Writer.prototype.sendFiles = function (files) {
@@ -194,74 +182,7 @@ Writer.prototype.sendFiles = function (files) {
 
 Writer.prototype.addMedia = function () {
     console.log("add media")
-    var writer = this;
-    if (!isElectron) {
-        document.getElementById("input_file").click();
-    } else
-        FileOpener.selectFile(function (fileNames) {
-
-            if (fileNames === undefined) return;
-
-            var filePath = fileNames[0];
-            console.log("file " + filePath)
-            fs.readFile(filePath, 'base64', function read(err, data) {
-                if (err) {
-                    throw err;
-                }
-                //filename
-                console.log("read file ok !")
-                require('mkdirp').sync(tmppath + 'data/');
-                var name = FileUtils.getFilename(filePath)
-                fs.writeFile(tmppath + 'data/' + name, data, 'base64', function (err) {
-                    if (!err) {
-                        console.log("write ok !")
-
-                        if (FileUtils.isFileImage(filePath)) {
-                            console.log("creating thumb")
-
-                            var img = document.createElement("img");
-                            img.src = 'data:' + FileUtils.geMimetypeFromExtension(FileUtils.getExtensionFromPath(filePath)) + ';base64,' + data
-                            img.onload = function () {
-                                var canvas = document.createElement('canvas');
-                                var MAX_WIDTH = 200;
-                                var MAX_HEIGHT = 200;
-                                var width = img.width;
-                                var height = img.height;
-
-                                if (width > height) {
-                                    if (width > MAX_WIDTH) {
-                                        height *= MAX_WIDTH / width;
-                                        width = MAX_WIDTH;
-                                    }
-                                } else {
-                                    if (height > MAX_HEIGHT) {
-                                        width *= MAX_HEIGHT / height;
-                                        height = MAX_HEIGHT;
-                                    }
-                                }
-                                canvas.width = width;
-                                canvas.height = height;
-                                var ctx = canvas.getContext("2d");
-                                ctx.drawImage(img, 0, 0, width, height);
-                                console.log("data width " + width)
-
-                                var dataurl = canvas.toDataURL("image/jpeg");
-                                console.log("data url" + dataurl)
-                                fs.writeFile(tmppath + 'data/' + 'preview_' + name, dataurl.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
-                                    writer.seriesTaskExecutor.addTask(writer.saveNoteTask)
-                                    writer.refreshMedia();
-                                })
-                            }
-
-                        }
-                    }
-                })
-
-            })
-
-
-        })
-
+    document.getElementById("input_file").click();
 }
 
 Writer.prototype.setDoNotEdit = function (b) {
@@ -346,17 +267,9 @@ var saveTextIfChanged = function () {
 }
 Writer.prototype.fillWriter = function (extractedHTML) {
     console.log("fill")
-    if (isElectron) {
-        const {
-            ipcRenderer
-        } = require('electron')
-        ipcRenderer.sendToHost('loaded', "")
-    } else if (typeof app !== "function") {
-        parent.postMessage("loaded", "*")
-    }
     if (extractedHTML != undefined)
         this.oEditor.innerHTML = extractedHTML;
-    this.oEditor.onscroll = function(){
+    this.oEditor.onscroll = function () {
         lastscroll = $(writer.oEditor).scrollTop()
         console.log("onscroll")
     }
@@ -370,11 +283,10 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     this.sDefTxt = this.oDoc.innerHTML;
     /*simple initialization*/
     this.oDoc.focus();
-    if (typeof app == 'object')
-        app.hideProgress();
     resetScreenHeight();
     this.refreshKeywords();
     //  $("#editor").webkitimageresize().webkittableresize().webkittdresize();
+    compatibility.onNoteLoaded();
 
 }
 //var KeywordsDBManager = require(rootpath + "keywords/keywords_db_manager").KeywordsDBManager;
@@ -464,25 +376,13 @@ Writer.prototype.displaySnack = function (data) {
         snackbarContainer.MaterialSnackbar.showSnackbar(data);
 }
 Writer.prototype.init = function () {
-    if (isElectron) {
-        /* var ipcRenderer = require('electron').ipcRenderer;
-          var remote = require('electron').remote;
-          var main = remote.require("./main.js");
-          var win = remote.getCurrentWindow();
-          win.show();
-          main.hideMainWindow();*/
-
-    }
     var writer = this;
-    document.getElementById("input_file").onchange = function () {
-        writer.sendFiles(this.files);
-    }
     window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
         if (errorMsg.indexOf("parentElement") >= 0) //ignore that one
             return;
         if ([
-                "TypeError: firstHeader is null"
-            ].includes(errorMsg))
+            "TypeError: firstHeader is null"
+        ].includes(errorMsg))
             return;
         var data = {
             message: "Error occured: " + errorMsg,
@@ -494,6 +394,9 @@ Writer.prototype.init = function () {
     }
 
     document.execCommand('styleWithCSS', false, true);
+    document.getElementById("input_file").onchange = function () {
+        writer.sendFiles(this.files);
+    }
     this.statsDialog = this.elem.querySelector('#statsdialog');
     this.showDialogButton = this.elem.querySelector('#show-dialog');
     if (!this.statsDialog.showModal) {
@@ -592,47 +495,47 @@ Writer.prototype.init = function () {
     }
     var inToolbarButtons = document.getElementsByClassName("in-toolbar-button");
 
-     for (var i = 0; i < inToolbarButtons.length; i++) {
-                var button = inToolbarButtons[i];
+    for (var i = 0; i < inToolbarButtons.length; i++) {
+        var button = inToolbarButtons[i];
 
-                button.onclick = function (ev) {
-                    console.log("on click " + this.id);
-                    switch (this.id) {
-                        case "bold":
-                        case "italic":
-                        case "underline":
-                        case "justifyleft":
-                        case "justifycenter":
-                        case "justifyright":
-                            writer.formatDoc(this.id);
-                            break;
-                        case "text-color":
-                            writer.displayTextColorPicker();
-                            break;
-                        case "fill-color":
-                            writer.displayFillColorPicker();
-                            break;
-                        case "size-minus":
-                            writer.decreaseFontSize();
-                            break;
-                        case "size-plus":
-                            writer.increaseFontSize();
-                            break;
-                        case "statistics-button":
-                            writer.displayCountDialog();
-                            break;
-                        case "copy-button":
-                            writer.copy();
-                            break;
-                        case "paste-button":
-                            writer.paste();
-                            break;
-                        case "select-all-button":
-                            document.execCommand("selectAll");
-                            break;
-                    }
-                };
+        button.onclick = function (ev) {
+            console.log("on click " + this.id);
+            switch (this.id) {
+                case "bold":
+                case "italic":
+                case "underline":
+                case "justifyleft":
+                case "justifycenter":
+                case "justifyright":
+                    writer.formatDoc(this.id);
+                    break;
+                case "text-color":
+                    writer.displayTextColorPicker();
+                    break;
+                case "fill-color":
+                    writer.displayFillColorPicker();
+                    break;
+                case "size-minus":
+                    writer.decreaseFontSize();
+                    break;
+                case "size-plus":
+                    writer.increaseFontSize();
+                    break;
+                case "statistics-button":
+                    writer.displayCountDialog();
+                    break;
+                case "copy-button":
+                    writer.copy();
+                    break;
+                case "paste-button":
+                    writer.paste();
+                    break;
+                case "select-all-button":
+                    document.execCommand("selectAll");
+                    break;
             }
+        };
+    }
 
     this.keywordsList = document.getElementById("keywords")
 
@@ -668,7 +571,7 @@ Writer.prototype.init = function () {
 
         try {
             new MaterialDataTable(writer.keywordsList)
-        } catch (e) {}
+        } catch (e) { }
     })
     document.getElementById("exit").onclick = function () {
         writer.toggleDrawer();
@@ -696,15 +599,9 @@ Writer.prototype.askToExit = function () {
     if (this.seriesTaskExecutor.isExecuting)
         return false;
     else {
-        this.exit();
+        compatibility.exit();
     }
     return false;
-}
-
-Writer.prototype.exit = function () {
-    if(window.self !== window.top) //in iframe
-        parent.postMessage("exit", "*")
-    else if(typeof app === "object") app.postMessage("exit", "*");
 }
 
 Writer.prototype.copy = function () {
@@ -713,8 +610,8 @@ Writer.prototype.copy = function () {
 }
 
 Writer.prototype.paste = function () {
-    if(!document.execCommand('paste')){
-        if(typeof app === "object")
+    if (!document.execCommand('paste')) {
+        if (typeof app === "object")
             app.paste(); //for android app
         else
             document.execCommand('insertHTML', false, this.copied)
@@ -852,15 +749,15 @@ Writer.prototype.getCaretPosition = function () {
     var x = 0;
     var y = 0;
     var sel = window.getSelection();
-    if(sel.rangeCount) {
+    if (sel.rangeCount) {
         var range = sel.getRangeAt(0).cloneRange();
-        if(range.getClientRects()) {
-        range.collapse(true);
-        var rect = range.getClientRects()[0];
-        if(rect) {
-            y = rect.top;
-            x = rect.left;
-        }
+        if (range.getClientRects()) {
+            range.collapse(true);
+            var rect = range.getClientRects()[0];
+            if (rect) {
+                y = rect.top;
+                x = rect.left;
+            }
         }
     }
     return {
@@ -930,7 +827,7 @@ var SaveNoteTask = function (writer) {
 }
 SaveNoteTask.prototype.trySave = function (onEnd, trial) {
     const task = this;
-    if(this.writer.note.metadata.creation_date === "")
+    if (this.writer.note.metadata.creation_date === "")
         this.writer.note.metadata.creation_date = Date.now();
 
     this.writer.note.metadata.last_modification_date = Date.now();
@@ -977,11 +874,11 @@ function resetScreenHeight() {
     $("#center").height(content);
     $("#editor").height(content - 45);
     $("#editor").scrollTop(lastscroll);
-    if(writer != undefined) {
+    if (writer != undefined) {
         var diff = content - 45 - writer.getCaretPosition().y + header
         console.log(diff)
-        if(diff < 0)
-            $("#editor").scrollTop(lastscroll - diff);       
+        if (diff < 0)
+            $("#editor").scrollTop(lastscroll - diff);
     }
     console.log(content - 45)
 }
@@ -1041,9 +938,9 @@ $(document).ready(function () {
         loaded = true;
     }
     window.oldOncontextmenu = window.oncontextmenu;
-    window.oncontextmenu = function(event) {
+    window.oncontextmenu = function (event) {
         event.preventDefault();
         event.stopPropagation();
         return false;
-   };
+    };
 });

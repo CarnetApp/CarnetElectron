@@ -211,4 +211,3 @@ RecentDBManager.prototype.mergeDB = function (path, callback) {
     });
 
 }
-exports.RecentDBManager = RecentDBManager;

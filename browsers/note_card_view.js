@@ -112,6 +112,7 @@ NoteCardViewGrid.prototype.init = function () {
             this.width = document.body.clientWidth - 10;
     }
     console.log("width " + document.body.clientWidth)
+    var Masonry = compatibility.getMasonry();
     this.msnry = new Masonry(this.elem, {
         // options
         itemSelector: '.demo-card-wide.mdl-card',

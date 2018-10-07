@@ -1,22 +1,19 @@
 var fs = require('fs');
 var getParentFolderFromPath = require('path').dirname;
 var lockFile = require('lockfile')
-var RecentDBManager = require('../../recent/recent_db_manager').RecentDBManager;
 var LocalRecentDBManager = function (path) {
     this.path = path;
     console.log("RecentDBManager with " + path)
 
 }
 
-LocalRecentDBManager.prototype = RecentDBManager.prototype
-
 
 LocalRecentDBManager.prototype.getFullDB = function (callback) {
     console.log("getFullDB")
-    fs.readFile(this.path, function (err, data) {
+    fs.readFile(this.path, "utf8", function (err, data) {
         if (data == undefined || data.length == 0)
             data = "{\"data\":[]}";
-        callback(err, data);
+        callback(err, JSON.parse(data));
     });
 }
 
