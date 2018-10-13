@@ -145,12 +145,12 @@ String.prototype.replaceAll = function (search, replacement) {
 
 function openNote(notePath) {
     currentNotePath = notePath
-    if (writerFrame.src == ""){
-        if(navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1){//open in new tab for firefox android
-            window.open(root_url + "../writer.php?path=" + encodeURIComponent(notePath), "_blank");
+    if (writerFrame.src == "") {
+        if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1) {//open in new tab for firefox android
+            window.open("writer?path=" + encodeURIComponent(notePath), "_blank");
         }
-        else{
-            writerFrame.src = root_url + "../writer.php?path=" + encodeURIComponent(notePath);
+        else {
+            writerFrame.src = "writer?path=" + encodeURIComponent(notePath);
             writerFrame.style.display = "block"
             loadingView.style.display = "block"
         }
