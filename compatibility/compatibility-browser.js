@@ -1,6 +1,16 @@
 class BrowserCompatibility extends Compatibility {
     constructor() {
         super();
+        var compatibility = this;
+        $(document).ready(function () {
+            if (!compatibility.isElectron) {
+                const right = document.getElementById("right-bar");
+                right.removeChild(document.getElementById("minus-button"))
+                right.removeChild(document.getElementById("close-button"))
+                document.getElementById("settings-button").href = "./settings"
+
+            }
+        });
 
     }
     getStore() {
