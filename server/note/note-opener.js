@@ -1,6 +1,7 @@
 var JSZip = require('jszip');
 var mkdirp = require('mkdirp');
 var fs = require('fs');
+var textVersion = require("textversionjs");
 
 var NoteOpener = function (note) {
   this.note = note;
@@ -11,11 +12,9 @@ NoteOpener.prototype.getMainTextMetadataAndPreviews = function (callback) {
   this.getFullHTML(function (data, zip) {
     if (zip != undefined) {
       opener.getMetadataString(zip, function (metadata) {
-        var tempElement = document.createElement("div");
-        tempElement.innerHTML = data;
         opener.getPreviews(zip, function (previews) {
           console.log(previews)
-          callback(tempElement.innerText, metadata != undefined ? JSON.parse(metadata) : undefined, previews)
+          callback(textVersion(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews)
 
         })
       })
@@ -220,4 +219,4 @@ Compressor.prototype.start = function () {
 
 
 }
-if (typeof exports !== 'undefined') exports.NoteOpener = NoteOpener
+exports.NoteOpener = NoteOpener

@@ -4,6 +4,8 @@ var KeywordsDBManager = require('./keywords/keywords_db_manager').KeywordsDBMana
 
 var SettingsHelper = require("../settings/settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
+var NoteOpener = require("./note/note-opener").NoteOpener;
+var Note = require("../browsers/note").Note;
 
 var handle = function (method, path, data, callback) {
     console.log(path)
@@ -22,10 +24,59 @@ var handle = function (method, path, data, callback) {
                 });
         }
         if (path.startsWith("/metadata?")) {
+            var params = path.split("?")[1].split("=")[1].split("%2C");
+
+            var handler = new ArrayHandler(params, function (step) {
+                step = decodeURIComponent(step);
+                if (step == "" || step == undefined || step.indexOf("../") >= 0) {
+                    this.next()
+                    return;
+                }
+                console.log(step)
+
+                new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
+                    if (text != undefined)
+                        handler.addResult(step, {
+                            shorttext: text.substr(0, 200),
+                            metadata: metadata,
+                            previews: previews
+                        })
+
+                    handler.next();
+                })
+            }, function (result) {
+                console.log("sending " + JSON.stringify(result))
+
+                callback(false, result)
+            });
+            handler.next();
             callback("", "");
         }
     }
 
 }
+class ArrayHandler {
+    constructor(array, doNext, onFinished) {
+        this.array = array;
+        this.current = 0;
+        this.result = {};
+        this.doNext = doNext;
+        this.onFinished = onFinished;
+    }
 
+    next() {
+        if (this.array.length > 0) {
+            this.doNext(this.array.pop());
+        }
+        else
+            this.onFinished(this.result);
+
+    }
+
+    addResult(key, result) {
+        this.result[key] = result;
+        console.log("adding " + JSON.stringify(this.result))
+    }
+
+}
 exports.handle = handle;
