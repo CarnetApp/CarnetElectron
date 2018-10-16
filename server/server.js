@@ -35,31 +35,30 @@ var handle = function (method, path, data, callback) {
                 console.log(step)
 
                 new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
-                    if (text != undefined)
+                    if (text != undefined) {
                         handler.addResult(step, {
                             shorttext: text.substr(0, 200),
                             metadata: metadata,
                             previews: previews
                         })
+                    }
 
                     handler.next();
                 })
             }, function (result) {
-                console.log("sending " + JSON.stringify(result))
-
                 callback(false, result)
             });
             handler.next();
-            callback("", "");
         }
     }
 
 }
+
 class ArrayHandler {
     constructor(array, doNext, onFinished) {
         this.array = array;
         this.current = 0;
-        this.result = {};
+        this.result = {}
         this.doNext = doNext;
         this.onFinished = onFinished;
     }

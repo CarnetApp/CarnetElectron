@@ -109,5 +109,5 @@ FileUtils.getParentFolderFromPath = function (path) {
 
   return root + dir;
 };
-
-exports.FileUtils = FileUtils;
+if (typeof exports !== 'undefined')
+  exports.FileUtils = FileUtils;

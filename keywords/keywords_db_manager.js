@@ -172,5 +172,3 @@ function keysrt(key, desc) {
         return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
     }
 }
-
-exports.KeywordsDBManager = KeywordsDBManager

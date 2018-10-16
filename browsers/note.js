@@ -18,4 +18,5 @@ var NoteMetadata = function () {
     this.keywords = []
     this.rating = -1;
 }
-exports.Note = Note
+if (typeof exports !== 'undefined')
+    exports.Note = Note
