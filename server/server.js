@@ -6,6 +6,7 @@ var SettingsHelper = require("../settings/settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
 var NoteOpener = require("./note/note-opener").NoteOpener;
 var Note = require("../browsers/note").Note;
+var fs = require('fs');
 
 var handle = function (method, path, data, callback) {
     console.log(path)
@@ -32,7 +33,6 @@ var handle = function (method, path, data, callback) {
                     this.next()
                     return;
                 }
-                console.log(step)
 
                 new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
                     if (text != undefined) {
@@ -50,9 +50,58 @@ var handle = function (method, path, data, callback) {
             });
             handler.next();
         }
+        else if (path.startsWith("/note/create?path=")) {
+            var folder = path.split("=")[1];
+            if (folder.indexOf("../") >= 0) {
+                callback(true, "");
+                return;
+            }
+            if (!folder.startsWith("/"))
+                folder = "/" + folder;
+            if (!folder.endsWith("/"))
+                folder = folder + "/";
+            new NewNoteCreationTask(folder, function (path) {
+                console.log("found " + path)
+                callback(false, path);
+
+            })
+
+        }
     }
 
 }
+var NewNoteCreationTask = function (folder, callback) {
+    console.log("NewNoteCreationTask " + path)
+    var path = settingsHelper.getNotePath() + folder;
+    fs.stat(path, function (error, stats) {
+        if (error) {
+            console.log("not here")
+            var mkdirp = require('mkdirp');
+            mkdirp.sync(path);
+        }
+        var task = this;
+        fs.readdir(path, (err, files) => {
+            var name = "untitled.sqd";
+            var sContinue = true;
+            var i = 1;
+            while (sContinue) {
+                sContinue = false
+                for (let file of files) {
+                    if (file == name) {
+                        sContinue = true;
+                        i++;
+                        name = "untitled " + i + ".sqd";
+                    }
+                }
+            }
+            callback(folder.substr(1) + name)
+
+        });
+    })
+
+
+}
+
 
 class ArrayHandler {
     constructor(array, doNext, onFinished) {

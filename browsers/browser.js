@@ -62,81 +62,8 @@ TextGetterTask.prototype.getNext = function () {
         }
         myTask.getNext();
     });
-    /* if (this.list[this.current] instanceof Note) {
-         var opener = new NoteOpener(this.list[this.current])
-         var myTask = this;
-         var note = this.list[this.current]
-         var fast = false;
-         //should we go fast or slow refresh ?
-         for (var i = this.current; i < this.stopAt && i < this.list.length && i < oldNotes.length; i++) {
-             if (oldNotes[this.list[i].path] == undefined) {
-                 fast = true;
-                 break;
-             }
-         }
-         setTimeout(function () {
-             try {
-                 opener.getMainTextMetadataAndPreviews(function (txt, metadata, previews) {
-                     if (myTask.continue) {
-                         if (txt != undefined)
-                             note.text = txt.substring(0, 200);
-                         if (metadata != undefined)
-                             note.metadata = metadata;
-                         note.previews = previews;
-                         oldNotes[note.path] = note;
-                         noteCardViewGrid.updateNote(note)
-                         noteCardViewGrid.msnry.layout();
-
-                         myTask.getNext();
-                     }
-                 });
-             } catch (error) {
-                 console.log(error);
-             }
-             myTask.current++;
-         }, !fast ? 1000 : 100)
-
-     } else {
-         this.current++;
-         this.getNext();
-     }*/
-
 }
 
-
-
-var NewNoteCreationTask = function (callback) {
-    var path = currentPath;
-    if (path == initPath || path.startsWith("keyword://"))
-        path = main.getNotePath();
-    var fs = require('fs');
-    if (!fs.exists(path)) {
-        var mkdirp = require('mkdirp');
-        mkdirp.sync(path);
-    }
-
-    var fb = new FileBrowser(path);
-    console.log(path + " fefef")
-    var task = this;
-    fb.list(function (files) {
-        task.files = files;
-        var name = "untitled.sqd";
-        var sContinue = true;
-        var i = 1;
-        while (sContinue) {
-            sContinue = false
-            for (let file of files) {
-                if (file.name == name) {
-                    sContinue = true;
-                    i++;
-                    name = "untitled " + i + ".sqd";
-                }
-            }
-        }
-        callback(path + "/" + name)
-
-    });
-}
 
 String.prototype.replaceAll = function (search, replacement) {
     var target = this;
@@ -161,7 +88,7 @@ function openNote(notePath) {
         writerFrame.style.display = "block"
         loadingView.style.display = "block"
     }
-    
+
 
     //window.location.assign("writer?path=" + encodeURIComponent(notePath));
 }
