@@ -13,6 +13,13 @@ class BrowserCompatibility extends Compatibility {
         });
 
     }
+    getEditorUrl() {
+        if (this.isElectron)
+            return "";
+
+        else if (!this.isAndroid)
+            return "writer"
+    }
     getStore() {
         if (this.isElectron) {
             return ElectronStore;

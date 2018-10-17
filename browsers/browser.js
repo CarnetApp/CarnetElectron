@@ -72,24 +72,30 @@ String.prototype.replaceAll = function (search, replacement) {
 
 function openNote(notePath) {
     currentNotePath = notePath
-    if (writerFrame.src == "") {
-        if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1) {//open in new tab for firefox android
-            window.open("writer?path=" + encodeURIComponent(notePath), "_blank");
+    RequestBuilder.sRequestBuilder.get("/note/open/prepare", function (error, data) {
+        console.log("opening " + data)
+        if (error)
+            return;
+        if (writerFrame.src == "") {
+            if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1) {//open in new tab for firefox android
+                window.open("writer?path=" + encodeURIComponent(notePath), "_blank");
+            }
+            else {
+                writerFrame.src = data + "?path=" + encodeURIComponent(notePath);
+                writerFrame.style.display = "inline-flex"
+                loadingView.style.display = "block"
+            }
+            setTimeout(function () {
+                writerFrame.openDevTools()
+            }, 1000)
         }
         else {
-            writerFrame.src = "writer?path=" + encodeURIComponent(notePath);
-            writerFrame.style.display = "block"
+            console.log("reuse old iframe");
+            writerFrame.contentWindow.loadPath(notePath);
+            writerFrame.style.display = "inline-flex"
             loadingView.style.display = "block"
         }
-    }
-    else {
-        console.log("reuse old iframe");
-        writerFrame.contentWindow.loadPath(notePath);
-        writerFrame.style.display = "block"
-        loadingView.style.display = "block"
-    }
-
-
+    })
     //window.location.assign("writer?path=" + encodeURIComponent(notePath));
 }
 
@@ -629,7 +635,14 @@ var writerFrame = undefined;
 events = []
 
 if (isElectron) {
+    writerFrame = document.getElementById("writer-webview");
 
+    writerFrame.addEventListener('ipc-message', event => {
+        if (events[event.channel] !== undefined) {
+            for (var callback of events[event.channel])
+                callback();
+        }
+    });
 
 } else {
     writerFrame = document.getElementById("writer-iframe");

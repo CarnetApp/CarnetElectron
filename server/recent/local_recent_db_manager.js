@@ -42,16 +42,21 @@ LocalRecentDBManager.prototype.actionArray = function (items, action, callback) 
         })
     });
 }
+
 LocalRecentDBManager.prototype.action = function (path, action, callback) {
+    this.action(path, action, new Date().getTime(), callback);
+}
+LocalRecentDBManager.prototype.action = function (path, action, time, callback) {
     var db = this;
+    console.log("action")
     lockFile.lock('recent.lock', {
         wait: 10000
     }, function (er) {
         db.getFullDB(function (err, data) {
             console.log(data)
-            var fullDB = JSON.parse(data);
+            var fullDB = data;
             var item = new function () {
-                this.time = new Date().getTime();
+                this.time = time;
                 this.action = action;
                 this.path = path;
             };

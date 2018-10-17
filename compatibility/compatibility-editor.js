@@ -9,7 +9,7 @@ String.prototype.startsWith = function (suffix) {
 };
 
 class CompatibilityEditor extends Compatibility {
-    contructor() {
+    constructor() {
         super();
         if (this.isElectron) {
             module.paths.push(rootpath + 'node_modules');

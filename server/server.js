@@ -7,6 +7,7 @@ var settingsHelper = new SettingsHelper();
 var NoteOpener = require("./note/note-opener").NoteOpener;
 var Note = require("../browsers/note").Note;
 var fs = require('fs');
+const path = require('path')
 
 var handle = function (method, path, data, callback) {
     console.log(path)
@@ -18,11 +19,18 @@ var handle = function (method, path, data, callback) {
 
                     callback(err, data)
                 });
+                break;
             case "/keywordsdb":
                 new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).getFullDB(function (err, data) {
 
                     callback(err, data)
                 });
+                break;
+            case "/note/open/prepare":
+                prepareEditor(callback);
+
+                break;
+
         }
         if (path.startsWith("/metadata?")) {
             var params = path.split("?")[1].split("=")[1].split("%2C");
@@ -67,8 +75,110 @@ var handle = function (method, path, data, callback) {
             })
 
         }
+        else if (path.startsWith("/note/open")) {
+            var folder = decodeURIComponent(path.split("=")[1]);
+            if (folder.indexOf("../") >= 0) {
+                callback(true, "");
+                return;
+            }
+            openNote(folder, function (result) {
+                console.log("result " + result)
+                callback(false, result)
+            })
+        }
+    } else if (method === "POST") {
+        switch (path) {
+            case "/recentdb/action":
+                for (action of data.data) {
+                    console.log(action.action);
+                    new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid()).action(action.path, action.action, action.time, function () {
+                        callback(false, "");
+                    })
+                }
+                break;
+        }
     }
 
+}
+
+var openNote = function (path, callback) {
+    var writer = this;
+    const tmppath = getTmpPath() + "/note/";
+    console.log("extractNote" + settingsHelper.getNotePath() + "/" + path + " to " + tmppath)
+
+    const noteOpener = new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + path));
+    noteOpener.extractTo(tmppath, function (noSuchFile) {
+        console.log("done " + noSuchFile)
+        if (!noSuchFile) {
+            fs.readFile(tmppath + 'index.html', 'utf8', function read(err, data) {
+                var result = {}
+
+                if (err) {
+                    throw err;
+                }
+                result["html"] = data
+
+                fs.readFile(tmppath + 'metadata.json', 'utf8', function read(err, metadata) {
+                    if (err) {
+                        throw err;
+                    }
+                    result["metadata"] = JSON.parse(metadata);
+                    result["id"] = 0;
+                    callback(result)
+                });
+            });
+        } else {
+        }
+        /*fs.readFile(tmppath+'metadata.json', function read(err, data) {
+            if (err) {
+                throw err;
+            }
+
+            content = data;
+            console.log(data)
+            this.note.metadata = JSON.parse(content)
+        });*/
+        //copying reader.html
+    })
+}
+
+var getTmpPath = function () {
+    const {
+        app,
+    } = require('electron');
+    return path.join(app.getPath("temp"), "tmpcarnet");
+}
+
+var prepareEditor = function (callback) {
+    console.log("prepareEditor");
+    var rimraf = require('rimraf');
+    const tmp = getTmpPath();
+
+    rimraf(tmp, function (e) {
+        var fs = require('fs');
+        console.log("rm " + e)
+        fs.mkdir(tmp, function (e) {
+            console.log("mkdir " + e)
+
+            fs.readFile(__dirname + '/../reader/reader.html', 'utf8', function (err, data) {
+                if (err) {
+                    fs.rea
+                    console.log("error ")
+                    return console.log(err);
+                }
+                const index = path.join(tmp, 'reader.html');
+                data = data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/../');
+                data = data.replace(new RegExp('<!APIURL>', 'g'), '')
+
+                fs.writeFileSync(index, data);
+                console.log("index " + index)
+                callback(false, index)
+            });
+
+
+        });
+
+    })
 }
 var NewNoteCreationTask = function (folder, callback) {
     console.log("NewNoteCreationTask " + path)

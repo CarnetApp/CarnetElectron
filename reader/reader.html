@@ -3,6 +3,8 @@
 <html>
 
 <head>
+	<script src="<!ROOTPATH>requests/request_builder.js"></script>
+	<script src="<!ROOTPATH>compatibility/electron/request_builder.js"></script>
 	<script src="<!ROOTPATH>compatibility/compatibility.js"></script>
 	<script src="<!ROOTPATH>compatibility/compatibility-editor.js"></script>
 
@@ -39,7 +41,6 @@
 	<script src="<!ROOTPATH>libs/jszip.min.js"></script>
 	<script src="<!ROOTPATH>reader/assets/scripts/Countable.js"></script>
 	<script src="<!ROOTPATH>utils/file_utils.js"></script>
-	<script src="<!ROOTPATH>requests/request_builder.js"></script>
 	<script src="<!ROOTPATH>reader/assets/scripts/jquery.ui.touch-punch.min.js"></script>
 
 	<link rel="stylesheet" href="<!ROOTPATH>reader/libs/jquery-ui.css" media="screen">
@@ -282,13 +283,12 @@ mdl-layout--fixed-header">
 		<div class="mdl-spinner mdl-js-spinner is-active" style="width:200px; height:200px; top:50%; left:50%; margin-top:-150px; margin-left:-100px;"></div>
 
 	</div>
-	<script>
-	</script>
+
 	<input type="file" id="input_file" />
 	<span style="display:none;" id="api-url">
-		<!APIURL>/</span>
+		<!APIURL></span>
 	<span style="display:none;" id="root-url">
-		<!ROOTURL>/</span>
+		<!ROOTURL></span>
 
 </body>
 </head>

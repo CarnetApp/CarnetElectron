@@ -1,4 +1,4 @@
-var FileUtils = function () {}
+var FileUtils = function () { }
 FileUtils.base64MimeType = function (encoded) {
   var result = null;
 

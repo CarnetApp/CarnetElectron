@@ -2,7 +2,7 @@ var JSZip = require('jszip');
 var mkdirp = require('mkdirp');
 var fs = require('fs');
 var textVersion = require("textversionjs");
-
+var getParentFolderFromPath = require("../../utils/file_utils").FileUtils.getParentFolderFromPath
 var NoteOpener = function (note) {
   this.note = note;
 }
@@ -180,9 +180,7 @@ Extractor.prototype.fullExtract = function () {
         console.log("mkdirok");
 
         fs.writeFileSync(dest, content, 'base64');
-        if (filename == "metadata.json") {
-          extractor.opener.note.metadata = JSON.parse(decodeURIComponent(escape(atob(content))));
-        }
+
 
       }
       extractor.currentFile++;

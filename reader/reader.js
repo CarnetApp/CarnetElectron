@@ -1,6 +1,3 @@
-function require() {
-    return "pet"
-}
 var rootpath = undefined;
 var api_url = undefined;
 
