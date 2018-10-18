@@ -34,8 +34,8 @@ if (settingsHelper.getAppUid() == null || settingsHelper.getAppUid() == "undefin
     settingsHelper.setAppUid(guid());
 uid = settingsHelper.getAppUid();
 console.log("app uid " + uid)
-var dbmerger = require("./recent/merge_db");
-var keywordsdbmerger = require("./keywords/merge_db");
+var dbmerger = require("./server/recent/merge_db");
+var keywordsdbmerger = require("./server/keywords/merge_db");
 
 function startMerging() {
     new dbmerger.DBMerger(exports.getNotePath() + "/quickdoc/recentdb/", uid).startMergin(function (hasChanged) {

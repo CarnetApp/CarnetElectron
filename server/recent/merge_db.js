@@ -1,6 +1,6 @@
 var fs = require("fs");
 
-var RecentDBManager = require("./recent_db_manager").RecentDBManager;
+var RecentDBManager = require("./local_recent_db_manager").LocalRecentDBManager;
 
 var DBMerger = function (recentFolder, appUid) {
     this.recentFolder = recentFolder;

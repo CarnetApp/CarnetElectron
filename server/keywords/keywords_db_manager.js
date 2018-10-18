@@ -102,9 +102,9 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
         db.getFullDB(function (err, data) {
             var otherDB = new KeywordsDBManager(path)
             otherDB.getFullDB(function (err, dataBis) {
-                var dataJson = JSON.parse(data)
+                var dataJson = data
                 try {
-                    var dataBisJson = JSON.parse(dataBis)
+                    var dataBisJson = dataBis
                 } catch (e) { //bad :(
                     return
                 }
