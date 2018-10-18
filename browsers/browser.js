@@ -91,7 +91,10 @@ function openNote(notePath) {
         }
         else {
             console.log("reuse old iframe");
-            writerFrame.contentWindow.loadPath(notePath);
+            if (compatibility.isElectron)
+                writerFrame.send('loadnote', notePath);
+            else
+                writerFrame.contentWindow.loadPath(notePath);
             writerFrame.style.display = "inline-flex"
             loadingView.style.display = "block"
         }
@@ -520,36 +523,9 @@ document.getElementById("grid-container").onscroll = function () {
 
     }
 }
-var webview = document.getElementById("writer-webview")
 
-webview.addEventListener('ipc-message', event => {
-    if (event.channel == "exit") {
-        webview.style = "position:fixed; top:0px; left:0px; height:0px; width:0px; z-index:100; right:0; bottom:0;"
-        //$(browserElem).faceIn();
-        $("#no-drag-bar").hide()
-        if (wasNewNote)
-            list(currentPath, true)
-        else if (currentTask != undefined) {
-            var noteIndex
-            if ((noteIndex = notePath.indexOf(currentNotePath)) == -1) {
-                noteIndex = 0;
-            }
-            currentTask.current = noteIndex;
-            currentTask.getNext()
-        }
-        wasNewNote = false;
-        refreshKeywords()
-
-    } else if (event.channel == "loaded") {
-        $(loadingView).fadeOut();
-        $("#no-drag-bar").show()
-
-    }
-});
 var hasLoadedOnce = false
-webview.addEventListener('dom-ready', () => {
-    webview.openDevTools()
-})
+
 var loadingView = document.getElementById("loading-view")
 //var browserElem = document.getElementById("browser")
 console.log("pet")
@@ -669,11 +645,12 @@ function registerWriterEvent(event, callback) {
         events[event] = []
     }
     events[event].push(callback)
+
 }
 
 
 registerWriterEvent("exit", function () {
-    document.getElementById("writer-iframe").style.display = "none";
+    writerFrame.style.display = "none";
     if (wasNewNote)
         list();
     else {
