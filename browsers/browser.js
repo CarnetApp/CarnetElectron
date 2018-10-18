@@ -651,6 +651,7 @@ function registerWriterEvent(event, callback) {
 
 registerWriterEvent("exit", function () {
     writerFrame.style.display = "none";
+    $("#no-drag-bar").hide()
     if (wasNewNote)
         list();
     else {
@@ -666,6 +667,8 @@ registerWriterEvent("exit", function () {
 
 registerWriterEvent("loaded", function () {
     loadingView.style.display = "none"
+    $("#no-drag-bar").show()
+
 })
 
 
