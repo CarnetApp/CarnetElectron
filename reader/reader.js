@@ -214,46 +214,6 @@ Writer.prototype.extractNote = function () {
         };
         writer.updateRating(writer.note.metadata.rating)
     });
-    /*var writer = this;
-    console.log("extractNote to " + tmppath)
-    writer.noteOpener.extractTo(tmppath, function (noSuchFile) {
-        console.log("done")
-        if (!noSuchFile) {
-            var fs = require('fs');
-            fs.readFile(tmppath + 'index.html', 'base64', function read(err, data) {
-                if (err) {
-                    throw err;
-                }
-                fs.readFile(tmppath + 'metadata.json', 'base64', function read(err, metadata) {
-                    if (err) {
-                        throw err;
-                    }
-                    writer.note.metadata = JSON.parse(decodeURIComponent(escape(atob(metadata))));
-                    writer.refreshKeywords()
-                    writer.refreshMedia()
-                    var ratingStars = document.querySelectorAll("input.star")
-                    for (var i = 0; i < ratingStars.length; i++) {
-                        ratingStars[i].checked = writer.note.metadata.rating == (5 - i);
-                    };
-                    writer.updateRating(writer.note.metadata.rating)
-                });
-                content = data;
-                writer.fillWriter(decodeURIComponent(escape(atob(content))))
-            });
-        } else {
-            writer.fillWriter(undefined)
-        }
-        /*fs.readFile(tmppath+'metadata.json', function read(err, data) {
-            if (err) {
-                throw err;
-            }
-
-            content = data;
-            console.log(data)
-            this.note.metadata = JSON.parse(content)
-        });*/
-    //copying reader.html
-    /* })*/
 }
 
 var saveTextIfChanged = function () {

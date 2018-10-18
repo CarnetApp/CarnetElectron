@@ -96,9 +96,38 @@ var handle = function (method, path, data, callback) {
                     })
                 }
                 break;
+            case "/note/saveText":
+                saveNote(data.path, data.html, data.metadata, callback);
+                break;
         }
     }
 
+}
+
+var saveNote = function (path, html, metadata, callback) {
+    var tmppath = getTmpPath() + "/note/";
+    fs.writeFile(tmppath + 'index.html', html, function (err) {
+        if (err) {
+            callback(true, "")
+            return console.log(err);
+        }
+        var note = new Note("", "", settingsHelper.getNotePath() + "/" + path, metadata)
+        var noteOpener = new NoteOpener(note)
+        console.log("saving meta  " + metadata)
+        fs.writeFile(tmppath + 'metadata.json', metadata, function (err) {
+            if (err) {
+                callback(true, "")
+                return console.log(err);
+            }
+            console.log("compress")
+            noteOpener.compressFrom(tmppath, function () {
+                console.log("compressed")
+
+                callback(false, "")
+            })
+        });
+
+    });
 }
 
 var openNote = function (path, callback) {
