@@ -97,22 +97,62 @@ var handle = function (method, path, data, callback) {
                 }
                 break;
             case "/note/saveText":
-                saveNote(data.path, data.html, data.metadata, callback);
+                saveTextToNote(data.path, data.html, data.metadata, callback);
                 break;
+            case "/note/open/0/addMedia": {
+                console.log(typeof data.files)
+
+                addMedias(data.path, data.files, callback)
+            }
         }
     }
 
 }
 
-var saveNote = function (path, html, metadata, callback) {
+var addMedias = function (path, files, callback) {
+    const Jimp = require('jimp');
+    var tmppath = getTmpPath() + "/note/";
+    require('mkdirp').sync(tmppath + 'data/');
+    var handler = new ArrayHandler(files, function (file) {
+        fs.writeFile(tmppath + 'data/' + file.name, file.data, 'base64', function (err) {
+            if (!err) {
+
+                // open a file called "lenna.png"
+                Jimp.read(tmppath + 'data/' + file.name, (err, image) => {
+                    if (!err) {
+                        image.scaleToFit(200, 200);
+                        image.getBase64(Jimp.MIME_JPEG, function (err, base) {
+                            fs.writeFile(tmppath + 'data/preview_' + file.name + ".jpg", base.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
+                                handler.next()
+                            })
+
+                        })
+
+                    } else handler.next()
+
+                })
+
+
+            }
+        })
+
+    }, function () {
+        saveNote(path, callback);
+    });
+    handler.next()
+    for (var i = 0; i < files.length; i++) {
+
+
+    }
+}
+
+var saveTextToNote = function (path, html, metadata, callback) {
     var tmppath = getTmpPath() + "/note/";
     fs.writeFile(tmppath + 'index.html', html, function (err) {
         if (err) {
             callback(true, "")
             return console.log(err);
         }
-        var note = new Note("", "", settingsHelper.getNotePath() + "/" + path, metadata)
-        var noteOpener = new NoteOpener(note)
         console.log("saving meta  " + metadata)
         fs.writeFile(tmppath + 'metadata.json', metadata, function (err) {
             if (err) {
@@ -120,14 +160,21 @@ var saveNote = function (path, html, metadata, callback) {
                 return console.log(err);
             }
             console.log("compress")
-            noteOpener.compressFrom(tmppath, function () {
-                console.log("compressed")
-
-                callback(false, "")
-            })
+            saveNote(path, callback)
         });
 
     });
+}
+
+var saveNote = function (path, callback) {
+    var note = new Note("", "", settingsHelper.getNotePath() + "/" + path)
+    var noteOpener = new NoteOpener(note)
+    var tmppath = getTmpPath() + "/note/";
+    noteOpener.compressFrom(tmppath, function () {
+        console.log("compressed")
+        callback(false, "")
+    })
+
 }
 
 var openNote = function (path, callback) {
