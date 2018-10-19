@@ -30,6 +30,9 @@ var handle = function (method, path, data, callback) {
                 prepareEditor(callback);
 
                 break;
+            case "/note/open/0/listMedia":
+                getMediaList(callback)
+                break;
 
         }
         if (path.startsWith("/metadata?")) {
@@ -109,6 +112,20 @@ var handle = function (method, path, data, callback) {
 
 }
 
+var getMediaList = function (callback) {
+    var tmppath = getTmpPath() + "/note/data/";
+    var medias = [];
+
+    fs.readdir(tmppath, (err, files) => {
+        for (let file of files) {
+            if (!file.startsWith("preview_"))
+                medias.push(tmppath + file)
+        }
+        callback(false, medias)
+
+    })
+}
+
 var addMedias = function (path, files, callback) {
     const Jimp = require('jimp');
     var tmppath = getTmpPath() + "/note/";
@@ -137,7 +154,9 @@ var addMedias = function (path, files, callback) {
         })
 
     }, function () {
-        saveNote(path, callback);
+        saveNote(path, function (error, data) {
+            getMediaList(callback)
+        });
     });
     handler.next()
     for (var i = 0; i < files.length; i++) {
