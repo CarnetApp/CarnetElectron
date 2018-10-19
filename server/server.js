@@ -89,6 +89,34 @@ var handle = function (method, path, data, callback) {
                 callback(false, result)
             })
         }
+        else if (path.startsWith("/browser/list?path=")) {
+            var folder = decodeURIComponent(path.split("=")[1]);
+            if (!folder.endsWith("/"))
+                folder = folder + "/"
+            if (folder.indexOf("../") >= 0) {
+                callback(true, undefined);
+                return;
+            }
+            else {
+                var result = []
+                fs.readdir(settingsHelper.getNotePath() + "/" + folder, (err, files) => {
+                    for (let f of files) {
+                        if ((folder + f) == "/quickdoc")
+                            continue
+                        const file = {};
+                        const stat = fs.statSync(settingsHelper.getNotePath() + "/" + folder + f)
+                        console.log("file " + folder + f)
+                        file['name'] = f;
+                        file['path'] = folder + f;
+                        file['isDir'] = !stat.isFile();
+                        file['mtime'] = stat.mtime;
+                        result.push(file)
+                    }
+                    callback(false, result)
+                })
+            }
+
+        }
     } else if (method === "POST") {
         switch (path) {
             case "/recentdb/action":
