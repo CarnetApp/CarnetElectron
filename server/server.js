@@ -145,6 +145,10 @@ var getMediaList = function (callback) {
     var medias = [];
 
     fs.readdir(tmppath, (err, files) => {
+        if (err) {
+            callback(false, medias) // return empty because no medias
+            return
+        }
         for (let file of files) {
             if (!file.startsWith("preview_"))
                 medias.push(tmppath + file)
