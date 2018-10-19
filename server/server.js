@@ -28,12 +28,10 @@ var handle = function (method, path, data, callback) {
                 break;
             case "/note/open/prepare":
                 prepareEditor(callback);
-
-                break;
+                return;
             case "/note/open/0/listMedia":
                 getMediaList(callback)
-                break;
-
+                return;
         }
         if (path.startsWith("/metadata?")) {
             var params = path.split("?")[1].split("=")[1].split("%2C");
@@ -232,40 +230,46 @@ var openNote = function (path, callback) {
     var writer = this;
     const tmppath = getTmpPath() + "/note/";
     console.log("extractNote" + settingsHelper.getNotePath() + "/" + path + " to " + tmppath)
+    var rimraf = require('rimraf');
+    rimraf(tmppath, function (e) {
+        var mkdirp = require('mkdirp');
+        mkdirp.sync(tmppath);
+        const noteOpener = new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + path));
+        noteOpener.extractTo(tmppath, function (noSuchFile) {
+            var result = {}
+            result["id"] = 0;
 
-    const noteOpener = new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + path));
-    noteOpener.extractTo(tmppath, function (noSuchFile) {
-        console.log("done " + noSuchFile)
-        if (!noSuchFile) {
-            fs.readFile(tmppath + 'index.html', 'utf8', function read(err, data) {
-                var result = {}
+            console.log("done " + noSuchFile)
+            if (!noSuchFile) {
+                fs.readFile(tmppath + 'index.html', 'utf8', function read(err, data) {
 
-                if (err) {
-                    throw err;
-                }
-                result["html"] = data
-
-                fs.readFile(tmppath + 'metadata.json', 'utf8', function read(err, metadata) {
                     if (err) {
                         throw err;
                     }
-                    result["metadata"] = JSON.parse(metadata);
-                    result["id"] = 0;
-                    callback(result)
-                });
-            });
-        } else {
-        }
-        /*fs.readFile(tmppath+'metadata.json', function read(err, data) {
-            if (err) {
-                throw err;
-            }
+                    result["html"] = data
 
-            content = data;
-            console.log(data)
-            this.note.metadata = JSON.parse(content)
-        });*/
-        //copying reader.html
+                    fs.readFile(tmppath + 'metadata.json', 'utf8', function read(err, metadata) {
+                        if (err) {
+                            throw err;
+                        }
+                        result["metadata"] = JSON.parse(metadata);
+                        callback(result)
+                    });
+                });
+            } else {
+                callback(result)
+            }
+            /*fs.readFile(tmppath+'metadata.json', function read(err, data) {
+                if (err) {
+                    throw err;
+                }
+     
+                content = data;
+                console.log(data)
+                this.note.metadata = JSON.parse(content)
+            });*/
+            //copying reader.html
+        })
     })
 }
 
