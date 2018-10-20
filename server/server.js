@@ -125,13 +125,30 @@ var handle = function (method, path, data, callback) {
                     })
                 }
                 break;
+            case "/browser/newfolder":
+                if (!data.path.startsWith("/"))
+                    data.path = "/" + data.path
+                if (data.path.indexOf("../") >= 0) {
+                    callback(true)
+                    return;
+                }
+                fs.mkdir(settingsHelper.getNotePath() + data.path, function (err) {
+                    callback(err)
+                })
+                return;
             case "/note/saveText":
+                data.path = decodeURIComponent(data.path);
+                if (!data.path.startsWith("/"))
+                    data.path = "/" + data.path
+                if (data.path.indexOf("../") >= 0)
+                    return
                 saveTextToNote(data.path, data.html, data.metadata, callback);
                 break;
             case "/note/open/0/addMedia": {
                 console.log(typeof data.files)
 
                 addMedias(data.path, data.files, callback)
+                return;
             }
         }
     }
