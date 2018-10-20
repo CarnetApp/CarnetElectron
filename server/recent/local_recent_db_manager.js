@@ -17,16 +17,18 @@ LocalRecentDBManager.prototype.getFullDB = function (callback) {
     });
 }
 
-LocalRecentDBManager.prototype.actionArray = function (items, action, callback) {
+LocalRecentDBManager.prototype.actionArray = function (items, callback) {
     var db = this;
     var time = new Date().getTime();
     db.getFullDB(function (err, data) {
-        var fullDB = JSON.parse(data);
+        var fullDB = data;
         for (var i of items) {
             var item = new function () {
                 this.time = i.time;
-                this.action = action;
+                this.action = i.action;
                 this.path = i.path;
+                if (i.newPath != undefined)
+                    this.newPath = i.newPath
             };
             fullDB["data"].push(item);
         }
@@ -43,8 +45,17 @@ LocalRecentDBManager.prototype.actionArray = function (items, action, callback) 
     });
 }
 
+LocalRecentDBManager.prototype.move = function (path, newPath, callback) {
+    this.actionArray([{
+        action: "move",
+        time: new Date().getTime(),
+        path: path,
+        newPath: newPath
+    }], callback)
+}
+
 LocalRecentDBManager.prototype.action = function (path, action, callback) {
-    this.action(path, action, new Date().getTime(), callback);
+    this.actionArray(path, action, new Date().getTime(), callback);
 }
 LocalRecentDBManager.prototype.action = function (path, action, time, callback) {
     var db = this;

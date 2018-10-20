@@ -5,6 +5,8 @@ var KeywordsDBManager = require('./keywords/keywords_db_manager').KeywordsDBMana
 var SettingsHelper = require("../settings/settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
 var NoteOpener = require("./note/note-opener").NoteOpener;
+var NoteUtils = require("./note/NoteUtils").NoteUtils;
+
 var Note = require("../browsers/note").Note;
 var fs = require('fs');
 const path = require('path')
@@ -134,6 +136,23 @@ var handle = function (method, path, data, callback) {
                 }
                 fs.mkdir(settingsHelper.getNotePath() + data.path, function (err) {
                     callback(err)
+                })
+                return;
+            case "/notes/move":
+                if (data.from.startsWith("./"))
+                    data.from = data.from.substr(2)
+                if (data.to.startsWith("./"))
+                    data.to = data.to.substr(2)
+                if (data.from.startsWith("/"))
+                    data.from = data.from.substr(1)
+                if (data.to.startsWith("/"))
+                    data.to = data.to.substr(1)
+                if (data.from.indexOf("../") >= 0 || data.to.indexOf("../") >= 0) {
+                    callback(true, "")
+                    return;
+                }
+                NoteUtils.renameNote(data.from, data.to, function () {
+                    callback(false, "")
                 })
                 return;
             case "/note/saveText":

@@ -69,41 +69,7 @@ RecentDBManager.prototype.unpin = function (path, callback) {
     this.action(path, "unpin", callback)
 }
 
-RecentDBManager.prototype.move = function (path, newPath, callback) {
-    var db = this;
-    console.log("move " + path + " to " + newPath)
 
-    this.getFullDB(function (err, data) {
-        var fullDB = JSON.parse(data);
-        var item = new function () {
-            this.time = new Date().getTime();
-            this.action = "move";
-            this.path = path;
-            this.newPath = newPath;
-        };
-
-        fullDB["data"].push(item);
-        console.log(JSON.stringify(item))
-        require("mkdirp")(getParentFolderFromPath(db.path), function () {
-            lockFile.lock('recent.lock', {
-                wait: 10000
-            }, function (er) {
-                console.log("lock er " + er)
-                fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
-                    console.log(err)
-                    if (callback)
-                        callback()
-                });
-                lockFile.unlock('recent.lock', function (er) {
-                    console.log("unlock er " + er)
-
-                    // er means that an error happened, and is probably bad. 
-                })
-            })
-
-        })
-    })
-}
 RecentDBManager.prototype.actionArray = function (items, action, callback) {
     var db = this;
     var time = new Date().getTime();
