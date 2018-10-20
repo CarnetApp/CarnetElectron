@@ -39,4 +39,8 @@ class ElectronRequestBuilder extends RequestBuilder {
         readNext();
 
     }
+
+    delete(path, callback) {
+        this.main.sendRequestToServer("DELETE", path, undefined, callback);
+    }
 }

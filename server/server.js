@@ -151,10 +151,24 @@ var handle = function (method, path, data, callback) {
                 return;
             }
         }
+    } else if (method === "DELETE") {
+
+        if (path.startsWith("/note")) {
+            var toDelete = decodeURIComponent(path.split("=")[1])
+            if (!toDelete.startsWith("./"))
+                toDelete = "/" + toDelete
+            if (toDelete.indexOf("../") >= 0) {
+                callback(true, "")
+                return;
+            }
+            fs.unlink(settingsHelper.getNotePath() + toDelete, function () {
+                callback(false)
+            })
+            return;
+        }
     }
 
 }
-
 var getMediaList = function (callback) {
     var tmppath = getTmpPath() + "/note/data/";
     var medias = [];
