@@ -13,7 +13,6 @@ NoteOpener.prototype.getMainTextMetadataAndPreviews = function (callback) {
     if (zip != undefined) {
       opener.getMetadataString(zip, function (metadata) {
         opener.getPreviews(zip, function (previews) {
-          console.log(previews)
           callback(textVersion(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews)
 
         })

@@ -414,7 +414,6 @@ class ArrayHandler {
 
     addResult(key, result) {
         this.result[key] = result;
-        console.log("adding " + JSON.stringify(this.result))
     }
 
 }
