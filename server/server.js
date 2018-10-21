@@ -25,7 +25,7 @@ var handle = function (method, path, data, callback) {
                 new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).getFullDB(function (err, data) {
 
                     callback(err, data)
-                });
+                }, true);
                 break;
             case "/note/open/prepare":
                 prepareEditor(callback);
@@ -56,7 +56,7 @@ var handle = function (method, path, data, callback) {
                     handler.next();
                 })
             }, function (result) {
-                callback(false, result)
+                callback(false, JSON.stringify(result))
             });
             handler.next();
         }
@@ -85,7 +85,7 @@ var handle = function (method, path, data, callback) {
             }
             openNote(folder, function (result) {
                 console.log("result " + result)
-                callback(false, result)
+                callback(false, JSON.stringify(result))
             })
         }
         else if (path.startsWith("/browser/list?path=")) {
@@ -125,6 +125,12 @@ var handle = function (method, path, data, callback) {
                         callback(false, "");
                     })
                 }
+                break;
+            case "/keywordsdb/action":
+                new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).actionArray(data.data, function () {
+                    callback(false, "");
+                })
+
                 break;
             case "/browser/newfolder":
                 if (!data.path.startsWith("/"))

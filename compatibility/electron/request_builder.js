@@ -6,12 +6,29 @@ class ElectronRequestBuilder extends RequestBuilder {
     }
     get(path, callback) {
         console.log("getting " + path)
-        this.main.sendRequestToServer("GET", path, undefined, callback);
+        this.main.sendRequestToServer("GET", path, undefined, function (err, data) {
+            if (data != undefined) {
+                try {
+                    data = JSON.parse(data)
+                } catch (e) {
+                }
+            }
+            callback(err, data)
+        });
     }
     post(path, data, callback) {
-        this.main.sendRequestToServer("POST", path, data, callback);
+        this.main.sendRequestToServer("POST", path, data, function (err, data) {
+            if (data != undefined) {
+                try {
+                    data = JSON.parse(data)
+                } catch (e) {
+                }
+            }
+            callback(err, data)
+        });
 
     }
+
     postFiles(path, data, files, callback) {
         if (data == undefined)
             data = {}
@@ -20,7 +37,15 @@ class ElectronRequestBuilder extends RequestBuilder {
         var i = 0;
         function readNext() {
             if (i >= files.length) {
-                request.main.sendRequestToServer("POST", path, data, callback);
+                request.main.sendRequestToServer("POST", path, data, function (err, data) {
+                    if (data != undefined) {
+                        try {
+                            data = JSON.parse(data)
+                        } catch (e) {
+                        }
+                    }
+                    callback(err, data)
+                });
                 return;
             }
             var reader = new FileReader();
@@ -41,6 +66,14 @@ class ElectronRequestBuilder extends RequestBuilder {
     }
 
     delete(path, callback) {
-        this.main.sendRequestToServer("DELETE", path, undefined, callback);
+        this.main.sendRequestToServer("DELETE", path, undefined, function (err, data) {
+            if (data != undefined) {
+                try {
+                    data = JSON.parse(data)
+                } catch (e) {
+                }
+            }
+            callback(err, data)
+        });
     }
 }

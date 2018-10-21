@@ -8,12 +8,12 @@ var KeywordsDBManager = function (path) {
 
 
 
-KeywordsDBManager.prototype.getFullDB = function (callback) {
+KeywordsDBManager.prototype.getFullDB = function (callback, donotparse) {
     console.log("getFullDB")
     fs.readFile(this.path, "utf8", function (err, data) {
         if (data == undefined || data.length == 0)
             data = "{\"data\":[]}";
-        callback(err, JSON.parse(data));
+        callback(err, donotparse ? data : JSON.parse(data));
     });
 }
 
@@ -54,40 +54,17 @@ KeywordsDBManager.prototype.getFlatenDB = function (callback) {
     });
 }
 
-KeywordsDBManager.prototype.addToDB = function (keyword, path, callback) {
-    console.log("path 1 " + path)
-    if (path.startsWith("/"))
-        path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
-    console.log("path 2 " + path)
 
-    this.action(keyword, path, "add", callback)
-}
 
-KeywordsDBManager.prototype.removeFromDB = function (keyword, path, callback) {
-    if (path.startsWith("/"))
-        path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
-    this.action(keyword, path, "remove", callback)
-}
-
-KeywordsDBManager.prototype.action = function (keyword, path, action, callback) {
+KeywordsDBManager.prototype.action = function (keyword, path, action, time, callback) {
     this.actionArray([{
         keyword,
-        time: new Date().getTime(),
+        time: time,
         action: action,
         path: path
     }], callback)
 }
 
-KeywordsDBManager.prototype.actionArray = function (items, callback) {
-    RequestBuilder.sRequestBuilder.post("/keywordsdb/action", {
-        data: items,
-        json: JSON.stringify(items)
-    }, function (error, data) {
-        console.log(data)
-        callback();
-    });
-
-}
 
 //returns last time
 KeywordsDBManager.prototype.mergeDB = function (path, callback) {
@@ -141,17 +118,17 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
     });
 }
 
-/*KeywordsDBManager.prototype.actionArray = function (items, action, callback) {
+KeywordsDBManager.prototype.actionArray = function (items, callback) {
     var db = this;
     lockFile.lock('keyword.lock', {
         wait: 10000
     }, function (er) {
         db.getFullDB(function (err, data) {
-            var fullDB = JSON.parse(data);
+            var fullDB = data;
             for (var i of items) {
                 var item = new function () {
-                    this.time = new Date().getTime();
-                    this.action = action;
+                    this.time = i.time;
+                    this.action = i.action;
                     this.path = i.path;
                     this.keyword = i.keyword;
 
@@ -168,12 +145,12 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
                         callback()
 
                 });
-                lockFile.unlock('keyword.lock', function (er) {})
+                lockFile.unlock('keyword.lock', function (er) { })
             })
 
         })
     });
-}*/
+}
 
 
 // sort on key values
