@@ -8,12 +8,12 @@ var LocalRecentDBManager = function (path) {
 }
 
 
-LocalRecentDBManager.prototype.getFullDB = function (callback) {
+LocalRecentDBManager.prototype.getFullDB = function (callback, donotparse) {
     console.log("getFullDB")
     fs.readFile(this.path, "utf8", function (err, data) {
         if (data == undefined || data.length == 0)
             data = "{\"data\":[]}";
-        callback(err, JSON.parse(data));
+        callback(err, donotparse ? data : JSON.parse(data)); //working on big object transmitted to ui is a nightmare... so... sending string (far faster)
     });
 }
 

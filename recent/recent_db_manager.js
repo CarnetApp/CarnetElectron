@@ -8,7 +8,9 @@ RecentDBManager.prototype.getFullDB = function (callback) {
 
 RecentDBManager.prototype.getFlatenDB = function (callback) {
     this.getFullDB(function (err, data) {
-        console.log(data)
+        //with electron, working on big object transmitted to ui is a nightmare... so... sending string (far faster)
+        if (typeof data === "string")
+            data = JSON.parse(data)
         var fullDB = data["data"];
         var flaten = [];
         var pin = [];
