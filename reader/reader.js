@@ -130,7 +130,7 @@ Writer.prototype.setMediaList = function (list) {
     }
 
     for (var i = 0; i < list.length; i++) {
-        const filePath = api_url + list[i]
+        const filePath = list[i]
         const name = FileUtils.getFilename(list[i])
         console.log("file " + filePath)
         var el = document.createElement("div")
