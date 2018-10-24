@@ -51,10 +51,10 @@ class ElectronRequestBuilder extends RequestBuilder {
             var reader = new FileReader();
             reader.readAsDataURL(files[i]);
             reader.onload = function () {
-                console.log(reader.result);
+                console.log(reader.result.replace(/^data:.*\/\w+;base64,/, ""));
                 var f = {
                     name: files[i].name,
-                    data: reader.result.replace(/^data:image\/\w+;base64,/, "")
+                    data: reader.result.replace(/^data:.*\/\w+;base64,/, "")
                 }
                 data.files.push(f)
                 i++;

@@ -13,7 +13,17 @@ const path = require('path')
 
 var handle = function (method, path, data, callback) {
     console.log(path)
-
+    var splitPath = path.split("?")
+    var pathBeforeArgs = splitPath[0]
+    if (splitPath[1] != undefined) {
+        var argsStr = path.split("?")[1]
+        argsSplit = argsStr.split("&");
+        var args = {}
+        for (var arg of argsSplit) {
+            argSplit = arg.split("=");
+            args[decodeURIComponent(argSplit[0])] = decodeURIComponent(argSplit[1])
+        }
+    }
     if (method === "GET") {
         switch (path) {
             case "/recentdb":
@@ -177,18 +187,44 @@ var handle = function (method, path, data, callback) {
         }
     } else if (method === "DELETE") {
 
-        if (path.startsWith("/note")) {
-            var toDelete = decodeURIComponent(path.split("=")[1])
-            if (!toDelete.startsWith("./"))
-                toDelete = "/" + toDelete
-            if (toDelete.indexOf("../") >= 0) {
-                callback(true, "")
+        switch (pathBeforeArgs) {
+            case "/note":
+                var toDelete = decodeURIComponent(path.split("=")[1])
+                if (!toDelete.startsWith("./"))
+                    toDelete = "/" + toDelete
+                if (toDelete.indexOf("../") >= 0) {
+                    callback(true, "")
+                    return;
+                }
+                fs.unlink(settingsHelper.getNotePath() + toDelete, function () {
+                    callback(false)
+                })
                 return;
-            }
-            fs.unlink(settingsHelper.getNotePath() + toDelete, function () {
-                callback(false)
-            })
-            return;
+            case "/note/open/0/media":
+                console.log("deleting " + args["media"])
+                var toDelete = args["media"]
+                if (!toDelete.startsWith("./"))
+                    toDelete = "/" + toDelete
+                if (toDelete.indexOf("../") >= 0) {
+                    callback(true, "")
+                    return;
+                }
+                var note = args["path"]
+                if (!note.startsWith("./"))
+                    note = "/" + note
+                if (note.indexOf("../") >= 0) {
+                    callback(true, "")
+                    return;
+                }
+                var tmppath = getTmpPath() + "/note/data" + toDelete;
+                fs.unlink(tmppath, function () {
+                    saveNote(note, function () {
+                        getMediaList(callback)
+                    })
+                })
+                return;
+
+
         }
     }
 
@@ -354,6 +390,7 @@ var prepareEditor = function (callback) {
                 }
                 const index = path.join(tmp, 'reader.html');
                 data = data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/../');
+                data = data.replace(new RegExp('<!ROOTURL>', 'g'), __dirname + '/../');
                 data = data.replace(new RegExp('<!APIURL>', 'g'), '')
 
                 fs.writeFileSync(index, data);

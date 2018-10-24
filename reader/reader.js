@@ -121,8 +121,17 @@ Writer.prototype.setMediaList = function (list) {
     writer.mediaList.innerHTML = "";
 
     var mediaCount = 0;
+
+    if (list.length > 0) {
+        this.addMediaMenu.parentNode.style.left = "unset"
+    } else {
+        this.addMediaMenu.parentNode.style.left = "0px"
+
+    }
+
     for (var i = 0; i < list.length; i++) {
-        var filePath = api_url + list[i]
+        const filePath = api_url + list[i]
+        const name = FileUtils.getFilename(list[i])
         console.log("file " + filePath)
         var el = document.createElement("div")
         el.classList.add("media")
@@ -145,8 +154,16 @@ Writer.prototype.setMediaList = function (list) {
             var img = document.createElement("img")
             img.src = rootpath + "/img/file.svg"
             el.appendChild(img)
-            el.innerHTML += "<br /> " + filePath
+            el.innerHTML += "<br /> " + name.substr(0, 15)
             el.classList.add("media-file")
+            el.filePath = filePath
+            if (filePath.endsWith("opus")) {
+                el.onclick = function () {
+                    writer.recorder.setAudioUrl(filePath, name)
+                    writer.recorderDialog.showModal()
+                }
+            }
+
         }
         writer.mediaList.appendChild(el)
     }
@@ -162,7 +179,16 @@ Writer.prototype.refreshMedia = function () {
     })
 }
 
-Writer.prototype.sendFiles = function (files) {
+Writer.prototype.deleteMedia = function (name) {
+    console.log("name " + name)
+    var writer = this;
+    RequestBuilder.sRequestBuilder.delete("/note/open/" + this.saveID + "/media?path=" + encodeURIComponent(this.note.path) + "&media=" + encodeURIComponent(name), function (error, data) {
+        if (!error)
+            writer.setMediaList(data);
+    })
+}
+
+Writer.prototype.sendFiles = function (files, callback) {
     $("#media-loading").fadeIn();
     var writer = this;
     RequestBuilder.sRequestBuilder.postFiles("/note/open/" + this.saveID + "/addMedia", {
@@ -173,6 +199,8 @@ Writer.prototype.sendFiles = function (files) {
         }
         $("#media-loading").fadeOut();
         writer.setMediaList(data);
+        if (callback)
+            callback(data)
 
     })
 }
@@ -334,6 +362,8 @@ Writer.prototype.displaySnack = function (data) {
 }
 Writer.prototype.init = function () {
     var writer = this;
+    this.recorder = new CarnetRecorder();
+
     window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
         if (errorMsg.indexOf("parentElement") >= 0) //ignore that one
             return;
@@ -373,6 +403,11 @@ Writer.prototype.init = function () {
     this.styleDialog = this.elem.querySelector('#style-dialog');
     if (!this.styleDialog.showModal) {
         dialogPolyfill.registerDialog(this.styleDialog);
+    }
+
+    this.recorderDialog = this.elem.querySelector('#recorder-container');
+    if (!this.recorderDialog.showModal) {
+        dialogPolyfill.registerDialog(this.recorderDialog);
     }
 
     this.newKeywordDialog = this.elem.querySelector('#new-keyword-dialog');
@@ -530,12 +565,19 @@ Writer.prototype.init = function () {
             new MaterialDataTable(writer.keywordsList)
         } catch (e) { }
     })
+
+    this.addMediaMenu = document.getElementById("add-media-menu")
     document.getElementById("exit").onclick = function () {
         writer.toggleDrawer();
         writer.askToExit();
     }
-    document.getElementById("add-media-button").onclick = writer.addMedia;
-
+    document.getElementById("add-file-button").onclick = function () {
+        writer.addMedia();
+    }
+    document.getElementById("add-recording-button").onclick = function () {
+        writer.recorder.new()
+        writer.recorderDialog.showModal()
+    }
     document.getElementById("rename-button").onclick = document.getElementById("export-button").onclick = function () {
         writer.toggleDrawer();
         writer.warnNotYetImplemented()
