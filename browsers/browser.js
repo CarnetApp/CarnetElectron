@@ -530,9 +530,9 @@ var loadingView = document.getElementById("loading-view")
 //var browserElem = document.getElementById("browser")
 console.log("pet")
 
-
-for (var dia of document.getElementsByClassName("mdl-dialog")) {
-    dialogPolyfill.registerDialog(dia);
+var dias = document.getElementsByClassName("mdl-dialog")
+for (var i = 0; i < dias.length; i++) {
+    dialogPolyfill.registerDialog(dias[i]);
 }
 
 document.getElementById("search-button").onclick = function () {
