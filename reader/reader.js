@@ -121,6 +121,8 @@ Writer.prototype.setMediaList = function (list) {
     writer.mediaList.innerHTML = "";
 
     var mediaCount = 0;
+    if (list == undefined)
+        list = []
 
     if (list.length > 0) {
         this.addMediaMenu.parentNode.style.left = "unset"
