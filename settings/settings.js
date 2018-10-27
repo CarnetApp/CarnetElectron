@@ -1,18 +1,19 @@
 var currentPath;
 document.getElementById("select_note_path_button").onclick = function () {
-  if (isElectron) {
+  if (compatibility.isElectron) {
+    const {
+      remote
+    } = require('electron');
     var dialog = remote.dialog;
     dialog.showOpenDialog({
       properties: ['openDirectory']
     }, function (path) {
       if (path != undefined) {
-        settingsHelper.setNotePath(path)
-
-        document.getElementById("restarting").style.display = "block";
-        setTimeout(function () {
-          remote.app.relaunch();
-          remote.app.exit(0);
-        }, 3000)
+        RequestBuilder.sRequestBuilder.post("/settings/note_path", {
+          path: path
+        }, function (error, data) {
+          window.location.reload(true)
+        });
       }
 
     })
@@ -38,7 +39,7 @@ RequestBuilder.sRequestBuilder.get("/settings/note_path", function (error, data)
 document.getElementById("cloudsync").onclick = function () {
   console.log("pet")
   const url = 'https://github.com/PhieF/QuickDocDocumentation/blob/master/README.md';
-  if (isElectron) {
+  if (compatibility.isElectron) {
     var {
       shell
     } = require('electron');
@@ -57,17 +58,32 @@ document.getElementById("export").onclick = function () {
 }
 
 document.getElementById("liberapay").onclick = function () {
-  var win = window.open("https://liberapay.com/~34946", '_blank');
-  win.focus();
+  const url = 'https://liberapay.com/~34946';
+  if (compatibility.isElectron) {
+    var {
+      shell
+    } = require('electron');
+    shell.openExternal(url);
+  } else {
+    var win = window.open(url, '_blank');
+    win.focus();
+  }
 }
 
 document.getElementById("paypal").onclick = function () {
-  var win = window.open("https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YMHT55NSCLER6", '_blank');
-  win.focus();
+  const url = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YMHT55NSCLER6";
+  if (compatibility.isElectron) {
+    var {
+      shell
+    } = require('electron');
+    shell.openExternal(url);
+  } else {
+    var win = window.open(url, '_blank');
+    win.focus();
+  }
 }
 
 document.getElementById("import").onclick = function () {
-  var settingsHelper = new SettingsHelper();
   var {
     remote
   } = require('electron');
@@ -81,11 +97,12 @@ document.getElementById("import").onclick = function () {
   const url = require('url')
   const path = require('path')
   win.loadURL(url.format({
-    pathname: path.join(__dirname, '../importer/importer.html'),
+    pathname: path.join(__dirname, 'importer/importer.html'),
     protocol: 'file:',
     slashes: true
   }))
   win.setMenu(null)
+
 }
 const isWeb = true;
 if (isWeb) {

@@ -26,17 +26,20 @@ var handle = function (method, path, data, callback) {
     }
     if (method === "GET") {
         switch (path) {
+            case "/settings/note_path":
+                callback(false, settingsHelper.getNotePath())
+                return;
             case "/recentdb":
                 new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid()).getFullDB(function (err, data) {
                     callback(err, data)
                 }, true);
-                break;
+                return;
             case "/keywordsdb":
                 new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).getFullDB(function (err, data) {
 
                     callback(err, data)
                 }, true);
-                break;
+                return;
             case "/note/open/prepare":
                 prepareEditor(callback);
                 return;
@@ -128,6 +131,11 @@ var handle = function (method, path, data, callback) {
         }
     } else if (method === "POST") {
         switch (path) {
+            case "/settings/note_path":
+                settingsHelper.setNotePath(data.path)
+                callback(false, undefined)
+                console.log("ok")
+                return;
             case "/recentdb/action":
                 for (action of data.data) {
                     console.log(action.action);

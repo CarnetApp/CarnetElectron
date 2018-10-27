@@ -46,6 +46,8 @@ class BrowserCompatibility extends Compatibility {
                 document.getElementById("close-button").onclick = function () {
                     remote.app.exit(0);
                 }
+                document.getElementById("settings-button").href = "settings.html"
+
             }
         });
 
