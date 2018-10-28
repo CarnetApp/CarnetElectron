@@ -1,6 +1,6 @@
 {
-  "name": "QuickDoc",
-  "version": "0.1.0",
+  "name": "Carnet",
+  "version": "0.4.0",
   "main": "main.js",
   "scripts": {
     "postinstall": "install-app-deps",
@@ -9,9 +9,9 @@
     "dist": "build"
   },
   "author": {
-    "name": "Barney Rubble",
-    "email": "b@rubble.com",
-    "url": "http://barnyrubble.tumblr.com/"
+    "name": "Phie",
+    "email": "phie@phie.ovh",
+    "url": "https://github.com/PhieF/CarnetElectron/"
   },
   "build": {
     "appId": "QuickDoc",
