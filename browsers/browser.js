@@ -678,7 +678,7 @@ if (launchCount == null || launchCount == undefined) {
     launchCount = 1
 }
 console.log("launch count " + launchCount)
-if (launchCount % 1 == 0)
+if (launchCount % 10 == 0)
     setTimeout(function () {
         displaySnack({
             message: "This application was created for free, please, consider making a donation",
