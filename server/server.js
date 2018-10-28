@@ -33,7 +33,6 @@ var handle = function (method, path, data, callback) {
                 callback(false, settingsHelper.getNotePath())
                 return;
             case "/settings/current_version":
-                var fs = require('fs');
                 fs.readFile(__dirname + '/../version', 'utf8', function (err, data) {
                     if (err) {
                     }
