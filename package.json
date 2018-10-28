@@ -13,10 +13,6 @@
     "email": "phie@phie.ovh",
     "url": "https://github.com/PhieF/CarnetElectron/"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PhieF/CarnetElectron/"
-  },
   "build": {
     "appId": "org.spisoft.carnet",
     "dmg": {
