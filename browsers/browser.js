@@ -85,7 +85,7 @@ function openNote(notePath) {
                 loadingView.style.display = "block"
             }
             setTimeout(function () {
-                writerFrame.openDevTools()
+                // writerFrame.openDevTools()
             }, 1000)
         }
         else {
