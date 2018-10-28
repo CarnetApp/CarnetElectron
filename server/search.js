@@ -1,7 +1,6 @@
 var fs = require("fs");
-var Search = function (keyword, path, callback) {
+var Search = function (keyword, path) {
     this.keyword = keyword.toLowerCase();
-    this.callback = callback;
     this.path = path
 }
 
@@ -13,18 +12,21 @@ Search.prototype.start = function () {
 
     this.recursiveVisit(this.path, function () {
         if (search.fileList.length > 0) {
-            search.searchInFiles(search.callback);
+            search.searchInFiles();
         }
     })
 }
-Search.prototype.searchInFiles = function (callback) {
+Search.prototype.searchInFiles = function () {
     var search = this;
     if (search.fileList.length > 0) {
         this.searchInFile(search.fileList.pop(), function () {
-            search.searchInFiles(callback)
+            setTimeout(function () {
+                search.searchInFiles()
+            }, 50)
         })
-    } else
-        callback.onEnd(this.result)
+    } else {
+
+    }
 
 }
 
@@ -37,20 +39,23 @@ function stripExtensionFromName(name) {
 }
 Search.prototype.searchInFile = function (filePath, callback) {
     console.log("searchInFile " + filePath)
-    var NoteOpener = require("../note/note-opener").NoteOpener
-    var Note = require("./note").Note
+    var NoteOpener = require("./note/note-opener").NoteOpener
+    var Note = require("../browsers/note").Note
 
     var opener = new NoteOpener(new Note(filePath, "", filePath, undefined))
     var search = this;
     try {
-        console.log("opening")
 
-        opener.getMainTextAndMetadata(function (txt, metadata) {
+        opener.getMainTextMetadataAndPreviews(function (txt, metadata) {
             var fileName = stripExtensionFromName(getFilenameFromPath(filePath));
-            console.log("opened")
+
             if (fileName.toLowerCase().indexOf(search.keyword) >= 0 || txt !== undefined && txt.toLowerCase().indexOf(search.keyword) >= 0 || metadata !== undefined && metadata.keywords.indexOf(search.keyword) >= 0) {
-                search.result.push(new Note(fileName, txt, filePath, metadata))
-                search.callback.update(new Note(stripExtensionFromName(getFilenameFromPath(filePath)), txt, filePath, metadata))
+                search.result.push({
+                    name: fileName,
+                    path: filePath.substr(search.path.length),
+                    isDir: false,
+                    mtime: 0
+                })
                 console.log("found in " + filePath)
 
             }
@@ -78,7 +83,10 @@ Search.prototype.recursiveVisit = function (path, callback) {
                 }
             }
         if (search.toVisit.length > 0) {
-            search.recursiveVisit(search.toVisit.pop(), callback)
+            setTimeout(function () {
+                search.recursiveVisit(search.toVisit.pop(), callback)
+
+            }, 50)
         } else
             callback()
     });

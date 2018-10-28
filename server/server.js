@@ -6,7 +6,8 @@ var SettingsHelper = require("../settings/settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
 var NoteOpener = require("./note/note-opener").NoteOpener;
 var NoteUtils = require("./note/NoteUtils").NoteUtils;
-
+var Search = require("./search").Search;
+var currentSearch = undefined;
 var Note = require("../browsers/note").Note;
 var fs = require('fs');
 const path = require('path')
@@ -25,7 +26,15 @@ var handle = function (method, path, data, callback) {
         }
     }
     if (method === "GET") {
-        switch (path) {
+        switch (pathBeforeArgs) {
+            case "/notes/search":
+                currentSearch = new Search(args['query'], settingsHelper.getNotePath() + "/" + args['path'])
+                currentSearch.start();
+                callback(false, "");
+                return;
+            case "/notes/getSearchCache":
+                callback(false, currentSearch.result)
+                return;
             case "/settings/isfirstrun":
                 callback(false, settingsHelper.isFirstRun())
                 return;
