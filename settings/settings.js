@@ -70,6 +70,18 @@ document.getElementById("liberapay").onclick = function () {
   }
 }
 
+document.getElementById("sources").onclick = function () {
+  if (compatibility.isElectron) {
+    var {
+      shell
+    } = require('electron');
+    shell.openExternal("https://github.com/PhieF/CarnetElectron");
+  } else {
+    var win = window.open("https://github.com/PhieF/CarnetNextcloud/", '_blank');
+    win.focus();
+  }
+}
+
 document.getElementById("paypal").onclick = function () {
   const url = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YMHT55NSCLER6";
   if (compatibility.isElectron) {
