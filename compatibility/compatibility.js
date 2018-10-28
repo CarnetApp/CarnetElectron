@@ -9,7 +9,7 @@ class Compatibility {
             console.log("set resquest builder")
         }
     }
-    openLink(url) {
+    openUrl(url) {
         if (compatibility.isElectron) {
             var {
                 shell
