@@ -673,3 +673,21 @@ setTimeout(function () {
     })
 }, 2000);
 initDragAreas();
+var launchCount = parseInt(store.get("launch_count"))
+if (launchCount == null || launchCount == undefined) {
+    launchCount = 1
+}
+console.log("launch count " + launchCount)
+if (launchCount % 1 == 0)
+    setTimeout(function () {
+        displaySnack({
+            message: "This application was created for free, please, consider making a donation",
+            timeout: 10000,
+            actionText: "Donate",
+            actionHandler: function () {
+                const url = 'https://liberapay.com/~34946';
+                compatibility.openUrl(url)
+            }
+        })
+    }, 10000);
+store.set("launch_count", launchCount + 1)

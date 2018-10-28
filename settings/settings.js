@@ -37,17 +37,9 @@ RequestBuilder.sRequestBuilder.get("/settings/note_path", function (error, data)
 })
 
 document.getElementById("cloudsync").onclick = function () {
-  console.log("pet")
   const url = 'https://github.com/PhieF/QuickDocDocumentation/blob/master/README.md';
-  if (compatibility.isElectron) {
-    var {
-      shell
-    } = require('electron');
-    shell.openExternal(url);
-  } else {
-    var win = window.open(url, '_blank');
-    win.focus();
-  }
+  compatibility.openUrl(url)
+
   return false;
 };
 
@@ -59,15 +51,7 @@ document.getElementById("export").onclick = function () {
 
 document.getElementById("liberapay").onclick = function () {
   const url = 'https://liberapay.com/~34946';
-  if (compatibility.isElectron) {
-    var {
-      shell
-    } = require('electron');
-    shell.openExternal(url);
-  } else {
-    var win = window.open(url, '_blank');
-    win.focus();
-  }
+  compatibility.openUrl(url)
 }
 
 document.getElementById("sources").onclick = function () {
@@ -84,15 +68,8 @@ document.getElementById("sources").onclick = function () {
 
 document.getElementById("paypal").onclick = function () {
   const url = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YMHT55NSCLER6";
-  if (compatibility.isElectron) {
-    var {
-      shell
-    } = require('electron');
-    shell.openExternal(url);
-  } else {
-    var win = window.open(url, '_blank');
-    win.focus();
-  }
+  compatibility.openUrl(url)
+
 }
 
 document.getElementById("import").onclick = function () {

@@ -9,5 +9,16 @@ class Compatibility {
             console.log("set resquest builder")
         }
     }
+    openLink(url) {
+        if (compatibility.isElectron) {
+            var {
+                shell
+            } = require('electron');
+            shell.openExternal(url);
+        } else {
+            var win = window.open(url, '_blank');
+            win.focus();
+        }
+    }
 }
 
