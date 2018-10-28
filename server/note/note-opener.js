@@ -41,7 +41,6 @@ PreviewOpener.prototype.start = function () {
   var extractor = this;
   this.files = [];
   this.zip.folder("data").forEach(function (relativePath, file) {
-    console.log(relativePath)
 
     if (relativePath.startsWith("preview_")) {
       extractor.files.push(file.name)
@@ -51,17 +50,14 @@ PreviewOpener.prototype.start = function () {
 }
 
 PreviewOpener.prototype.fullRead = function () {
-  console.log("fullExtract = " + this.files.length)
 
   if (this.currentFile >= this.files.length || this.currentFile >= 2) {
-    console.log("size = " + this.files.length)
-    console.log("took " + (Date.now() - this.startTime) + "ms")
+
     this.callback(this.data)
     return;
   }
   var filename = this.files[this.currentFile]
   var previewOpener = this;
-  console.log("extract  = " + filename)
   var file = this.zip.file(filename);
 
   if (file != null) {
@@ -97,16 +93,13 @@ NoteOpener.prototype.getFullHTML = function (callback) {
       callback(undefined, undefined)
       return console.log(err);
     }
-    console.log("loadAsync  " + data.length)
 
     if (data.length != 0)
       JSZip.loadAsync(data, {
         base64: true
       }).then(function (zip) {
-        console.log("then  " + zip)
 
         zip.file("index.html").async("string").then(function (content) {
-          console.log("ok  ")
 
           callback(content, zip)
         })

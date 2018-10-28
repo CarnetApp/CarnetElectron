@@ -17,7 +17,6 @@ const store = new Store();
 var noteCacheStr = String(store.get("note_cache"))
 if (noteCacheStr == "undefined")
     noteCacheStr = "{}"
-console.log("cache loaded " + noteCacheStr)
 var oldNotes = JSON.parse(noteCacheStr);
 /*var main = remote.require("./main.js");
 var SettingsHelper = require("./settings/settings_helper").SettingsHelper
