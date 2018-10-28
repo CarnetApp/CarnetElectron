@@ -672,10 +672,11 @@ setTimeout(function () {
     })
 }, 2000);
 initDragAreas();
-var launchCount = parseInt(store.get("launch_count"))
+var launchCount = store.get("launch_count")
 if (launchCount == null || launchCount == undefined) {
     launchCount = 1
 }
+else launchCount = parseInt(launchCount)
 console.log("launch count " + launchCount)
 if (launchCount % 10 == 0)
     setTimeout(function () {
