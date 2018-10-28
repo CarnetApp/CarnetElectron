@@ -26,6 +26,9 @@ var handle = function (method, path, data, callback) {
     }
     if (method === "GET") {
         switch (path) {
+            case "/settings/isfirstrun":
+                callback(false, settingsHelper.isFirstRun())
+                return;
             case "/settings/note_path":
                 callback(false, settingsHelper.getNotePath())
                 return;
