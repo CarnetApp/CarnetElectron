@@ -43,9 +43,9 @@ SettingsHelper.prototype.getAppUid = function () {
 
 SettingsHelper.prototype.isFirstRun = function () {
     var first = store.get("first_launch")
-    if (first == null)
+    if (first == null || first == undefined)
         store.set("first_launch", false)
-    return first == null
+    return first == null || first == undefined
 }
 
 exports.SettingsHelper = SettingsHelper;

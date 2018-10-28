@@ -58,7 +58,6 @@ function startKeywordsMerging() {
 }
 
 function createWindow() {
-    store.set("first_launch", false)
     setTimeout(function () {
         startMerging();
         startKeywordsMerging()
@@ -125,7 +124,7 @@ function createWindow() {
     }))
 
     // Open the DevTools.
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
     console.log("app uid " + uid)
 
     // Emitted when the window is closed.
