@@ -2,6 +2,7 @@
   "name": "Carnet",
   "version": "0.4.1",
   "main": "main.js",
+  "publish": "never",
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "npm install && electron ./app",
