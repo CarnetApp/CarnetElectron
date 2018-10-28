@@ -1,6 +1,6 @@
 {
-  "name": "carnet",
-  "version": "0.4.0",
+  "name": "Carnet",
+  "version": "0.4.1",
   "main": "main.js",
   "scripts": {
     "postinstall": "install-app-deps",
@@ -13,8 +13,12 @@
     "email": "phie@phie.ovh",
     "url": "https://github.com/PhieF/CarnetElectron/"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PhieF/CarnetElectron/"
+  },
   "build": {
-    "appId": "Carnet",
+    "appId": "org.spisoft.carnet",
     "dmg": {
       "contents": [
         {
@@ -29,7 +33,12 @@
         }
       ]
     },
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
     "linux": {
+      "synopsis": "Powerful note taking apps that can also be used on nextcloud and android",
+      "category": "Office",
       "target": [
         {
           "target": "AppImage",
@@ -66,6 +75,6 @@
   },
   "devDependencies": {
     "electron": "1.7.16",
-    "electron-builder": "^19.56.0"
+    "electron-builder": "^20.29.0"
   }
 }

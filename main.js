@@ -112,7 +112,7 @@ function createWindow() {
         width: 1030,
         height: 600,
         frame: false,
-        icon: path.join(__dirname, 'assets/images/QuickDoc.png')
+        icon: path.join(__dirname, 'img/512x512.png')
     })
     win.setMenu(null)
 
