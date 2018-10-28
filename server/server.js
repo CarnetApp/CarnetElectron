@@ -29,6 +29,14 @@ var handle = function (method, path, data, callback) {
             case "/settings/note_path":
                 callback(false, settingsHelper.getNotePath())
                 return;
+            case "/settings/current_version":
+                var fs = require('fs');
+                fs.readFile(__dirname + '/../version', 'utf8', function (err, data) {
+                    if (err) {
+                    }
+                    callback(err, data)
+                })
+                return;
             case "/recentdb":
                 new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid()).getFullDB(function (err, data) {
                     callback(err, data)

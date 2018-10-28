@@ -47,6 +47,40 @@ class BrowserCompatibility extends Compatibility {
                     remote.app.exit(0);
                 }
                 document.getElementById("settings-button").href = "settings.html"
+                setTimeout(function () {
+                    RequestBuilder.sRequestBuilder.get("/settings/current_version", function (error, version) {
+                        if (!error) {
+                            console.log("current version " + version)
+                            $.ajax({
+                                url: "https://qn.phie.ovh/binaries/desktop/current_version",
+                                type: "GET",
+                                success: function (newVersion) {
+                                    console.log("new version " + newVersion)
+                                    if (version != newVersion) {
+                                        displaySnack(
+                                            {
+                                                message: "New version available",
+                                                timeout: 10000,
+                                                actionHandler: function () {
+                                                    var {
+                                                        shell
+                                                    } = require('electron');
+                                                    shell.openExternal("https://qn.phie.ovh/binaries/desktop/");
+                                                },
+                                                actionText: 'Download'
+                                            })
+                                    }
+                                },
+                                fail: function () {
+                                },
+                                error: function (e) {
+                                }
+                            });
+
+                        }
+
+                    })
+                }, 5000)
 
             }
         });

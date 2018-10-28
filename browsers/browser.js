@@ -102,6 +102,11 @@ function openNote(notePath) {
     //window.location.assign("writer?path=" + encodeURIComponent(notePath));
 }
 
+var displaySnack = function (data) {
+    var snackbarContainer = document.querySelector('#snackbar');
+    if (!(typeof snackbarContainer.MaterialSnackbar == undefined))
+        snackbarContainer.MaterialSnackbar.showSnackbar(data);
+}
 
 function oldOpenNote(notePath) {
     currentNotePath = notePath
