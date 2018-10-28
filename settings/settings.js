@@ -104,8 +104,10 @@ document.getElementById("import").onclick = function () {
   win.setMenu(null)
 
 }
-const isWeb = true;
-if (isWeb) {
+if (compatibility.isElectron) {
+  document.getElementById("recent-button").href = "index.html"
+  document.getElementById("browser-button").href = "index.html"
+} else {
   document.getElementById("recent-button").href = "./"
   document.getElementById("browser-button").href = "./"
 }
