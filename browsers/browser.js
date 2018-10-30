@@ -3,6 +3,7 @@ var currentPath;
 var currentTask = undefined;
 var noteCardViewGrid = undefined;
 var notePath = []
+var oldFiles = undefined;
 var wasNewNote = false
 var dontOpen = false;
 var currentNotePath = undefined
@@ -372,11 +373,14 @@ class NoteContextualDialog extends ContextualDialog {
 var mNoteContextualDialog = new NoteContextualDialog()
 var mNewFolderDialog = new NewFolderDialog()
 
-
+var refreshTimeout = undefined;
 function list(pathToList, discret) {
+    if (refreshTimeout !== undefined)
+        clearTimeout(refreshTimeout)
     if (pathToList == undefined)
         pathToList = currentPath;
     console.log("listing path " + pathToList);
+    var hasPathChanged = currentPath !== pathToList
     currentPath = pathToList;
     var settingsHelper = {};
     settingsHelper.getNotePath = function () {
@@ -398,43 +402,50 @@ function list(pathToList, discret) {
 
     var fb = new FileBrowser(pathToList);
     fb.list(function (files, endOfSearch) {
-        resetGrid(discret);
-        var noteCardViewGrid = this.noteCardViewGrid
-        var notes = [];
-        notePath = [];
-        if (currentTask != undefined)
-            currentTask.continue = false
-        if (files.length > 0) {
-            $("#emty-view").fadeOut("fast");
-        } else if (endOfSearch)
-            $("#emty-view").fadeIn("fast");
-        for (let file of files) {
-            var filename = getFilenameFromPath(file.path);
-            if (file.isFile && filename.endsWith(".sqd")) {
-                var oldNote = oldNotes[file.path];
+        if (!_.isEqual(files, oldFiles)) {
+            resetGrid(discret);
+            oldFiles = files;
+            var noteCardViewGrid = this.noteCardViewGrid
+            var notes = [];
+            notePath = [];
+            if (currentTask != undefined)
+                currentTask.continue = false
+            if (files.length > 0) {
+                $("#emty-view").fadeOut("fast");
+            } else if (endOfSearch)
+                $("#emty-view").fadeIn("fast");
+            for (let file of files) {
+                var filename = getFilenameFromPath(file.path);
+                if (file.isFile && filename.endsWith(".sqd")) {
+                    var oldNote = oldNotes[file.path];
 
-                var noteTestTxt = new Note(stripExtensionFromName(filename), oldNote != undefined ? oldNote.text : "", file.path, oldNote != undefined ? oldNote.metadata : undefined, oldNote != undefined ? oldNote.previews : undefined);
-                noteTestTxt.isPinned = file.isPinned
-                notes.push(noteTestTxt)
-            } else if (!file.isFile) {
+                    var noteTestTxt = new Note(stripExtensionFromName(filename), oldNote != undefined ? oldNote.text : "", file.path, oldNote != undefined ? oldNote.metadata : undefined, oldNote != undefined ? oldNote.previews : undefined);
+                    noteTestTxt.isPinned = file.isPinned
+                    notes.push(noteTestTxt)
+                } else if (!file.isFile) {
 
-                notes.push(file)
+                    notes.push(file)
+                }
+                notePath.push(file.path)
             }
-            notePath.push(file.path)
-        }
-        noteCardViewGrid.setNotesAndFolders(notes)
-        if (discret) {
-            document.getElementById("grid-container").scrollTop = scroll;
-            console.log("scroll : " + scroll)
+            noteCardViewGrid.setNotesAndFolders(notes)
+            if (discret) {
+                document.getElementById("grid-container").scrollTop = scroll;
+                console.log("scroll : " + scroll)
 
+            }
+            currentTask = new TextGetterTask(notes);
+            console.log("stopping and starting task")
+            currentTask.startList();
         }
-        currentTask = new TextGetterTask(notes);
-        console.log("stopping and starting task")
-        currentTask.startList();
         if (!endOfSearch) {
-            setTimeout(function () {
+            refreshTimeout = setTimeout(function () {
                 list(pathToList, true);
             }, 1000);
+        } else {
+            refreshTimeout = setTimeout(function () {
+                list(pathToList, true);
+            }, 20000);
         }
 
     });
