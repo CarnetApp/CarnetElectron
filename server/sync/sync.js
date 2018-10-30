@@ -65,6 +65,8 @@ Sync.prototype.startSync = function () {
 var correctPath = function (nextcloudRoot, path) {
     if (path.startsWith(nextcloudRoot))
         path = path.substr(nextcloudRoot.length)
+    if (path.startsWith("/" + nextcloudRoot))
+        path = path.substr(nextcloudRoot.length + 1)
     if (path.startsWith("/"))
         path = path.substr(1)
     return path;
@@ -151,6 +153,11 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
                 const stat = sync.fs.statSync(fpath)
                 sync.save(DBItem.fromFS(sync.settingsHelper.getNotePath(), fpath, stat), remoteDBItem)
                 callback();
+            }
+            else {
+                console.log("error " + err)
+
+                sync.exit()
             }
         })
     } else {
@@ -336,8 +343,9 @@ Sync.prototype.visitlocal = function (path, callback) {
                 sync.visitlocal(sync.localFoldersToVisit.pop(), callback)
 
             }, 200)
-        } else
+        } else if (sync.filesToStat.length !== 0)
             sync.statFiles(sync.filesToStat.pop(), callback)
+        else callback()
     })
 
 }
