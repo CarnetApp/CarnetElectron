@@ -48,4 +48,40 @@ SettingsHelper.prototype.isFirstRun = function () {
     return first == null || first == undefined
 }
 
+SettingsHelper.prototype.getRemoteWebdavAddr = function () {
+
+    return store.get("remote_webdav_addr")
+}
+
+SettingsHelper.prototype.getRemoteWebdavUsername = function () {
+    return store.get("remote_webdav_username")
+}
+
+SettingsHelper.prototype.getRemoteWebdavPassword = function () {
+    return store.get("remote_webdav_password")
+}
+
+SettingsHelper.prototype.getRemoteWebdavPath = function () {
+    return store.get("remote_webdav_path")
+}
+
+
+SettingsHelper.prototype.setRemoteWebdavPath = function (path) {
+
+    return store.set("remote_webdav_path", path)
+}
+
+SettingsHelper.prototype.setRemoteWebdavAddr = function (addr) {
+
+    return store.set("remote_webdav_addr", addr)
+}
+
+SettingsHelper.prototype.setRemoteWebdavUsername = function (username) {
+    return store.set("remote_webdav_username", username)
+}
+
+SettingsHelper.prototype.setRemoteWebdavPassword = function (password) {
+    return store.set("remote_webdav_password", password)
+}
+
 exports.SettingsHelper = SettingsHelper;

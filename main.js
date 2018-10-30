@@ -208,3 +208,6 @@ exports.sendRequestToServer = function (method, path, data, callback) {
 exports.createWindow = createWindow;
 
 var server = require("./server/server");
+
+var sync = new (require("./server/sync/sync")).Sync();
+sync.startSync();

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <link rel="stylesheet" href="../browsers/design.css">
+    <script src="../libs/material.js"></script>
+    <script src="../libs/date.js"></script>
+    <script src="../reader/libs/jquery.min.js"></script>
+
+    <script src="webdav_dialog.js"></script>
+
+    <link rel="stylesheet" href="../libs/material.indigo-pink.min.css">
+    <!-- Material Design icon font -->
+    <link rel="stylesheet" href="../libs/material-icons.css">
+</head>
+
+<body>
+    <style>
+        .centered-container {
+            padding-top: 15px;
+            margin-left: calc(50% - 200px);
+            width: 400px;
+        }
+
+        .name {
+            font-size: 14px;
+            display: block;
+            font-weight: bold;
+        }
+
+        .description {
+            display: block;
+
+        }
+
+        .instance {
+            background: rgb(95, 101, 175);
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            color: white;
+        }
+
+        #instances {
+            overflow-y: auto;
+            height: 320px;
+            margin-bottom: 10px;
+        }
+
+        #second-slide {
+            display: none;
+        }
+
+        #register{
+            display: none;
+        }
+        #connect-button{
+            float:right;
+        }
+        #error{
+            color:red;
+            display: none;
+        }
+    </style>
+    <div class="centered-container" id="first-slide">
+        <h3>Select a carnet server</h3>
+        <div id="instances">
+            <div class="instance" onclick="secondSlide('carnet.live')">
+                <span class="name">Carnet.live</span>
+                <span class="description">An instance dedicated to Carnet with encryption</span>
+                Registrations: <span class="registration">Open</span>
+                Reliability: <span class="reliability">Good</span>
+            </div>
+
+
+        </div>
+        Or<br />
+        <a href="#" id="connect-own-server">Connect with your own webdav/nextcloud server</a>
+    </div>
+    <div class="centered-container" id="second-slide">
+        <h3>Credentials</h3>
+        <form action="#">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="address">
+                <label class="mdl-textfield__label" for="address">Address</label>
+            </div>
+            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="is-nextcloud">
+                <input type="checkbox" id="is-nextcloud" class="mdl-checkbox__input" checked>
+                <span class="mdl-checkbox__label">is a NextCloud server</span>
+            </label>
+            <br />
+            <br />
+            <a id="register" href="#" onclick="register()">Create a new account</a>
+            <span id="error">An error occured, please check your configuration</span>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="username">
+                <label class="mdl-textfield__label" for="username">Username</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="password">
+                <label class="mdl-textfield__label" for="password">Password</label>
+            </div>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="path" value="Documents/QuickNote">
+                <label class="mdl-textfield__label" for="path">Path</label>
+            </div>
+            <button type="button" class="mdl-button" id="connect-button" onclick="connect()">Connect</button>
+        </form>
+    </div>
+
+    <div id="loading-view" style="opacity:0.5;position:fixed; top:0px; display:none; left:0px;height:100%; width:100%; z-index:100;
+                    right:0; bottom:0; background:white; ">
+        <div class="mdl-spinner mdl-js-spinner is-active " style="position:absolute; top:50%; margin-top:-50px; left:50%;
+margin-left:-50px;width:100px; height:100px; "></div>
+    </div>
+</body>
