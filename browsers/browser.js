@@ -676,7 +676,9 @@ setTimeout(function () {
             new Slides(elem, function () {
                 $(("#firstrun")).slideToggle(function () {
                     $(elem).hide();
+                    compatibility.onFirstrunEnds();
                 });
+
             });
         }
 
