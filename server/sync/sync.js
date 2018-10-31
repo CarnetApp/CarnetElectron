@@ -6,6 +6,8 @@ var Sync = function () {
     this.store = new Store();
     this.fs = require('fs');
     this.path = require('path')
+    this.FileUtils = require('../../utils/file_utils').FileUtils
+
     this.rimraf = require('rimraf');
 
 }
@@ -171,7 +173,7 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
             }).catch(function (err) {
                 console.log(err);
                 sync.exit();
-            });;
+            });
     }
 }
 
@@ -274,8 +276,12 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
         } else { //is on server
             if (remoteDbItem.remotelastmod !== localDBItem.locallastmod) {
                 //conflict
-                console.log("conflict on " + localDBItem.path)
-                cb();
+
+                if (localDBItem.type !== "directory") {
+                    console.log("conflict on " + localDBItem.path)
+                    sync.fixConflict(localDBItem, remoteDbItem, cb)
+                } else cb();
+
             } else {
                 // that's ok !
                 console.log("OK 1 ")
@@ -314,8 +320,11 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
                 else cb()
             } else {
                 //conflict
-                console.log("conflict on " + localDBItem.path)
-                cb();
+
+                if (localDBItem.type !== "directory") {
+                    console.log("conflict on " + localDBItem.path)
+                    sync.fixConflict(localDBItem, remoteDbItem, cb)
+                } else cb()
             }
 
 
@@ -323,6 +332,59 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
 
     }
 
+}
+
+Sync.prototype.fixConflict = function (localDBItem, remoteDBItem, callback) {
+    var sync = this
+    this.client
+        .getFileContents(this.nextcloudRoot + "/" + remoteDBItem.path)
+        .then(function (remoteData) {
+
+            sync.fs.readFile(sync.settingsHelper.getNotePath() + "/" + localDBItem.path, (err, localData) => {
+                if (err) {
+                    console.log(err);
+                    sync.exit();
+                    return;
+                }
+                if (localData.compare(remoteData) === 0) {
+                    console.log("conflict fixed ")
+                    sync.save(localDBItem, remoteDBItem)
+                    callback();
+                } else {
+                    console.log("real conflict... fixing ")
+                    var name = sync.FileUtils.getFilename(localDBItem.path)
+                    var newName = sync.FileUtils.stripExtensionFromName(name) + " conflict " + new Date().getTime();
+                    var extension = sync.FileUtils.getExtensionFromPath(name)
+                    if (extension != undefined)
+                        newName += "." + extension
+                    sync.fs.writeFile(sync.settingsHelper.getNotePath() + "/" + sync.FileUtils.getParentFolderFromPath(localDBItem.path) + "/" + newName, localData, (err) => {
+                        if (err) {
+                            console.log(err);
+                            sync.exit();
+                            return;
+                        }
+                        sync.fs.writeFile(sync.settingsHelper.getNotePath() + "/" + localDBItem.path, remoteData, (err) => {
+                            if (err) {
+                                console.log(err);
+                                sync.exit();
+                                return;
+                            }
+                            sync.save(localDBItem, remoteDBItem)
+                            callback();
+
+                        });
+
+                    });
+
+                }
+
+            });
+
+        }).catch(function (err) {
+            console.log(err);
+            sync.exit();
+        });
+    //
 }
 Sync.prototype.visitlocal = function (path, callback) {
     var sync = this
