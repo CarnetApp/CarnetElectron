@@ -9,7 +9,7 @@
     "postinstall": "install-app-deps",
     "start": "npm install && electron ./app",
     "pack": "build --dir",
-    "distapp": "build --linux AppImage",
+    "distapp": "build --x64 --ia32 --linux AppImage",
     "dist": "build"
   },
   "author": {
