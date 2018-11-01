@@ -1,8 +1,10 @@
 {
   "name": "Carnet",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "main": "main.js",
   "publish": "never",
+  "license": "GPLv3",
+  "description": "Carnet is a powerful note taking app which purpose is not only to write your   shopping list but can also be used to write longer texts, stories, etc. Carnet is available on Android and Linux, also on your web browser with full compatibility with Windows, Mac and Linux, with sync capabilities (not mandatory) \n \n'''Features''' \n\n * Complete editor : bold/italic/underline/color/highlight \n * Import from Google Keep (only on desktop, then sync on mobile) \n * Insert images / review \n * Open HTML format \n * Organize with folders and choose root storage folder depending on your needs \n * Keywords \n * Quickly see your recent notes \n * Search amount your notes \n * Protect the app with a pin code (won't encrypt notes) on android \n * Statistics : words/sentences/characters \n * Sync with NextCloud \n * Record audio \n * Online editor as a NextCloud App",
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "npm install && electron ./app",
@@ -43,8 +45,16 @@
             "ia32",
             "x64"
           ]
+        },
+        {
+          "target": "snap"
         }
       ]
+    },
+    "snap": {
+      "confinement": "strict",
+      "grade": "stable",
+      "summary": "Powerful note taking app with sync, online editor and android app"
     },
     "win": {
       "target": "squirrel",
