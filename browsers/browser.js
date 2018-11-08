@@ -698,7 +698,7 @@ if (launchCount % 10 == 0)
             timeout: 10000,
             actionText: "Donate",
             actionHandler: function () {
-                const url = 'https://liberapay.com/~34946';
+                const url = 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YMHT55NSCLER6';
                 compatibility.openUrl(url)
             }
         })
