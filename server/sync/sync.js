@@ -473,6 +473,6 @@ DBItem.fromNC = function (ncroot, ncItem) {
     return new DBItem(correctPath(ncroot, ncItem.filename), undefined, new Date(ncItem.lastmod).getTime() / 1000, ncItem.type);
 }
 DBItem.fromFS = function (localroot, path, stat) {
-    return new DBItem(correctLocalPath(localroot, path), stat.mtimeMs / 1000, undefined, stat.isFile() ? "file" : "directory");
+    return new DBItem(correctLocalPath(localroot, path), stat.mtimeMs != undefined ? stat.mtimeMs / 1000 : new Date(stat.mtime).getTime() / 1000, undefined, stat.isFile() ? "file" : "directory");
 }
 exports.Sync = Sync
