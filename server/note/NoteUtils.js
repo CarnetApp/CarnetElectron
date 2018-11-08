@@ -27,15 +27,17 @@ NoteUtils.renameNote = function (notePath, newPath, callback) {
     if (!fs.existsSync(settingsHelper.getNotePath() + "/" + newPath)) {
         fs.rename(settingsHelper.getNotePath() + "/" + notePath, settingsHelper.getNotePath() + "/" + newPath, function (err) {
             console.log(err)
-            if (err)
+            if (err) {
+                callback(false)
                 return;
+            }
             var db = new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid())
             db.move(notePath, newPath, function () {
-                callback();
+                callback(true);
             })
 
         })
-    }
+    } else callback(false)
 }
 
 exports.NoteUtils = NoteUtils

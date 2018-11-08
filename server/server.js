@@ -193,8 +193,8 @@ var handle = function (method, path, data, callback) {
                     callback(true, "")
                     return;
                 }
-                NoteUtils.renameNote(data.from, data.to, function () {
-                    callback(false, "")
+                NoteUtils.renameNote(data.from, data.to, function (success) {
+                    callback(!success, "")
                 })
                 return;
             case "/note/saveText":
