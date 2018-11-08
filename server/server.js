@@ -93,7 +93,7 @@ var handle = function (method, path, data, callback) {
             handler.next();
         }
         else if (path.startsWith("/note/create?path=")) {
-            var folder = path.split("=")[1];
+            var folder = decodeURIComponent(path.split("=")[1]);
             if (folder.indexOf("../") >= 0) {
                 callback(true, "");
                 return;
