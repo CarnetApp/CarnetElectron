@@ -111,9 +111,10 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1030,
         height: 600,
-        frame: false,
+        frame: settingsHelper.displayFrame(),
         icon: path.join(__dirname, 'img/512x512.png')
     })
+    win.setMenuBarVisibility(false)
     win.setMenu(null)
 
     // and load the index.html of the app.

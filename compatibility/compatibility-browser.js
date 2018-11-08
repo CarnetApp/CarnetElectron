@@ -34,17 +34,27 @@ class BrowserCompatibility extends Compatibility {
                 const {
                     remote
                 } = require('electron');
-                document.getElementById("minus-button").onclick = function () {
-                    remote.BrowserWindow.getFocusedWindow().minimize();
+                var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
+                var settingsHelper = new SettingsHelper();
+                if (settingsHelper.displayFrame()) {
+                    document.getElementById("minus-button").style.display = "none"
+                    document.getElementById("size-button").style.display = "none"
+                    document.getElementById("close-button").style.display = "none"
                 }
-                document.getElementById("size-button").onclick = function () {
-                    if (remote.BrowserWindow.getFocusedWindow().isMaximized())
-                        remote.BrowserWindow.getFocusedWindow().unmaximize();
-                    else
-                        remote.BrowserWindow.getFocusedWindow().maximize();
-                }
-                document.getElementById("close-button").onclick = function () {
-                    remote.app.exit(0);
+                else {
+
+                    document.getElementById("minus-button").onclick = function () {
+                        remote.BrowserWindow.getFocusedWindow().minimize();
+                    }
+                    document.getElementById("size-button").onclick = function () {
+                        if (remote.BrowserWindow.getFocusedWindow().isMaximized())
+                            remote.BrowserWindow.getFocusedWindow().unmaximize();
+                        else
+                            remote.BrowserWindow.getFocusedWindow().maximize();
+                    }
+                    document.getElementById("close-button").onclick = function () {
+                        remote.app.exit(0);
+                    }
                 }
                 document.getElementById("settings-button").href = "settings.html"
                 setTimeout(function () {

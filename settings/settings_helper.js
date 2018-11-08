@@ -84,4 +84,12 @@ SettingsHelper.prototype.setRemoteWebdavPassword = function (password) {
     return store.set("remote_webdav_password", password)
 }
 
+SettingsHelper.prototype.displayFrame = function () {
+    return store.get("display_frame", false)
+}
+
+SettingsHelper.prototype.setDisplayFrame = function (display) {
+    store.set("display_frame", display)
+}
+
 exports.SettingsHelper = SettingsHelper;
