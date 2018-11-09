@@ -61,50 +61,6 @@ function createWindow() {
     setTimeout(function () {
         startMerging();
         startKeywordsMerging()
-        //observe
-
-        var chokidar = require('chokidar');
-        var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/recentdb/", {
-            ignored: /^\./,
-            persistent: true,
-            ignoreInitial: true,
-            awaitWriteFinish: true
-        });
-        watcher
-            .on('add', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid) {
-                    startMerging()
-                }
-            })
-            .on('change', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid) {
-                    startMerging()
-                }
-            })
-            .on('unlink', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/recentdb/" + uid) {
-                    startMerging()
-                }
-            })
-        var watcher = chokidar.watch(exports.getNotePath() + "/quickdoc/keywords/", {
-            ignored: /^\./,
-            persistent: true,
-            ignoreInitial: true,
-            awaitWriteFinish: true
-        });
-        watcher
-            .on('add', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/keywords/" + uid)
-                    startKeywordsMerging()
-            })
-            .on('change', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/keywords/" + uid)
-                    startKeywordsMerging()
-            })
-            .on('unlink', function (path) {
-                if (path !== exports.getNotePath() + "/quickdoc/keywords/" + uid)
-                    startKeywordsMerging()
-            })
     }, 15000)
 
     // Create the browser window.
@@ -210,5 +166,11 @@ exports.createWindow = createWindow;
 
 var server = require("./server/server");
 
-var sync = new (require("./server/sync/sync")).Sync();
+var sync = new (require("./server/sync/sync")).Sync(function (hasDownloadedSmt) {
+    console.log("hasDownloadedSmt " + hasDownloadedSmt)
+    if (hasDownloadedSmt) {
+        startMerging();
+        startKeywordsMerging()
+    }
+});
 sync.startSync();

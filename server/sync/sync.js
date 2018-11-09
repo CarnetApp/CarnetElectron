@@ -1,5 +1,5 @@
 
-var Sync = function () {
+var Sync = function (onSyncEnd) {
     var SettingsHelper = require("../../settings/settings_helper").SettingsHelper;
     this.settingsHelper = new SettingsHelper();
     const Store = require('electron-store');
@@ -7,7 +7,7 @@ var Sync = function () {
     this.fs = require('fs');
     this.path = require('path')
     this.FileUtils = require('../../utils/file_utils').FileUtils
-
+    this.onSyncEnd = onSyncEnd
     this.rimraf = require('rimraf');
 
 }
@@ -25,6 +25,7 @@ Sync.prototype.connect = function () {
 
 Sync.prototype.startSync = function () {
     var sync = this;
+    this.hasDownloadedSmt = false
     if (sync.settingsHelper.getRemoteWebdavAddr() == undefined || sync.settingsHelper.getRemoteWebdavAddr() == null) {
         this.exit();
         return;
@@ -154,6 +155,7 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
             if (!err) {
                 const stat = sync.fs.statSync(fpath)
                 sync.save(DBItem.fromFS(sync.settingsHelper.getNotePath(), fpath, stat), remoteDBItem)
+                sync.hasDownloadedSmt = true;
                 callback();
             }
             else {
@@ -169,6 +171,7 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
                 sync.fs.writeFileSync(fpath, data);
                 const stat = sync.fs.statSync(fpath)
                 sync.save(DBItem.fromFS(sync.settingsHelper.getNotePath(), fpath, stat), remoteDBItem)
+                sync.hasDownloadedSmt = true;
                 callback();
             }).catch(function (err) {
                 console.log(err);
@@ -184,6 +187,7 @@ Sync.prototype.exit = function (error) {
     setTimeout(function () {
         sync.startSync()
     }, 10 * 60 * 1000)
+    this.onSyncEnd(this.hasDownloadedSmt)
 }
 
 Sync.prototype.deleteLocalAndSave = function (local, callback) {

@@ -64,7 +64,6 @@
   },
   "dependencies": {
     "archiver": "^2.0.3",
-    "chokidar": "^1.7.0",
     "desandro-matches-selector": "^2.0.2",
     "electron-store": "^1.3.0",
     "ev-emitter": "^1.1.1",
