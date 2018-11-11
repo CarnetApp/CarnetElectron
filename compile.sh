@@ -6,21 +6,20 @@ fi
 
 if [ "$1" == "android" ]; then
     echo "compiling for android"
-    mkdir build/
+    rm -R dist/build/
+    mkdir dist/build/ -p
     
-    cp reader build/ -R
-    mkdir build/compatibility
-    cp compatibility/android/* build/compatibility/ -R
-    cp compatibility.js build/ -R
-    cp browsers build/ -R
-    cp libs build/ -R
-    cp note build -R
-    cp utils build/ -R
-    cp img build/ -R
-    cp keywords build/ -R
-    cp requests build/ -R
-    ./node_modules/.bin/babel --presets es2015  build/ -d build/
-    cp reader/assets/scripts/Countable.js build/reader/assets/scripts/
+    cp reader dist/build/ -R
+    cp compatibility dist/build/ -R
+    cp browsers dist/build/ -R
+    cp libs dist/build/ -R
+    cp utils dist/build/ -R
+    cp img dist/build/ -R
+    cp keywords dist/build/ -R
+    cp requests dist/build/ -R
+    ./node_modules/.bin/babel --presets @babel/preset-env  dist/build/ -d dist/build/
+    cp reader/assets/scripts/Countable.js dist/build/reader/assets/scripts/
     rm "$2"/app/src/main/assets/reader  -R
-    cp build "$2"/app/src/main/assets/reader -R
+    rm "$2"/app/src/main/assets/reader -R
+    cp dist/build "$2"/app/src/main/assets/reader -R
 fi
