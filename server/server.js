@@ -245,8 +245,11 @@ var handle = function (method, path, data, callback) {
                 }
                 var tmppath = getTmpPath() + "/note/data" + toDelete;
                 fs.unlink(tmppath, function () {
-                    saveNote(note, function () {
-                        getMediaList(callback)
+                    fs.unlink(getTmpPath() + "/note/data/preview_" + toDelete.substring(1) + ".jpg", function (e) {
+                        console.log(e)
+                        saveNote(note, function () {
+                            getMediaList(callback)
+                        })
                     })
                 })
                 return;
@@ -281,8 +284,6 @@ var addMedias = function (path, files, callback) {
     var handler = new ArrayHandler(files, function (file) {
         fs.writeFile(tmppath + 'data/' + file.name, file.data, 'base64', function (err) {
             if (!err) {
-
-                // open a file called "lenna.png"
                 Jimp.read(tmppath + 'data/' + file.name, (err, image) => {
                     if (!err) {
                         image.scaleToFit(200, 200);

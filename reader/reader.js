@@ -87,7 +87,7 @@ Writer.prototype.displayMediaFullscreen = function (index) {
         $(writer.fullscreenViewer).hide("slow")
         return false;
     }
-    deleteButton = document.createElement("button")
+    var deleteButton = document.createElement("button")
 
     deleteButton.classList.add('mdl-button');
     deleteButton.classList.add('mdl-js-button')
