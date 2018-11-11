@@ -726,6 +726,7 @@ Writer.prototype.reset = function () {
         snackbarContainer.queuedNotifications_ = [];
         snackbarContainer.MaterialSnackbar.cleanup_()
     }
+    this.setDoNotEdit(false)
 }
 
 Writer.prototype.setColor = function (color) {
@@ -822,7 +823,7 @@ RenameNoteTask.prototype.run = function (callback) {
     }
     path += ".sqd"
     if (path.startsWith("./"))
-        path.substr(2);
+        path = path.substr(2);
 
     RequestBuilder.sRequestBuilder.post("/notes/move", {
         from: this.writer.note.path,
