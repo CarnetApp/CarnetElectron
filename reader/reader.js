@@ -721,6 +721,11 @@ Writer.prototype.reset = function () {
         if (dias[i].open)
             dias[i].close()
     }
+    var snackbarContainer = document.querySelector('#snackbar');
+    if (snackbarContainer != undefined && !(typeof snackbarContainer.MaterialSnackbar == undefined)) {
+        snackbarContainer.queuedNotifications_ = [];
+        snackbarContainer.MaterialSnackbar.cleanup_()
+    }
 }
 
 Writer.prototype.setColor = function (color) {
@@ -816,6 +821,9 @@ RenameNoteTask.prototype.run = function (callback) {
         }
     }
     path += ".sqd"
+    if (path.startsWith("./"))
+        path.substr(2);
+
     RequestBuilder.sRequestBuilder.post("/notes/move", {
         from: this.writer.note.path,
         to: path,
