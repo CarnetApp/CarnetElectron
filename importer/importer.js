@@ -92,7 +92,7 @@ Importer.prototype.importNotes = function () {
         }
         var KeywordsDBManager = require("../server/keywords/keywords_db_manager").KeywordsDBManager
         var db = new KeywordsDBManager(SettingsHelper.getNotePath() + "/quickdoc/keywords/" + SettingsHelper.getAppUid())
-        db.actionArray(importer.timeStampedKeywords, "add", function () {
+        db.actionArray(importer.timeStampedKeywords, function () {
             importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
 
         })
@@ -321,6 +321,7 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
                 keywords.push(label.innerText)
                 console.log("label " + label.innerText)
                 importer.timeStampedKeywords.push({
+                    action: 'add',
                     time: time,
                     path: notePath.substring((importer.notePath + '/').length),
                     keyword: label.innerText
