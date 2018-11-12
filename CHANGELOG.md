@@ -1,3 +1,9 @@
+# Version 0.9.0
+
+- Rename inside note editor
+- Fix Google Keep import
+- multiple fix
+
 # Version 0.4.3
 
 - Sync with Nextcloud/WebDav
