@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../browsers/design.css">
     <script src="../libs/material.js"></script>
     <script src="../libs/date.js"></script>
+    <script src="../libs/moment.js"></script>
     <script src="../reader/libs/jquery.min.js"></script>
 
     <script src="importer.js"></script>
@@ -35,11 +36,13 @@
         <h2>Google Keep</h2>
         Google provides a way to export all of your Google Keep notes.
         <br />
-        <a onclick="require('electron').shell.openExternal( 'https://takeout.google.com/settings/takeout'); return false;" href="#">Follow this link</a>
+        <a onclick="require('electron').shell.openExternal( 'https://takeout.google.com/settings/takeout'); return false;"
+            href="#">Follow this link</a>
         <br />
         <br /> and select Google Keep.
         <br />
-        <br /> Once the archive is downloaded, please extract it to an empty folder and select folder with notes, usually takout/Google
+        <br /> Once the archive is downloaded, please extract it to an empty folder and select folder with notes,
+        usually takout/Google
         Keep
         <br />
         <br />

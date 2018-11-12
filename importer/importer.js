@@ -22,7 +22,7 @@ var Importer = function (destPath) {
         if (event.channel == "pathSelected") {
             importer.path = event.args[0]
             console.log("event.channel " + event.args[0])
-            importer.fillNoteList()
+            importer.fillNoteList(function () { })
             document.getElementById("folder-picker").style.display = "none"
             $("#select-folder").hide()
             $("#note-selection-view").show()
@@ -80,9 +80,9 @@ Importer.prototype.importNotes = function () {
             for (var er of importer.timeStampedNotes) {
                 paths.push(er.path)
             }
-            var RecentDBManager = require("../recent/recent_db_manager").RecentDBManager
+            var RecentDBManager = require("../server/recent/local_recent_db_manager").LocalRecentDBManager
             var db = new RecentDBManager(SettingsHelper.getNotePath() + "/quickdoc/recentdb/" + SettingsHelper.getAppUid())
-            db.actionArray(importer.timeStampedNotes, "add", function () {
+            db.actionArray(importer.timeStampedNotes, function () {
                 importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
 
             })
@@ -90,7 +90,7 @@ Importer.prototype.importNotes = function () {
             importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
 
         }
-        var KeywordsDBManager = require("../keywords/keywords_db_manager").KeywordsDBManager
+        var KeywordsDBManager = require("../server/keywords/keywords_db_manager").KeywordsDBManager
         var db = new KeywordsDBManager(SettingsHelper.getNotePath() + "/quickdoc/keywords/" + SettingsHelper.getAppUid())
         db.actionArray(importer.timeStampedKeywords, "add", function () {
             importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
@@ -230,7 +230,7 @@ Importer.prototype.writeNext = function (callback) {
     });
 }
 
-function DateError() {}
+function DateError() { }
 
 Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
     var FileUtils = require("../utils/file_utils.js").FileUtils
@@ -302,10 +302,13 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
         var time = getDateFromFormat(fixedDate, "dd MMM yyyy HH:mm:ss")
         if (time == 0) //try different
             time = getDateFromFormat(fixedDate, "d MMM yyyy HH:mm:ss")
+        if (time == 0) //try moment
+            time = moment(fixedDate).toDate().getTime()
         if (time == 0)
             throw new DateError()
         var notePath = destFolder + "/" + (title == date ? "untitled" : "") + FileUtils.stripExtensionFromName(fileName) + ".sqd"
         importer.timeStampedNotes.push({
+            action: "add",
             time: time,
             path: notePath.substring((importer.notePath + '/').length)
         });
@@ -404,6 +407,3 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
     });
 
 }
-
-
-exports.Importer = Importer;
