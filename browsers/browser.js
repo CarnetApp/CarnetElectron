@@ -244,6 +244,7 @@ function resetGrid(discret) {
     noteCardViewGrid.onMenuClick(function (note) {
         mNoteContextualDialog.show(note)
     })
+    return scroll;
 }
 
 class ContextualDialog {
@@ -382,12 +383,9 @@ function list(pathToList, discret) {
     console.log("listing path " + pathToList);
     var hasPathChanged = currentPath !== pathToList
     currentPath = pathToList;
-    var settingsHelper = {};
-    settingsHelper.getNotePath = function () {
-        return "pet"
-    };
-    if (pathToList == settingsHelper.getNotePath() || pathToList == initPath || pathToList.startsWith("keyword://")) {
-        if (pathToList != settingsHelper.getNotePath()) {
+
+    if (pathToList == "/" || pathToList == initPath || pathToList.startsWith("keyword://")) {
+        if (pathToList != "/") {
             $("#add-directory-button").hide()
         } else
             $("#add-directory-button").show()
@@ -403,7 +401,7 @@ function list(pathToList, discret) {
     var fb = new FileBrowser(pathToList);
     fb.list(function (files, endOfSearch) {
         if (!_.isEqual(files, oldFiles)) {
-            resetGrid(discret);
+            var scroll = resetGrid(discret);
             oldFiles = files;
             var noteCardViewGrid = this.noteCardViewGrid
             var notes = [];
@@ -647,9 +645,7 @@ function registerWriterEvent(event, callback) {
 registerWriterEvent("exit", function () {
     writerFrame.style.display = "none";
     $("#no-drag-bar").hide()
-    if (wasNewNote)
-        list();
-    else {
+    if (!wasNewNote) {
         if (currentTask != undefined) {
             const index = notePath.indexOf(currentNotePath)
             currentTask.current = index
@@ -658,6 +654,8 @@ registerWriterEvent("exit", function () {
         }
 
     }
+    list(currentPath, true);
+    wasNewNote = false;
 })
 
 registerWriterEvent("loaded", function () {
