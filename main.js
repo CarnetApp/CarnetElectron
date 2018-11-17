@@ -119,6 +119,25 @@ app.on('activate', () => {
     }
 })
 
+var sendStart = function () {
+    if (win != undefined)
+        win.webContents.send("sync-start");
+}
+var sendStop = function () {
+    if (win != undefined)
+        win.webContents.send("sync-stop");
+}
+var sync = new (require("./server/sync/sync")).Sync(sendStart
+    , function (hasDownloadedSmt) {
+        console.log("hasDownloadedSmt " + hasDownloadedSmt)
+        if (hasDownloadedSmt) {
+            startMerging();
+            startKeywordsMerging()
+        }
+        sendStop();
+    });
+sync.startSync();
+
 
 exports.displayMainWindow = (size, pos) => {
     win.setSize(size[0], size[1]);
@@ -162,15 +181,9 @@ exports.sendRequestToServer = function (method, path, data, callback) {
     server.handle(method, path, data, callback);
 }
 
+exports.isSyncing = function () {
+    return sync.isSyncing;
+}
 exports.createWindow = createWindow;
 
 var server = require("./server/server");
-
-var sync = new (require("./server/sync/sync")).Sync(function (hasDownloadedSmt) {
-    console.log("hasDownloadedSmt " + hasDownloadedSmt)
-    if (hasDownloadedSmt) {
-        startMerging();
-        startKeywordsMerging()
-    }
-});
-sync.startSync();

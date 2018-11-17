@@ -32,8 +32,19 @@ class BrowserCompatibility extends Compatibility {
 
             } else {
                 const {
-                    remote
+                    remote,
+                    ipcRenderer
                 } = require('electron');
+
+                ipcRenderer.on('sync-start', (event, arg) => {
+                    document.getElementById("right-bar-text").innerHTML = "Syncing..."
+                });
+                ipcRenderer.on('sync-stop', (event, arg) => {
+                    document.getElementById("right-bar-text").innerHTML = ""
+                });
+                var main = remote.require("./main.js");
+                if (main.isSyncing())
+                    document.getElementById("right-bar-text").innerHTML = "Syncing..."
                 var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
                 var settingsHelper = new SettingsHelper();
                 if (settingsHelper.displayFrame()) {

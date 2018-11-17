@@ -63,6 +63,10 @@ body {
     background: #fafafa;
 }
 
+#right-bar-text{
+    margin-right:10px;
+}
+
 #grid-container {
     margin: 0 auto;
     position: absolute;

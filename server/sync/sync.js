@@ -1,5 +1,5 @@
 
-var Sync = function (onSyncEnd) {
+var Sync = function (onSyncStart, onSyncEnd) {
     var SettingsHelper = require("../../settings/settings_helper").SettingsHelper;
     this.settingsHelper = new SettingsHelper();
     const Store = require('electron-store');
@@ -7,6 +7,8 @@ var Sync = function (onSyncEnd) {
     this.fs = require('fs');
     this.path = require('path')
     this.FileUtils = require('../../utils/file_utils').FileUtils
+    this.onSyncStart = onSyncStart
+
     this.onSyncEnd = onSyncEnd
     this.rimraf = require('rimraf');
 
@@ -35,6 +37,7 @@ Sync.prototype.startSync = function () {
         return
     }
     this.isSyncing = true;
+    this.onSyncStart();
     this.connect();
     var sync = this;
     this.nextcloudRoot = sync.settingsHelper.getRemoteWebdavPath()
@@ -221,7 +224,7 @@ Sync.prototype.handleRemoteItems = function (remoteDBItem, callback) {
     var cb = function () {
         setTimeout(function () {
             sync.handleRemoteItems(sync.remoteFilesStack.shift(), callback)
-        }, 200)
+        }, 50)
     }
     var inDBItem = sync.db[remoteDBItem.path];
     if (inDBItem === undefined) {
@@ -270,7 +273,7 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
     var cb = function () {
         setTimeout(function () {
             sync.handleLocalItems(sync.localFiles.shift(), callback)
-        }, 200)
+        }, 50)
     }
     if (inDBItem == undefined) { //has never been synced
         if (remoteDbItem == undefined) { //is not on server
