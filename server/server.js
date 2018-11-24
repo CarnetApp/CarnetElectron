@@ -41,6 +41,9 @@ var handle = function (method, path, data, callback) {
             case "/settings/editor_css":
                 callback(false, settingsHelper.getEditorCss())
                 return;
+            case "/settings/settings_css":
+                callback(false, settingsHelper.getSettingsCss())
+                return;
             case "/notes/getSearchCache":
                 callback(false, currentSearch.result)
                 return;
@@ -199,8 +202,12 @@ var handle = function (method, path, data, callback) {
                         result.browser[i] = data.url + "/" + result.browser[i]
                     for (var i = 0; i < result.editor.length; i++)
                         result.editor[i] = __dirname + '/../' + data.url + "/" + result.editor[i]
+                    for (var i = 0; i < result.settings.length; i++)
+                        result.settings[i] = __dirname + '/../' + data.url + "/" + result.settings[i]
                     settingsHelper.setBrowserCss(JSON.stringify(result.browser))
                     settingsHelper.setEditorCss(JSON.stringify(result.editor))
+                    settingsHelper.setSettingsCss(JSON.stringify(result.settings))
+
                     callback(false, "")
                 })
 

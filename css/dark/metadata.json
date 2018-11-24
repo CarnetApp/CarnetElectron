@@ -7,5 +7,8 @@
     "editor": [
         "design-dark-common.css",
         "design-dark-editor.css"
+    ],
+    "settings": [
+        "design-dark-common.css"
     ]
 }

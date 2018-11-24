@@ -99,11 +99,20 @@ SettingsHelper.prototype.setBrowserCss = function (url) {
     store.set("browser_css", url)
 }
 
+SettingsHelper.prototype.setSettingsCss = function (url) {
+    store.set("settings_css", url)
+}
+
 SettingsHelper.prototype.getEditorCss = function () {
     return store.get("editor_css")
 }
 SettingsHelper.prototype.getBrowserCss = function () {
     return store.get("browser_css")
 }
+
+SettingsHelper.prototype.getSettingsCss = function () {
+    return store.get("settings_css")
+}
+
 
 exports.SettingsHelper = SettingsHelper;

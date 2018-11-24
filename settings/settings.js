@@ -103,6 +103,7 @@ function createThemeSelector(name, url, preview) {
         url: url
       }, function (error, data) {
         document.getElementById("theme-dialog").close()
+        window.location.reload(true)
       })
     }
   }
@@ -151,3 +152,12 @@ if (compatibility.isElectron) {
   document.getElementById("recent-button").href = "./"
   document.getElementById("browser-button").href = "./"
 }
+
+RequestBuilder.sRequestBuilder.get("/settings/settings_css", function (error, data) {
+  if (!error) {
+    console.log("data " + data)
+    for (var sheet of data) {
+      Utils.applyCss(sheet)
+    }
+  }
+})
