@@ -81,22 +81,26 @@ function openNote(notePath) {
                 window.open("writer?path=" + encodeURIComponent(notePath), "_blank");
             }
             else {
-                writerFrame.src = data + "?path=" + encodeURIComponent(notePath);
-                writerFrame.style.display = "inline-flex"
-                loadingView.style.display = "block"
+
+                $(loadingView).fadeIn(function () {
+                    writerFrame.src = data + "?path=" + encodeURIComponent(notePath);
+                    writerFrame.style.display = "inline-flex"
+                })
             }
             setTimeout(function () {
-                // writerFrame.openDevTools()
+                writerFrame.openDevTools()
             }, 1000)
         }
         else {
             console.log("reuse old iframe");
-            if (compatibility.isElectron)
-                writerFrame.send('loadnote', notePath);
-            else
-                writerFrame.contentWindow.loadPath(notePath);
-            writerFrame.style.display = "inline-flex"
-            loadingView.style.display = "block"
+
+            $(loadingView).fadeIn(function () {
+                if (compatibility.isElectron)
+                    writerFrame.send('loadnote', notePath);
+                else
+                    writerFrame.contentWindow.loadPath(notePath);
+                writerFrame.style.display = "inline-flex"
+            })
         }
     })
     //window.location.assign("writer?path=" + encodeURIComponent(notePath));
@@ -643,7 +647,7 @@ function registerWriterEvent(event, callback) {
 
 
 registerWriterEvent("exit", function () {
-    writerFrame.style.display = "none";
+    $(writerFrame).fadeOut();
     $("#no-drag-bar").hide()
     if (!wasNewNote) {
         if (currentTask != undefined) {
@@ -659,7 +663,7 @@ registerWriterEvent("exit", function () {
 })
 
 registerWriterEvent("loaded", function () {
-    loadingView.style.display = "none"
+    $(loadingView).fadeOut()
     $("#no-drag-bar").show()
 
 })
@@ -702,3 +706,15 @@ if (launchCount % 10 == 0)
         })
     }, 10000);
 store.set("launch_count", launchCount + 1)
+RequestBuilder.sRequestBuilder.get("/settings/browser_css", function (error, data) {
+    if (!error) {
+        store.set("css_sheets", JSON.stringify(data));
+        console.log("data " + data)
+
+        for (var sheet of data) {
+            Utils.applyCss(root_url + sheet)
+        }
+
+    }
+    $("#carnet-icon-view").fadeOut('slow');
+})

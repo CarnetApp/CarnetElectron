@@ -36,6 +36,28 @@
             margin-left: calc(50% - 200px);
             width: 400px;
         }
+        .theme-selector{
+            width:100%;
+            padding-top:15px;
+            padding-bottom:15px;
+            border-bottom: 1px rgba(128, 128, 128, 0.2) solid;
+
+        }
+        .theme-selector .mdl-radio{
+            width:100%;
+        }
+        .theme-selector img{
+            max-width: 100%;
+            margin-top: 20px;
+
+        }
+        #theme-dialog{
+            margin-top:20px;
+            overflow-y: auto;
+            margin-bottom:20px;
+            max-height: 100%;
+
+        }
     </style>
 
     <!-- The drawer is always open in large screens. The header is always shown,
@@ -59,7 +81,12 @@
             </nav>
         </div>
         <main class="mdl-layout__content" id="page-container" style="text-align:center;">
+            <dialog class="mdl-dialog" id="theme-dialog">
+                <div class="content" id="theme-list">
+                </div>
 
+
+            </dialog>
             <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp settings-box"
                 style="">
 
@@ -73,6 +100,11 @@
                 <tr>
                     <td class="mdl-data-table__cell--non-numeric carnet-settings-button" id="cloudsync">
                         Get mobile, desktop or online app
+                    </td>
+                </tr>
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric carnet-settings-button" id="theme">
+                        Theme
                     </td>
                 </tr>
                 <tr>

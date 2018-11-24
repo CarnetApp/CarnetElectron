@@ -997,6 +997,16 @@ $(document).ready(function () {
     api_url = document.getElementById("api-url").innerHTML;
 
     new RequestBuilder(api_url);
+    RequestBuilder.sRequestBuilder.get("/settings/editor_css", function (error, data) {
+        if (!error) {
+            console.log("data " + data)
+            for (var sheet of data) {
+                console.log("sheet " + sheet)
+
+                Utils.applyCss(sheet)
+            }
+        }
+    })
     if (writer == undefined) {
         writer = new Writer(document);
         writer.init();

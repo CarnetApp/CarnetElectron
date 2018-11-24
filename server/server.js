@@ -32,6 +32,15 @@ var handle = function (method, path, data, callback) {
                 currentSearch.start();
                 callback(false, "");
                 return;
+            case "/settings/themes":
+                callback(false, '[{"name":"Carnet", "path":"css/carnet", "preview":"css/carnet/preview.png"}, {"name":"Dark", "path":"css/dark", "preview":"css/dark/preview.png"}]');
+                return;
+            case "/settings/browser_css":
+                callback(false, settingsHelper.getBrowserCss())
+                return;
+            case "/settings/editor_css":
+                callback(false, settingsHelper.getEditorCss())
+                return;
             case "/notes/getSearchCache":
                 callback(false, currentSearch.result)
                 return;
@@ -179,6 +188,22 @@ var handle = function (method, path, data, callback) {
                 fs.mkdir(settingsHelper.getNotePath() + data.path, function (err) {
                     callback(err)
                 })
+                return;
+            case "/settings/app_theme":
+                console.log(__dirname + "../" + data.url + '/metadata.json')
+                fs.readFile(__dirname + "/../" + data.url + '/metadata.json', 'utf8', function (err, result) {
+                    result = JSON.parse(result)
+                    console.log(err)
+                    console.log("data " + JSON.stringify(result.browser))
+                    for (var i = 0; i < result.browser.length; i++)
+                        result.browser[i] = data.url + "/" + result.browser[i]
+                    for (var i = 0; i < result.editor.length; i++)
+                        result.editor[i] = __dirname + '/../' + data.url + "/" + result.editor[i]
+                    settingsHelper.setBrowserCss(JSON.stringify(result.browser))
+                    settingsHelper.setEditorCss(JSON.stringify(result.editor))
+                    callback(false, "")
+                })
+
                 return;
             case "/notes/move":
                 if (data.from.startsWith("./"))
@@ -381,12 +406,12 @@ var openNote = function (path, callback) {
             /*fs.readFile(tmppath+'metadata.json', function read(err, data) {
                 if (err) {
                     throw err;
-                }
-     
-                content = data;
-                console.log(data)
-                this.note.metadata = JSON.parse(content)
-            });*/
+                    }
+         
+                    content = data;
+                    console.log(data)
+                    this.note.metadata = JSON.parse(content)
+                });*/
             //copying reader.html
         })
     })

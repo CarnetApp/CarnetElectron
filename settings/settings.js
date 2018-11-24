@@ -66,6 +66,57 @@ document.getElementById("sources").onclick = function () {
   }
 }
 
+document.getElementById("theme").onclick = function () {
+  document.getElementById("theme-dialog").showModal();
+}
+function createThemeSelector(name, url, preview) {
+  var id = Math.random().toString(36).substring(7);
+  var selector = document.createElement("div");
+  selector.classList.add("theme-selector")
+  var label = document.createElement("label");
+  label.classList.add("mdl-radio")
+  label.classList.add("mdl-js-radio")
+  label.classList.add("mdl-js-ripple-effect")
+  label.for = id;
+  selector.appendChild(label)
+  var input = document.createElement("input");
+  input.type = "radio"
+  input.id = id
+  input.classList.add("mdl-radio__button")
+  input.name = "theme"
+  input.value = url;
+
+  label.appendChild(input)
+  var span = document.createElement("span");
+  span.classList.add("mdl-radio__label")
+  span.innerHTML = name
+  label.appendChild(span)
+  var img = document.createElement("img")
+  img.src = preview;
+  selector.appendChild(img)
+  document.getElementById("theme-list").appendChild(selector)
+  var mat = new window['MaterialRadio'](label)
+  input.onchange = function () {
+    if (input.checked) {
+      console.log(name)
+      RequestBuilder.sRequestBuilder.post("/settings/app_theme", {
+        url: url
+      }, function (error, data) {
+        document.getElementById("theme-dialog").close()
+      })
+    }
+  }
+  label['MaterialRadio'] = mat
+}
+
+RequestBuilder.sRequestBuilder.get("/settings/themes", function (error, data) {
+  if (!error) {
+    for (var theme of data) {
+      createThemeSelector(theme.name, theme.path, theme.preview)
+
+    }
+  }
+})
 document.getElementById("paypal").onclick = function () {
   const url = "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YMHT55NSCLER6";
   compatibility.openUrl(url)

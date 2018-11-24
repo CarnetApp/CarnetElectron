@@ -10,14 +10,7 @@
     box-sizing: content-box !important;
 }
 
-.note-card-view :hover,
-.folder-card-view :hover {
-    background-color: rgb(230, 230, 230);
-    -webkit-transition: background-color 250ms linear;
-    -ms-transition: background-color 250ms linear;
-    transition: background-color 250ms linear;
-    cursor: pointer;
-}
+
 
 
 .demo-card-wide>.mdl-card__title {
@@ -121,6 +114,7 @@ body {
 
 .mdl-layout__header .mdl-layout__drawer-button,
 .mdl-layout__header button,
+.mdl-radio,
 .mdl-layout__header .mdl-textfield {
     -webkit-app-region: no-drag;
 }

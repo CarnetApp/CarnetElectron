@@ -92,4 +92,18 @@ SettingsHelper.prototype.setDisplayFrame = function (display) {
     store.set("display_frame", display)
 }
 
+SettingsHelper.prototype.setEditorCss = function (url) {
+    store.set("editor_css", url)
+}
+SettingsHelper.prototype.setBrowserCss = function (url) {
+    store.set("browser_css", url)
+}
+
+SettingsHelper.prototype.getEditorCss = function () {
+    return store.get("editor_css")
+}
+SettingsHelper.prototype.getBrowserCss = function () {
+    return store.get("browser_css")
+}
+
 exports.SettingsHelper = SettingsHelper;
