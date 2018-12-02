@@ -193,17 +193,19 @@ var handle = function (method, path, data, callback) {
                 })
                 return;
             case "/settings/app_theme":
-                console.log(__dirname + "../" + data.url + '/metadata.json')
-                fs.readFile(__dirname + "/../" + data.url + '/metadata.json', 'utf8', function (err, result) {
+                var metadataFolder = data.url;
+                if (!metadataFolder.startsWith("/"))
+                    metadataFolder = __dirname + "/../" + data.url
+                fs.readFile(metadataFolder + '/metadata.json', 'utf8', function (err, result) {
                     result = JSON.parse(result)
                     console.log(err)
                     console.log("data " + JSON.stringify(result.browser))
                     for (var i = 0; i < result.browser.length; i++)
-                        result.browser[i] = data.url + "/" + result.browser[i]
+                        result.browser[i] = metadataFolder + "/" + result.browser[i]
                     for (var i = 0; i < result.editor.length; i++)
-                        result.editor[i] = __dirname + '/../' + data.url + "/" + result.editor[i]
+                        result.editor[i] = metadataFolder + "/" + result.editor[i]
                     for (var i = 0; i < result.settings.length; i++)
-                        result.settings[i] = __dirname + '/../' + data.url + "/" + result.settings[i]
+                        result.settings[i] = metadataFolder + "/" + result.settings[i]
                     settingsHelper.setBrowserCss(JSON.stringify(result.browser))
                     settingsHelper.setEditorCss(JSON.stringify(result.editor))
                     settingsHelper.setSettingsCss(JSON.stringify(result.settings))

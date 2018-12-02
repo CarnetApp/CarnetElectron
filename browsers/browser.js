@@ -710,11 +710,17 @@ RequestBuilder.sRequestBuilder.get("/settings/browser_css", function (error, dat
     if (!error) {
         store.set("css_sheets", JSON.stringify(data));
         console.log("data " + data)
-
+        var num = 0;
         for (var sheet of data) {
-            Utils.applyCss(root_url + sheet)
+            Utils.applyCss(sheet, function () {
+                num++;
+                if (num == data.length)
+                    $("#carnet-icon-view").fadeOut('slow');
+
+            })
         }
+        if (data.length == 0)
+            $("#carnet-icon-view").fadeOut('slow');
 
     }
-    $("#carnet-icon-view").fadeOut('slow');
 })

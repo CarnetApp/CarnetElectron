@@ -1,7 +1,7 @@
-var Utils = function(){
+var Utils = function () {
 
 }
-Utils.keysrt = function(key, desc) {
+Utils.keysrt = function (key, desc) {
     return function (a, b) {
         return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
     }
@@ -16,12 +16,17 @@ Utils.srt = function (desc) {
         return desc ? ~~(a < b) : ~~(a > b);
     }
 }
-Utils.applyCss = function (url) {
-    var head = document.getElementsByTagName('head')[0];
+Utils.applyCss = function (url, onloaded) {
+    //content is for nextcloud..
+    var head = (document.getElementById("content") != undefined) ? document.getElementById("content") : document.getElementsByTagName('head')[0];
     var link = document.createElement('link');
     link.rel = 'stylesheet';
     link.type = 'text/css';
     link.href = url;
+    if (onloaded != undefined)
+        link.addEventListener('load', function () {
+            onloaded(url)
+        });
     head.appendChild(link);
 }
 Utils.removeCss = function (url) {

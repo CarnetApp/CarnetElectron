@@ -161,3 +161,7 @@ RequestBuilder.sRequestBuilder.get("/settings/settings_css", function (error, da
     }
   }
 })
+var dias = document.getElementsByClassName("mdl-dialog")
+for (var i = 0; i < dias.length; i++) {
+  dialogPolyfill.registerDialog(dias[i]);
+}
