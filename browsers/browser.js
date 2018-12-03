@@ -87,9 +87,9 @@ function openNote(notePath) {
                     writerFrame.style.display = "inline-flex"
                 })
             }
-            setTimeout(function () {
+            /*setTimeout(function () {
                 writerFrame.openDevTools()
-            }, 1000)
+            }, 1000)*/
         }
         else {
             console.log("reuse old iframe");
