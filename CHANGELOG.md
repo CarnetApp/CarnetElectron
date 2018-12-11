@@ -1,3 +1,11 @@
+# Version 0.10.1
+
+Fix start on new device
+
+# Version 0.10.0
+
+Dark theme
+
 # Version 0.9.0
 
 - Rename inside note editor
