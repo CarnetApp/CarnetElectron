@@ -998,7 +998,7 @@ $(document).ready(function () {
 
     new RequestBuilder(api_url);
     RequestBuilder.sRequestBuilder.get("/settings/editor_css", function (error, data) {
-        if (!error) {
+        if (!error && data != null && data != undefined) {
             console.log("data " + data)
             for (var sheet of data) {
                 console.log("sheet " + sheet)

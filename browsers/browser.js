@@ -707,9 +707,8 @@ if (launchCount % 10 == 0)
     }, 10000);
 store.set("launch_count", launchCount + 1)
 RequestBuilder.sRequestBuilder.get("/settings/browser_css", function (error, data) {
-    if (!error) {
+    if (!error && data != null && data != undefined) {
         store.set("css_sheets", JSON.stringify(data));
-        console.log("data " + data)
         var num = 0;
         for (var sheet of data) {
             Utils.applyCss(sheet, function () {
@@ -722,5 +721,5 @@ RequestBuilder.sRequestBuilder.get("/settings/browser_css", function (error, dat
         if (data.length == 0)
             $("#carnet-icon-view").fadeOut('slow');
 
-    }
+    } else $("#carnet-icon-view").fadeOut('slow');
 })
