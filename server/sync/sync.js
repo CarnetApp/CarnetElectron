@@ -27,15 +27,19 @@ Sync.prototype.connect = function () {
 
 }
 
-Sync.prototype.startSync = function () {
+Sync.prototype.startSync = function (onDirOK) {
     var sync = this;
+    if (onDirOK == undefined)
+        onDirOK = function () {
+            sync.onDirOK()
+        }
     this.hasDownloadedSmt = false
     if (sync.settingsHelper.getRemoteWebdavAddr() == undefined || sync.settingsHelper.getRemoteWebdavAddr() == null) {
         this.exit();
         return;
     }
     if (this.isSyncing) {
-        console.log("is syncing")
+        console.logDebug("is syncing")
         return
     }
     this.isSyncing = true;
@@ -62,10 +66,10 @@ Sync.prototype.startSync = function () {
     this.toDeleteLocal = [];
     this.toDeleteRemote = [];
     this.client.createDirectory(this.nextcloudRoot).then(function () {
-        sync.onDirOK();
+        onDirOK();
     }).catch(function (err) {
-        console.log(err);
-        sync.onDirOK();
+        console.logDebug(err);
+        onDirOK();
     });
 
 
@@ -242,9 +246,66 @@ Sync.prototype.handleRemoteItems = function (remoteDBItem, callback) {
     }
 
 }
+/**
+ * Error not reported: file doesn't exist.
+ */
+Sync.prototype.syncOneItem = function (localRelativePath, callback) {
+
+    var sync = this;
+    sync.startSync(function () {
+        sync.fs.stat(sync.path.join(sync.settingsHelper.getNotePath(), localRelativePath), (err, stat) => {
+            var localDBItem = undefined;
+            if (err) {
+                console.logDebug(err)
+                if (err.errno !== -2) { // not existing
+                    sync.exit()
+                    callback(true)
+                }
+            }
+            else
+                localDBItem = DBItem.fromFS(sync.settingsHelper.getNotePath(), localRelativePath, stat);
+            sync.client
+                .stat(sync.nextcloudRoot + "/" + localRelativePath)
+                .then(function (stat) {
+                    var item = DBItem.fromNC(sync.nextcloudRoot, stat)
+                    sync.remoteFiles[item.path] = item;
+                    console.logDebug("file stat " + stat)
+                    if (localDBItem != undefined) {
+                        sync.remoteFilesStack.push(item)
+                        sync.handleLocalItems(localDBItem, function () {
+                            console.logDebug("end")
+                            sync.exit()
+                            callback(false)
+                        })
+                    }
+                    else
+                        sync.handleRemoteItems(item, function () {
+                            console.logDebug("end")
+                            sync.exit()
+                            callback(false)
+                        })
+                }).catch(function (err) {
+                    console.logDebug(err.status);
+                    if (err.status == 404 && localDBItem != undefined) {
+                        sync.handleLocalItems(localDBItem, function () {
+                            console.logDebug("end")
+                            sync.exit()
+                            callback(false)
+                        })
+                    }
+                    else {
+                        sync.exit();
+                        callback(false)
+                    }
+                });
+        })
+
+    })
+
+}
 
 Sync.prototype.deleteRemoteAndSave = function (remote, callback) {
-    console.log("delete remote " + remote.path)
+    console.logDebug("delete remote " + remote.path)
     var sync = this
     if (remote.type === "directory") {
         this.remoteDirToRm.push(remote)

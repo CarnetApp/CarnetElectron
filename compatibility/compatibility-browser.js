@@ -67,6 +67,9 @@ class BrowserCompatibility extends Compatibility {
                         remote.app.exit(0);
                     }
                 }
+                registerWriterEvent("exit", function () {
+                    main.syncOneNote(currentNotePath)
+                })
                 document.getElementById("settings-button").href = "settings.html"
                 setTimeout(function () {
                     RequestBuilder.sRequestBuilder.get("/settings/current_version", function (error, version) {

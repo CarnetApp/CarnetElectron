@@ -142,7 +142,18 @@ var sync = new (require("./server/sync/sync")).Sync(sendStart
     });
 sync.startSync();
 
+exports.syncOneNote = (notePath) => {
+    sync.syncOneItem(notePath, function (error) {
+        //sync db
+        if (!error)
+            sync.syncOneItem("quickdoc/recentdb/" + uid, function (error) {
+                //sync db
+                if (!error)
+                    sync.syncOneItem("quickdoc/keywords/" + uid, function (error) { })
+            })
+    })
 
+}
 exports.displayMainWindow = (size, pos) => {
     win.setSize(size[0], size[1]);
     win.setPosition(pos[0], pos[1]);
