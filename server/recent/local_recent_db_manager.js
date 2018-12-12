@@ -3,13 +3,13 @@ var getParentFolderFromPath = require('path').dirname;
 var lockFile = require('lockfile')
 var LocalRecentDBManager = function (path) {
     this.path = path;
-    console.log("RecentDBManager with " + path)
+    console.logDebug("RecentDBManager with " + path)
 
 }
 
 
 LocalRecentDBManager.prototype.getFullDB = function (callback, donotparse) {
-    console.log("getFullDB")
+    console.logDebug("getFullDB")
     fs.readFile(this.path, "utf8", function (err, data) {
         if (data == undefined || data.length == 0)
             data = "{\"data\":[]}";
@@ -35,7 +35,7 @@ LocalRecentDBManager.prototype.actionArray = function (items, callback) {
         require("mkdirp")(getParentFolderFromPath(db.path), function () {
             // opts is optional, and defaults to {} 
 
-            console.log("writing")
+            console.logDebug("writing")
             fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
                 if (callback)
                     callback()
@@ -59,12 +59,12 @@ LocalRecentDBManager.prototype.action = function (path, action, callback) {
 }
 LocalRecentDBManager.prototype.action = function (path, action, time, callback) {
     var db = this;
-    console.log("action")
+    console.logDebug("action")
     lockFile.lock('recent.lock', {
         wait: 10000
     }, function (er) {
         db.getFullDB(function (err, data) {
-            console.log(data)
+            console.logDebug(data)
             var fullDB = data;
             var item = new function () {
                 this.time = time;
@@ -73,16 +73,16 @@ LocalRecentDBManager.prototype.action = function (path, action, time, callback) 
             };
 
             fullDB["data"].push(item);
-            console.log(JSON.stringify(item))
+            console.logDebug(JSON.stringify(item))
             require("mkdirp")(getParentFolderFromPath(db.path), function () {
                 // opts is optional, and defaults to {} 
 
-                console.log("writing")
+                console.logDebug("writing")
                 fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
                     if (callback)
                         callback()
                     lockFile.unlock('recent.lock', function (er) {
-                        console.log("lock er " + er)
+                        console.logDebug("lock er " + er)
                         // er means that an error happened, and is probably bad. 
                     })
                 });
@@ -100,7 +100,7 @@ function keysrt(key, desc) {
 }
 //returns last time
 LocalRecentDBManager.prototype.mergeDB = function (path, callback) {
-    console.log("merging with " + path);
+    console.logDebug("merging with " + path);
     var db = this;
     var hasChanged = false;
     lockFile.lock('recent.lock', {
@@ -108,7 +108,7 @@ LocalRecentDBManager.prototype.mergeDB = function (path, callback) {
     }, function (er) {
         db.getFullDB(function (err, data) {
             lockFile.unlock('recent.lock', function (er) {
-                console.log("lock er " + er)
+                console.logDebug("lock er " + er)
                 // er means that an error happened, and is probably bad. 
             })
             var otherDB = new LocalRecentDBManager(path)
@@ -140,7 +140,7 @@ LocalRecentDBManager.prototype.mergeDB = function (path, callback) {
                             wait: 10000
                         }, function (er) {
                             fs.writeFile(db.path, JSON.stringify(dataJson), function (err) {
-                                console.log(err);
+                                console.logDebug(err);
                                 callback(hasChanged);
                             });
                             lockFile.unlock('recent.lock', function (er) {

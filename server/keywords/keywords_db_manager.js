@@ -9,7 +9,7 @@ var KeywordsDBManager = function (path) {
 
 
 KeywordsDBManager.prototype.getFullDB = function (callback, donotparse) {
-    console.log("getFullDB")
+    console.logDebug("getFullDB")
     fs.readFile(this.path, "utf8", function (err, data) {
         if (data == undefined || data.length == 0)
             data = "{\"data\":[]}";
@@ -19,7 +19,7 @@ KeywordsDBManager.prototype.getFullDB = function (callback, donotparse) {
 
 KeywordsDBManager.prototype.getFlatenDB = function (callback) {
     this.getFullDB(function (err, data) {
-        console.log(data)
+        console.logDebug(data)
         var fullDB = data["data"];
         var flaten = {};
         for (let item of fullDB) {
@@ -68,13 +68,13 @@ KeywordsDBManager.prototype.action = function (keyword, path, action, time, call
 
 //returns last time
 KeywordsDBManager.prototype.mergeDB = function (path, callback) {
-    console.log("merging with " + path);
+    console.logDebug("merging with " + path);
     var db = this;
     var hasChanged = false;
     lockFile.lock('keyword.lock', {
         wait: 10000
     }, function (er) {
-        console.log(er)
+        console.logDebug(er)
         lockFile.unlock('keyword.lock', function (er) { })
         db.getFullDB(function (err, data) {
             var otherDB = new KeywordsDBManager(path)
@@ -105,7 +105,7 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
                             wait: 10000
                         }, function (er) {
                             fs.writeFile(db.path, JSON.stringify(dataJson), function (err) {
-                                console.log(err);
+                                console.logDebug(err);
                                 callback(hasChanged);
                             });
                             lockFile.unlock('keyword.lock', function (er) { })
@@ -138,7 +138,7 @@ KeywordsDBManager.prototype.actionArray = function (items, callback) {
             require("mkdirp")(getParentFolderFromPath(db.path), function () {
                 // opts is optional, and defaults to {} 
 
-                console.log("writing")
+                console.logDebug("writing")
 
                 fs.writeFile(db.path, JSON.stringify(fullDB), function (err) {
                     if (callback)

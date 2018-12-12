@@ -94,11 +94,15 @@ function createWindow() {
 
 }
 
+console.logDebug = function (mess) {
+    if (isDebug)
+        console.log(mess)
+}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-//app.on('ready', createWindow)
+// app.on('ready', createWindow)
 
 
 app.on('ready', createWindow)

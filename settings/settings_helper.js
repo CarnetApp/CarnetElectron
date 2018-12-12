@@ -16,7 +16,6 @@ SettingsHelper.prototype.getNotePath = function () {
         store.set("root_path", path);
     }
     require("mkdirp")(path)
-    console.log("path " + path)
     var {
         ipcRenderer,
         remote

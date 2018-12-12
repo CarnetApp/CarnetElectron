@@ -85,13 +85,13 @@ NoteOpener.prototype.getMetadataString = function (zip, callback) {
 }
 
 NoteOpener.prototype.getFullHTML = function (callback) {
-  console.log("this.note.path  " + this.note.path)
+  console.logDebug("this.note.path  " + this.note.path)
 
   fs.readFile(this.note.path, function (err, data) {
     if (err) {
-      console.log("error ")
+      console.logDebug("error ")
       callback(undefined, undefined)
-      return console.log(err);
+      return console.logDebug(err);
     }
 
     if (data.length != 0)
@@ -112,7 +112,7 @@ NoteOpener.prototype.getFullHTML = function (callback) {
 
 NoteOpener.prototype.extractTo = function (path, callback) {
   var opener = this;
-  console.log("extractTo")
+  console.logDebug("extractTo")
   fs.readFile(this.note.path, 'base64', function (err, data) {
     if (!err) {
       var extractor = new Extractor(data, path, opener, callback)
@@ -147,17 +147,17 @@ Extractor.prototype.start = function () {
 }
 
 Extractor.prototype.fullExtract = function () {
-  console.log("fullExtract = " + this.files.length)
+  console.logDebug("fullExtract = " + this.files.length)
 
   if (this.currentFile >= this.files.length) {
-    console.log("size = " + this.files.length)
-    console.log("took " + (Date.now() - this.startTime) + "ms")
+    console.logDebug("size = " + this.files.length)
+    console.logDebug("took " + (Date.now() - this.startTime) + "ms")
     this.callback()
     return;
   }
   var filename = this.files[this.currentFile]
   var extractor = this;
-  console.log("extract  = " + filename)
+  console.logDebug("extract  = " + filename)
   var file = this.zip.file(filename);
 
   if (file != null) {
@@ -167,9 +167,9 @@ Extractor.prototype.fullExtract = function () {
       if (content != "") {
 
         var dest = extractor.path + filename;
-        console.log("mkdir");
+        console.logDebug("mkdir");
         mkdirp.sync(getParentFolderFromPath(dest));
-        console.log("mkdirok");
+        console.logDebug("mkdirok");
 
         fs.writeFileSync(dest, content, 'base64');
 
@@ -195,7 +195,7 @@ var Compressor = function (source, dest, callback) {
 Compressor.prototype.start = function () {
   var fs = require('fs');
   var archiver = require('archiver');
-  console.log("start")
+  console.logDebug("start")
   var archive = archiver.create('zip');
   var output = fs.createWriteStream(this.path);
   output.on('close', function () {

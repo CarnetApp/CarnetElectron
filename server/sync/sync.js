@@ -16,6 +16,8 @@ var Sync = function (onSyncStart, onSyncEnd) {
 Sync.prototype.connect = function () {
     var createClient = require("webdav");
     var sync = this;
+    console.logDebug("connecting with " + sync.settingsHelper.getRemoteWebdavUsername())
+
     this.client = createClient(
         sync.settingsHelper.getRemoteWebdavAddr(),
         sync.settingsHelper.getRemoteWebdavUsername(),
@@ -41,7 +43,7 @@ Sync.prototype.startSync = function () {
     this.connect();
     var sync = this;
     this.nextcloudRoot = sync.settingsHelper.getRemoteWebdavPath()
-    console.log(this.nextcloudRoot)
+    console.logDebug(this.nextcloudRoot)
 
     var dbStr = this.store.get("nextcloud_db", "{}");
     this.db = JSON.parse(dbStr);
@@ -95,10 +97,10 @@ Sync.prototype.onDirOK = function () {
                 ++count;
             }
         }
-        console.log("found " + count)
+        console.logDebug("found " + count)
         sync.visitlocal(sync.settingsHelper.getNotePath(), function () {
             sync.handleLocalItems(sync.localFiles.shift(), function () {
-                console.log("local ends")
+                console.logDebug("local ends")
                 sync.handleRemoteItems(sync.remoteFilesStack.shift(), function () {
                     sync.exit();
                 })
@@ -108,18 +110,18 @@ Sync.prototype.onDirOK = function () {
 }
 
 Sync.prototype.uploadAndSave = function (localDBItem, callback) {
-    console.log("uploading " + localDBItem.path)
+    console.logDebug("uploading " + localDBItem.path)
     var sync = this;
     if (localDBItem.type === "directory") {
-        console.log("mkdir")
+        console.logDebug("mkdir")
         this.client.createDirectory(this.nextcloudRoot + "/" + localDBItem.path).then(function () {
             sync.client.stat(sync.nextcloudRoot + "/" + localDBItem.path).then(function (stat) {
                 DBItem.fromNC(sync.nextcloudRoot, stat)
                 sync.save(localDBItem, DBItem.fromNC(sync.nextcloudRoot, stat))
-                console.log(JSON.stringify(stat, undefined, 4));
+                console.logDebug(JSON.stringify(stat, undefined, 4));
                 callback()
             }).catch(function (err) {
-                console.log(err);
+                console.logDebug(err);
                 sync.exit();
             });
         })
@@ -132,10 +134,10 @@ Sync.prototype.uploadAndSave = function (localDBItem, callback) {
             sync.client.stat(sync.nextcloudRoot + "/" + localDBItem.path).then(function (stat) {
                 DBItem.fromNC(sync.nextcloudRoot, stat)
                 sync.save(localDBItem, DBItem.fromNC(sync.nextcloudRoot, stat))
-                console.log(JSON.stringify(stat, undefined, 4));
+                console.logDebug(JSON.stringify(stat, undefined, 4));
                 callback()
             }).catch(function (err) {
-                console.log(err);
+                console.logDebug(err);
                 sync.exit();
             });
         });
@@ -150,7 +152,7 @@ Sync.prototype.save = function (local, remote) {
 }
 
 Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
-    console.log("downloading " + remoteDBItem.path)
+    console.logDebug("downloading " + remoteDBItem.path)
     var sync = this;
     var fpath = sync.settingsHelper.getNotePath() + "/" + remoteDBItem.path
     if (remoteDBItem.type === "directory") {
@@ -162,7 +164,7 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
                 callback();
             }
             else {
-                console.log("error " + err)
+                console.logDebug("error " + err)
 
                 sync.exit()
             }
@@ -177,7 +179,7 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
                 sync.hasDownloadedSmt = true;
                 callback();
             }).catch(function (err) {
-                console.log(err);
+                console.logDebug(err);
                 sync.exit();
             });
     }
@@ -185,7 +187,7 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
 
 Sync.prototype.exit = function (error) {
     this.isSyncing = false;
-    console.log("exit, setting sync to 10 minutes")
+    console.logDebug("exit, setting sync to 10 minutes")
     var sync = this
     setTimeout(function () {
         sync.startSync()
@@ -196,17 +198,17 @@ Sync.prototype.exit = function (error) {
 Sync.prototype.deleteLocalAndSave = function (local, callback) {
     var sync = this;
     if (local.type === "directory") {
-        console.log("delete dir later")
+        console.logDebug("delete dir later")
         this.localDirToRm.push(local)
         callback()
     } else {
-        console.log("delete " + this.settingsHelper.getNotePath() + "/" + local.path);
+        console.logDebug("delete " + this.settingsHelper.getNotePath() + "/" + local.path);
         this.fs.unlink(this.settingsHelper.getNotePath() + "/" + local.path, function (err) {
             if (err) {
                 sync.exit()
                 return
             }
-            console.log("err " + err)
+            console.logDebug("err " + err)
             delete sync.db[local.path];
             sync.store.set("nextcloud_db", JSON.stringify(sync.db));
             callback()
@@ -219,7 +221,7 @@ Sync.prototype.handleRemoteItems = function (remoteDBItem, callback) {
         callback()
         return
     }
-    console.log("handleRemoteItems")
+    console.logDebug("handleRemoteItems")
     var sync = this;
     var cb = function () {
         setTimeout(function () {
@@ -253,7 +255,7 @@ Sync.prototype.deleteRemoteAndSave = function (remote, callback) {
             sync.store.set("nextcloud_db", JSON.stringify(sync.db));
             callback()
         }).catch(function (err) {
-            console.log(err);
+            console.logDebug(err);
             sync.exit();
         });;
     }
@@ -264,7 +266,7 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
         callback()
         return
     }
-    console.log(localDBItem.path)
+    console.logDebug(localDBItem.path)
     var sync = this;
     var inDBItem = sync.db[localDBItem.path];
     var remoteDbItem = sync.remoteFiles[localDBItem.path];
@@ -278,20 +280,20 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
     if (inDBItem == undefined) { //has never been synced
         if (remoteDbItem == undefined) { //is not on server
             //upload  and save
-            console.log("not on server")
+            console.logDebug("not on server")
             sync.uploadAndSave(localDBItem, cb)
         } else { //is on server
             if (remoteDbItem.remotelastmod !== localDBItem.locallastmod) {
                 //conflict
 
                 if (localDBItem.type !== "directory") {
-                    console.log("conflict on " + localDBItem.path)
+                    console.logDebug("conflict on " + localDBItem.path)
                     sync.fixConflict(localDBItem, remoteDbItem, cb)
                 } else cb();
 
             } else {
                 // that's ok !
-                console.log("OK 1 ")
+                console.logDebug("OK 1 ")
 
                 sync.save(localDBItem, remoteDbItem, cb)
 
@@ -305,14 +307,14 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
 
             } else {
                 //upload
-                console.log("not on server")
+                console.logDebug("not on server")
 
                 sync.uploadAndSave(localDBItem, cb)
             }
         } else { //is on server
             if (remoteDbItem.remotelastmod === inDBItem.remotelastmod) {
                 if (localDBItem.locallastmod === inDBItem.locallastmod) {
-                    console.log("nothing to do !")
+                    console.logDebug("nothing to do !")
                     cb();
                 } else {
                     //upload
@@ -329,7 +331,7 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
                 //conflict
 
                 if (localDBItem.type !== "directory") {
-                    console.log("conflict on " + localDBItem.path)
+                    console.logDebug("conflict on " + localDBItem.path)
                     sync.fixConflict(localDBItem, remoteDbItem, cb)
                 } else cb()
             }
@@ -349,16 +351,16 @@ Sync.prototype.fixConflict = function (localDBItem, remoteDBItem, callback) {
 
             sync.fs.readFile(sync.settingsHelper.getNotePath() + "/" + localDBItem.path, (err, localData) => {
                 if (err) {
-                    console.log(err);
+                    console.logDebug(err);
                     sync.exit();
                     return;
                 }
                 if (localData.compare(remoteData) === 0) {
-                    console.log("conflict fixed ")
+                    console.logDebug("conflict fixed ")
                     sync.save(localDBItem, remoteDBItem)
                     callback();
                 } else {
-                    console.log("real conflict... fixing ")
+                    console.logDebug("real conflict... fixing ")
                     var name = sync.FileUtils.getFilename(localDBItem.path)
                     var newName = sync.FileUtils.stripExtensionFromName(name) + " conflict " + new Date().getTime();
                     var extension = sync.FileUtils.getExtensionFromPath(name)
@@ -366,13 +368,13 @@ Sync.prototype.fixConflict = function (localDBItem, remoteDBItem, callback) {
                         newName += "." + extension
                     sync.fs.writeFile(sync.settingsHelper.getNotePath() + "/" + sync.FileUtils.getParentFolderFromPath(localDBItem.path) + "/" + newName, localData, (err) => {
                         if (err) {
-                            console.log(err);
+                            console.logDebug(err);
                             sync.exit();
                             return;
                         }
                         sync.fs.writeFile(sync.settingsHelper.getNotePath() + "/" + localDBItem.path, remoteData, (err) => {
                             if (err) {
-                                console.log(err);
+                                console.logDebug(err);
                                 sync.exit();
                                 return;
                             }
@@ -388,7 +390,7 @@ Sync.prototype.fixConflict = function (localDBItem, remoteDBItem, callback) {
             });
 
         }).catch(function (err) {
-            console.log(err);
+            console.logDebug(err);
             sync.exit();
         });
     //
@@ -405,7 +407,7 @@ Sync.prototype.visitlocal = function (path, callback) {
 
             sync.filesToStat.push(fpath);
 
-            //console.log(stat.mtimeMs / 1000)
+            //console.logDebug(stat.mtimeMs / 1000)
         }
         if (sync.localFoldersToVisit.length !== 0) {
             setTimeout(function () {
@@ -457,15 +459,15 @@ Sync.prototype.visitRemote = function (path, callback) {
                 sync.remoteFilesStack.push(item)
                 if (item.type == "directory")
                     sync.remoteFoldersToVisit.push(i.filename)
-                // console.log(correctPath(sync.nextcloudRoot, i.filename));
+                // console.logDebug(correctPath(sync.nextcloudRoot, i.filename));
             }
-            // console.log("sync.remoteFoldersToVisit.length " + sync.remoteFoldersToVisit.length)
+            // console.logDebug("sync.remoteFoldersToVisit.length " + sync.remoteFoldersToVisit.length)
             if (sync.remoteFoldersToVisit.length !== 0) {
                 sync.visitRemote(sync.remoteFoldersToVisit.pop(), callback)
             } else
                 callback()
         }).catch(function (err) {
-            console.log(err);
+            console.logDebug(err);
             sync.exit();
         });
 }

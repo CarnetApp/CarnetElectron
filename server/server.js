@@ -13,7 +13,7 @@ var fs = require('fs');
 const path = require('path')
 
 var handle = function (method, path, data, callback) {
-    console.log(path)
+    console.logDebug(path)
     var splitPath = path.split("?")
     var pathBeforeArgs = splitPath[0]
     if (splitPath[1] != undefined) {
@@ -115,7 +115,7 @@ var handle = function (method, path, data, callback) {
             if (!folder.endsWith("/"))
                 folder = folder + "/";
             new NewNoteCreationTask(folder, function (path) {
-                console.log("found " + path)
+                console.logDebug("found " + path)
                 callback(false, path);
 
             })
@@ -128,7 +128,7 @@ var handle = function (method, path, data, callback) {
                 return;
             }
             openNote(folder, function (result) {
-                console.log("result " + result)
+                console.logDebug("result " + result)
                 callback(false, JSON.stringify(result))
             })
         }
@@ -148,7 +148,7 @@ var handle = function (method, path, data, callback) {
                             continue
                         const file = {};
                         const stat = fs.statSync(settingsHelper.getNotePath() + "/" + folder + f)
-                        console.log("file " + folder + f)
+                        console.logDebug("file " + folder + f)
                         file['name'] = f;
                         file['path'] = folder + f;
                         file['isDir'] = !stat.isFile();
@@ -165,11 +165,11 @@ var handle = function (method, path, data, callback) {
             case "/settings/note_path":
                 settingsHelper.setNotePath(data.path)
                 callback(false, undefined)
-                console.log("ok")
+                console.logDebug("ok")
                 return;
             case "/recentdb/action":
                 for (action of data.data) {
-                    console.log(action.action);
+                    console.logDebug(action.action);
                     new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid()).action(action.path, action.action, action.time, function () {
                         callback(false, "");
                     })
@@ -198,8 +198,8 @@ var handle = function (method, path, data, callback) {
                     metadataFolder = __dirname + "/../" + data.url
                 fs.readFile(metadataFolder + '/metadata.json', 'utf8', function (err, result) {
                     result = JSON.parse(result)
-                    console.log(err)
-                    console.log("data " + JSON.stringify(result.browser))
+                    console.logDebug(err)
+                    console.logDebug("data " + JSON.stringify(result.browser))
                     for (var i = 0; i < result.browser.length; i++)
                         result.browser[i] = metadataFolder + "/" + result.browser[i]
                     for (var i = 0; i < result.editor.length; i++)
@@ -240,7 +240,7 @@ var handle = function (method, path, data, callback) {
                 saveTextToNote(data.path, data.html, data.metadata, callback);
                 break;
             case "/note/open/0/addMedia": {
-                console.log(typeof data.files)
+                console.logDebug(typeof data.files)
 
                 addMedias(data.path, data.files, callback)
                 return;
@@ -262,7 +262,7 @@ var handle = function (method, path, data, callback) {
                 })
                 return;
             case "/note/open/0/media":
-                console.log("deleting " + args["media"])
+                console.logDebug("deleting " + args["media"])
                 var toDelete = args["media"]
                 if (!toDelete.startsWith("./"))
                     toDelete = "/" + toDelete
@@ -280,7 +280,7 @@ var handle = function (method, path, data, callback) {
                 var tmppath = getTmpPath() + "/note/data" + toDelete;
                 fs.unlink(tmppath, function () {
                     fs.unlink(getTmpPath() + "/note/data/preview_" + toDelete.substring(1) + ".jpg", function (e) {
-                        console.log(e)
+                        console.logDebug(e)
                         saveNote(note, function () {
                             getMediaList(callback)
                         })
@@ -353,15 +353,15 @@ var saveTextToNote = function (path, html, metadata, callback) {
     fs.writeFile(tmppath + 'index.html', html, function (err) {
         if (err) {
             callback(true, "")
-            return console.log(err);
+            return console.logDebug(err);
         }
-        console.log("saving meta  " + metadata)
+        console.logDebug("saving meta  " + metadata)
         fs.writeFile(tmppath + 'metadata.json', metadata, function (err) {
             if (err) {
                 callback(true, "")
-                return console.log(err);
+                return console.logDebug(err);
             }
-            console.log("compress")
+            console.logDebug("compress")
             saveNote(path, callback)
         });
 
@@ -373,7 +373,7 @@ var saveNote = function (path, callback) {
     var noteOpener = new NoteOpener(note)
     var tmppath = getTmpPath() + "/note/";
     noteOpener.compressFrom(tmppath, function () {
-        console.log("compressed")
+        console.logDebug("compressed")
         callback(false, "")
     })
 
@@ -382,7 +382,7 @@ var saveNote = function (path, callback) {
 var openNote = function (path, callback) {
     var writer = this;
     const tmppath = getTmpPath() + "/note/";
-    console.log("extractNote" + settingsHelper.getNotePath() + "/" + path + " to " + tmppath)
+    console.logDebug("extractNote" + settingsHelper.getNotePath() + "/" + path + " to " + tmppath)
     var rimraf = require('rimraf');
     rimraf(tmppath, function (e) {
         var mkdirp = require('mkdirp');
@@ -392,7 +392,7 @@ var openNote = function (path, callback) {
             var result = {}
             result["id"] = 0;
 
-            console.log("done " + noSuchFile)
+            console.logDebug("done " + noSuchFile)
             if (!noSuchFile) {
                 fs.readFile(tmppath + 'index.html', 'utf8', function read(err, data) {
 
@@ -418,7 +418,7 @@ var openNote = function (path, callback) {
                     }
          
                     content = data;
-                    console.log(data)
+                    console.logDebug(data)
                     this.note.metadata = JSON.parse(content)
                 });*/
             //copying reader.html
@@ -434,21 +434,21 @@ var getTmpPath = function () {
 }
 
 var prepareEditor = function (callback) {
-    console.log("prepareEditor");
+    console.logDebug("prepareEditor");
     var rimraf = require('rimraf');
     const tmp = getTmpPath();
 
     rimraf(tmp, function (e) {
         var fs = require('fs');
-        console.log("rm " + e)
+        console.logDebug("rm " + e)
         fs.mkdir(tmp, function (e) {
-            console.log("mkdir " + e)
+            console.logDebug("mkdir " + e)
 
             fs.readFile(__dirname + '/../reader/reader.html', 'utf8', function (err, data) {
                 if (err) {
                     fs.rea
-                    console.log("error ")
-                    return console.log(err);
+                    console.logDebug("error ")
+                    return console.logDebug(err);
                 }
                 const index = path.join(tmp, 'reader.html');
                 data = data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/../');
@@ -456,7 +456,7 @@ var prepareEditor = function (callback) {
                 data = data.replace(new RegExp('<!APIURL>', 'g'), '')
 
                 fs.writeFileSync(index, data);
-                console.log("index " + index)
+                console.logDebug("index " + index)
                 callback(false, index)
             });
 
@@ -466,11 +466,11 @@ var prepareEditor = function (callback) {
     })
 }
 var NewNoteCreationTask = function (folder, callback) {
-    console.log("NewNoteCreationTask " + path)
+    console.logDebug("NewNoteCreationTask " + path)
     var path = settingsHelper.getNotePath() + folder;
     fs.stat(path, function (error, stats) {
         if (error) {
-            console.log("not here")
+            console.logDebug("not here")
             var mkdirp = require('mkdirp');
             mkdirp.sync(path);
         }
