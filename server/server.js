@@ -249,7 +249,7 @@ var handle = function (method, path, data, callback) {
     } else if (method === "DELETE") {
 
         switch (pathBeforeArgs) {
-            case "/note":
+            case "/notes":
                 var toDelete = decodeURIComponent(path.split("=")[1])
                 if (!toDelete.startsWith("./"))
                     toDelete = "/" + toDelete
