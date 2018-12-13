@@ -1,3 +1,10 @@
+# Version 0.10.2
+
+Fix Delete
+Sync note immediately
+Bye bye logs
+Slow down sync a bit to avoid high cpu usage :(
+
 # Version 0.10.1
 
 Fix start on new device
