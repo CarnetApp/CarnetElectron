@@ -510,12 +510,14 @@ Sync.prototype.statFiles = function (fpath, callback) {
         if (localDBItem.type == "directory")
             sync.localFoldersToVisit.push(fpath)
         if (sync.filesToStat.length !== 0) {
-            sync.statFiles(sync.filesToStat.pop(), callback)
+            setTimeout(function () {
+                sync.statFiles(sync.filesToStat.pop(), callback)
+            }, 150)
         } else if (sync.localFoldersToVisit.length !== 0) {
             setTimeout(function () {
                 sync.visitlocal(sync.localFoldersToVisit.pop(), callback)
 
-            }, 200)
+            }, 100)
         } else callback()
     })
 
