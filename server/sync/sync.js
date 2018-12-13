@@ -8,7 +8,7 @@ var Sync = function (onSyncStart, onSyncEnd) {
     this.path = require('path')
     this.FileUtils = require('../../utils/file_utils').FileUtils
     this.onSyncStart = onSyncStart
-
+    this.syncNext = []
     this.onSyncEnd = onSyncEnd
     this.rimraf = require('rimraf');
 
@@ -29,6 +29,7 @@ Sync.prototype.connect = function () {
 
 Sync.prototype.startSync = function (onDirOK) {
     var sync = this;
+    this.isFullSync = onDirOK == undefined;
     if (onDirOK == undefined)
         onDirOK = function () {
             sync.onDirOK()
@@ -102,7 +103,9 @@ Sync.prototype.onDirOK = function () {
             }
         }
         console.logDebug("found " + count)
+        var t = new Date().getTime()
         sync.visitlocal(sync.settingsHelper.getNotePath(), function () {
+            console.log("visit ok " + (new Date().getTime() - t))
             sync.handleLocalItems(sync.localFiles.shift(), function () {
                 console.logDebug("local ends")
                 sync.handleRemoteItems(sync.remoteFilesStack.shift(), function () {
@@ -191,12 +194,19 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
 
 Sync.prototype.exit = function (error) {
     this.isSyncing = false;
-    console.logDebug("exit, setting sync to 10 minutes")
+    console.logDebug("exit")
     var sync = this
-    setTimeout(function () {
-        sync.startSync()
-    }, 10 * 60 * 1000)
+    if (this.isFullSync) {
+        console.log("setting sync to 10 minutes")
+        this.nextFullSyncTO = setTimeout(function () {
+            sync.startSync()
+        }, 10 * 60 * 1000)
+    }
     this.onSyncEnd(this.hasDownloadedSmt)
+    if (this.syncNext.length > 0) {
+        var toSync = this.syncNext.pop();
+        this.syncOneItem(toSync.path, toSync.callback)
+    }
 }
 
 Sync.prototype.deleteLocalAndSave = function (local, callback) {
@@ -250,6 +260,12 @@ Sync.prototype.handleRemoteItems = function (remoteDBItem, callback) {
  * Error not reported: file doesn't exist.
  */
 Sync.prototype.syncOneItem = function (localRelativePath, callback) {
+    if (this.isSyncing) {
+        console.log("is syncing, delaying")
+        this.syncNext.push({ path: localRelativePath, callback: callback })
+        return;
+    }
+    console.log("sync one item " + localRelativePath)
 
     var sync = this;
     sync.startSync(function () {
