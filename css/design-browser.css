@@ -2,7 +2,7 @@
     --grid-bg: #fafafa;
     --note-text-color: black;
     --note-bg: white;
-    --note-bg-hover: white;
+    --note-bg-hover: #e0e0e0;
     --carnet-icon-view-bg:rgb(36, 46, 100);
     --loading-view-bg:rgb(36, 46, 100);
 }   
