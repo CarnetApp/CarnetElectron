@@ -14,12 +14,15 @@ KeywordsDBManager.prototype.getFlatenDB = function (callback) {
         var flaten = {};
         for (let item of fullDB) {
             var keyword = item.keyword
-            if (keyword == undefined)
-                continue;
+            if (keyword == undefined && item.action !== "remove" && item.action !== "move") {
+                continue
+            }
             if (keyword != undefined && flaten[keyword] == undefined) {
                 flaten[keyword] = []
             }
-            var index = flaten[keyword].indexOf(item.path);
+            var index = -1
+            if (keyword !== undefined)
+                index = flaten[keyword].indexOf(item.path);
             if (item.action == "add") {
                 if (index == -1) {
 
@@ -29,6 +32,13 @@ KeywordsDBManager.prototype.getFlatenDB = function (callback) {
             } else if (item.action == "remove") {
                 if (index > -1) {
                     flaten[keyword].splice(index, 1);
+                }
+                if (keyword == undefined) {
+                    for (var key in flaten) {
+                        var indexBis = flaten[key].indexOf(item.path);
+                        if (indexBis >= -1)
+                            flaten[key].splice(indexBis, 1)
+                    }
                 }
             } else if (item.action == "move") {
                 for (let key in flaten) {
@@ -54,8 +64,6 @@ KeywordsDBManager.prototype.addToDB = function (keyword, path, callback) {
 }
 
 KeywordsDBManager.prototype.removeFromDB = function (keyword, path, callback) {
-    if (path.startsWith("/"))
-        path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
     this.action(keyword, path, "remove", callback)
 }
 
