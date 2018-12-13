@@ -143,19 +143,23 @@ var handle = function (method, path, data, callback) {
             else {
                 var result = []
                 fs.readdir(settingsHelper.getNotePath() + "/" + folder, (err, files) => {
-                    for (let f of files) {
-                        if ((folder + f) == "/quickdoc")
-                            continue
-                        const file = {};
-                        const stat = fs.statSync(settingsHelper.getNotePath() + "/" + folder + f)
-                        console.logDebug("file " + folder + f)
-                        file['name'] = f;
-                        file['path'] = folder + f;
-                        file['isDir'] = !stat.isFile();
-                        file['mtime'] = stat.mtime;
-                        result.push(file)
-                    }
-                    callback(false, result)
+                    var arrayResult = []
+                    var arrayH = new ArrayHandler(files, function (f) {
+                        fs.stat(settingsHelper.getNotePath() + "/" + folder + f, (err, stat) => {
+                            const file = {};
+                            file['name'] = f;
+                            file['path'] = folder + f;
+                            file['isDir'] = !stat.isFile();
+                            file['mtime'] = stat.mtime;
+                            arrayResult.push(file)
+                            arrayH.next()
+                        }
+                        )
+                    }, function (result) {
+                        callback(false, JSON.stringify(arrayResult))
+                    })
+                    arrayH.next()
+
                 })
             }
 
