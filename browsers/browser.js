@@ -729,3 +729,9 @@ RequestBuilder.sRequestBuilder.get("/settings/browser_css", function (error, dat
 
     } else $("#carnet-icon-view").fadeOut('slow');
 })
+var isDebug = false
+console.oldlog = console.log;
+console.log = function (m) {
+    if (isDebug)
+        console.oldlog(m)
+}
