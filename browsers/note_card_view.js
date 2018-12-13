@@ -117,6 +117,7 @@ NoteCardViewGrid.prototype.init = function () {
         // options
         itemSelector: '.demo-card-wide.mdl-card',
         fitWidth: true,
+        horizontalOrder: true,
         columnWidth: this.width + 10,
         transitionDuration: this.discret ? 0 : "0.6s",
         animationOptions: {
