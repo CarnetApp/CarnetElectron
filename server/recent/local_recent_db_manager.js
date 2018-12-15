@@ -93,9 +93,9 @@ LocalRecentDBManager.prototype.action = function (path, action, time, callback) 
 }
 
 // sort on key values
-function keysrt(key, desc) {
+function keysrt(key) {
     return function (a, b) {
-        return desc ? ~~(a[key] < b[key]) : ~~(a[key] > b[key]);
+        return a[key] > b[key];
     }
 }
 //returns last time
@@ -132,7 +132,7 @@ LocalRecentDBManager.prototype.mergeDB = function (path, callback) {
                         hasChanged = true;
                     }
                 }
-                dataJson["data"].sort(keysrt('time'))
+                dataJson["data"] = dataJson["data"].sort(keysrt('time'))
                 if (hasChanged) {
                     require("mkdirp")(getParentFolderFromPath(db.path), function () {
                         // opts is optional, and defaults to {} 
