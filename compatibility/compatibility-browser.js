@@ -36,6 +36,7 @@ class BrowserCompatibility extends Compatibility {
                     ipcRenderer
                 } = require('electron');
                 var syncButton = document.getElementById("sync-button");
+                syncButton.style.display = "inline"
                 ipcRenderer.on('sync-start', (event, arg) => {
                     syncButton.classList.add("rotation")
                     syncButton.disabled = true;

@@ -137,5 +137,8 @@ body{
     #close-button{
         display:none;
     }
-    
+}
+
+#sync-button{
+    display: none;
 }
