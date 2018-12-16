@@ -23,10 +23,14 @@ Utils.applyCss = function (url, onloaded) {
     link.rel = 'stylesheet';
     link.type = 'text/css';
     link.href = url;
-    if (onloaded != undefined)
+    if (onloaded != undefined) {
         link.addEventListener('load', function () {
             onloaded(url)
         });
+        link.addEventListener('error', function () {
+            onloaded(url)
+        });
+    }
     head.appendChild(link);
 }
 Utils.removeCss = function (url) {

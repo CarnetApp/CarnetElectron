@@ -87,25 +87,30 @@
     <div id="browser" class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
                 mdl-layout--fixed-header">
         <header class="mdl-layout__header">
+            <div id="drag-bar" style="position: absolute;"></div>
+
             <div class="mdl-layout__header-row">
                 <button id="back_arrow" class="mdl-button mdl-js-button mdl-button--icon" style="left: -15px; ">
                     <i class="material-icons">arrow_back</i>
                 </button>
-                <span class="mdl-layout-title">Carnet</span>
-
+                <div id="search-bar" class="mdl-textfield mdl-js-textfield">
+                    <input class="mdl-textfield__input" type="text" id="search-input">
+                    <label class="mdl-textfield__label" for="search-input">Search...</label>
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="position:absolute; right:0px;" id="search-button">
+                        <i class="material-icons">search</i>
+                    </button>
+                </div>
                 <div style="position:absolute; right:0px;" id="right-bar">
                     <span id="right-bar-text"></span>
-                    <button class="mdl-button mdl-js-button mdl-button--icon" style="margin-right:5px" id="search-button">
-                        <img src="img/ic_search_white_24px.svg" />
-                    </button>
+
                     <button class="mdl-button mdl-js-button mdl-button--icon" id="minus-button" style="margin-right:5px">
-                        <img src="img/ic_remove_white_24px.svg" />
+                        <i class="material-icons">remove</i>
                     </button>
                     <button class="mdl-button mdl-js-button mdl-button--icon" id="size-button" style="margin-right:5px">
-                        <img src="img/ic_aspect_ratio_white_24px.svg" />
+                        <i class="material-icons">aspect_ratio</i>
                     </button>
                     <button class="mdl-button mdl-js-button mdl-button--icon" id="close-button" style="margin-right:15px">
-                        <img src="img/ic_close_white_24px.svg" />
+                        <i class="material-icons">close</i>
                     </button>
                 </div>
                 <div id="no-drag-bar" style="position:absolute; top : 20px; height:20px; width:100%; display:none; -webkit-app-region: no-drag;"></div>
@@ -126,23 +131,22 @@
             </div>
         </div>
         <main class="mdl-layout__content" id="page-container">
-            <div style="display:none;height:50px;width:100%;text-align:center; background:#fafafa; position:absolute;z-index:10;left:0px;;"
-                id="search-container">
-                <input style="max-width:300px;width:100%;margin-top:10px;" type="text " name="sample " id="search-input" />
 
-            </div>
-            <div style="z-index:10000;position:absolute; bottom:30px; right:30px ;width:50px;">
-                <button id="add-directory-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button"
-                    style="margin-bottom:10px;">
-                    <img style="width: 30px;" src="img/ic_create_new_folder_black_24px.svg" />
+            <div id="grid-button-container" style="z-index:10000;position:absolute; bottom:0px; right:0px ;">
+                <button id="add-directory-button" class="mdl-button mdl-js-button  mdl-js-ripple-effect mdl-button">
+                    <i style="width: 30px;" class="material-icons">create_new_folder</i>
                 </button>
-                <button id="add-note-button" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button">
-                    <img style="width: 30px;" src="img/ic_note_add_black_24px.svg" />
+                <button id="add-note-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button">
+                    <i style="width: 30px;" class="material-icons">note_add</i>
                 </button>
             </div>
             <div id="grid-container">
                 <div id="page-content" class="page-content">
 
+                </div>
+                <div id="note-loading-view" style="top:0px; left:0px;height:100%; width:100%; ">
+                    <div class="mdl-spinner mdl-js-spinner is-active " style="position:absolute; top:50%; margin-top:-50px; left:50%;
+                    margin-left:-50px;width:100px; height:100px; "></div>
                 </div>
             </div>
             <div id="emty-view" style="display:none; top:50%; left:50%; margin-left:-170px; position:absolute; text-align:center ">No
@@ -155,11 +159,8 @@
 
     </div>
 
-    <webview id="writer-webview" style="position:absolute; top:0px; left:0px;height:100%; display: none; width:100%;z-index:100; right:0;
-                    bottom:0; "
-        nodeintegration> </webview>
-    <iframe id="writer-iframe" allowfullscreen style="position:absolute; display: none; left:0px;height:100%; width:100%; z-index:100; right:0;
-    bottom:0; "></iframe>
+    <webview class="editor" id="writer-webview" nodeintegration> </webview>
+    <iframe id="writer-iframe" allowfullscreen></iframe>
 
     <div id="loading-view" style="position:fixed; top:0px; display:none; left:0px;height:100%; width:100%; z-index:100;
                     right:0; bottom:0;">
@@ -204,7 +205,8 @@
                     <img src="img/sync.svg" style="width:190px;text-align:center;" />
 
                     <h1>Synchronize</h1>
-                    And find all your notes on your web browser (also works with iPhone), your Android phone, and your
+                    And find all your notes on your web browser (also works with iPhone), your Android phone, and
+                    your
                     desktop
                     <br />
                     <br />

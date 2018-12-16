@@ -407,9 +407,17 @@ function list(pathToList, discret) {
     }
 
 
+    if (!discret) {
+        document.getElementById("note-loading-view").style.display = "inline";
+        document.getElementById("page-content").style.display = "none";
 
+    }
     var fb = new FileBrowser(pathToList);
     fb.list(function (files, endOfSearch) {
+        if (endOfSearch || files.length > 0) {
+            document.getElementById("page-content").style.display = "block";
+            document.getElementById("note-loading-view").style.display = "none";
+        }
         if (!_.isEqual(files, oldFiles)) {
             var scroll = resetGrid(discret);
             oldFiles = files;
@@ -448,7 +456,7 @@ function list(pathToList, discret) {
         }
         if (!endOfSearch) {
             refreshTimeout = setTimeout(function () {
-                list(pathToList, true);
+                list(pathToList, files.length > 0);
             }, 1000);
         } else {
             refreshTimeout = setTimeout(function () {
@@ -477,13 +485,6 @@ function closeW() {
     remote.app.exit(0);
     console.log("cloose")
 }
-
-function toggleSearch() {
-    $("#search-container").slideToggle();
-    if ($("#search-container").css("display") != "none")
-        $("#search-input").focus();
-}
-
 
 /*main.setMergeListener(function () {
     list(initPath, true)
@@ -519,7 +520,6 @@ document.getElementById("add-directory-button").onclick = function () {
 
 document.getElementById("search-input").onkeydown = function (event) {
     if (event.key === 'Enter') {
-        toggleSearch();
         searchInNotes(this.value)
     }
 }
@@ -559,7 +559,9 @@ for (var i = 0; i < dias.length; i++) {
 }
 
 document.getElementById("search-button").onclick = function () {
-    toggleSearch();
+    var value = document.getElementById("search-input").value;
+    if (value.length > 0)
+        searchInNotes(value)
 }
 
 //nav buttons

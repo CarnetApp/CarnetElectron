@@ -10,7 +10,7 @@
     --dialog-text-color: black;
     --button-text-color: black;
     --label-text-color: rgb(63, 81, 181);
-    --fab-button-bg: rgba(158, 158, 158, .5);
+    --fab-button-bg: #fafafa;
     --fab-button-hover-bg: rgba(158, 158, 158, .6);
 
 }
@@ -67,5 +67,13 @@ dialog{
     background: var(--fab-button-hover-bg);
 }
 .headerbar-button{
-    color:var(--header-text-color)
+    color:var(--header-text-color);
+}
+.mdl-layout__drawer-button{
+    color: var(--header-text-color) !important;
+
+}
+.mdl-layout-title{
+    color:var(--header-text-color);
+
 }
