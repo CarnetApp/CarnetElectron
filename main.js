@@ -140,7 +140,12 @@ var sync = new (require("./server/sync/sync")).Sync(sendStart
         }
         sendStop();
     });
-sync.startSync();
+sync.startSync()
+
+exports.startSync = () => {
+    return sync.startSync();
+
+}
 
 exports.syncOneNote = (notePath) => {
     sync.syncOneItem(notePath, function (error) {

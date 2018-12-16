@@ -116,10 +116,26 @@ body{
 @media (max-width: 900px) {
     #search-bar{
         margin-left: 0;
-        width: calc(100% - 110px);
+        width: calc(100% - 90px);
         max-width: 300px;
     }
     #drag-bar{
         display: none;
     }
+}
+
+
+@media (max-width: 550px) {
+    #search-bar{
+        margin-left: 0;
+        width: calc(100% - 90px);
+        max-width: 300px;
+    }
+    #minus-button{
+        display:none;
+    }
+    #close-button{
+        display:none;
+    }
+    
 }

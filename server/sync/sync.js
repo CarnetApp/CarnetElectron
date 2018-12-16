@@ -37,11 +37,11 @@ Sync.prototype.startSync = function (onDirOK) {
     this.hasDownloadedSmt = false
     if (sync.settingsHelper.getRemoteWebdavAddr() == undefined || sync.settingsHelper.getRemoteWebdavAddr() == null) {
         this.exit();
-        return;
+        return false;
     }
     if (this.isSyncing) {
         console.logDebug("is syncing")
-        return
+        return false;
     }
     this.isSyncing = true;
     this.onSyncStart();
@@ -72,6 +72,7 @@ Sync.prototype.startSync = function (onDirOK) {
         console.logDebug(err);
         onDirOK();
     });
+    return true;
 
 
 }

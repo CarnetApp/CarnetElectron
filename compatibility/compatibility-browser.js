@@ -35,16 +35,42 @@ class BrowserCompatibility extends Compatibility {
                     remote,
                     ipcRenderer
                 } = require('electron');
-
+                var syncButton = document.getElementById("sync-button");
                 ipcRenderer.on('sync-start', (event, arg) => {
-                    document.getElementById("right-bar-text").innerHTML = "Syncing..."
+                    syncButton.classList.add("rotation")
+                    syncButton.disabled = true;
                 });
                 ipcRenderer.on('sync-stop', (event, arg) => {
-                    document.getElementById("right-bar-text").innerHTML = ""
+                    syncButton.classList.remove("rotation")
+                    syncButton.disabled = false;
                 });
                 var main = remote.require("./main.js");
-                if (main.isSyncing())
-                    document.getElementById("right-bar-text").innerHTML = "Syncing..."
+                if (main.isSyncing()) {
+                    syncButton.classList.add("rotation")
+                    syncButton.disabled = true;
+                }
+                syncButton.onclick = function () {
+                    if (!main.startSync()) {
+                        var {
+                            remote
+                        } = require('electron');
+                        const BrowserWindow = remote.BrowserWindow;
+
+                        var win = new BrowserWindow({
+                            width: 500,
+                            height: 500,
+                            frame: true,
+                        });
+                        const url = require('url')
+                        const path = require('path')
+                        win.loadURL(url.format({
+                            pathname: path.join(__dirname, 'settings/webdav_dialog.html'),
+                            protocol: 'file:',
+                            slashes: true
+                        }))
+                        win.setMenu(null)
+                    }
+                }
                 var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
                 var settingsHelper = new SettingsHelper();
                 if (settingsHelper.displayFrame()) {
