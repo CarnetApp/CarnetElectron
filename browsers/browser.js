@@ -237,7 +237,7 @@ function resetGrid(discret) {
         list(folder.path)
     })
     noteCardViewGrid.onNoteClick(function (note) {
-        if (!dontOpen)
+        if (!dontOpen && note.path != "untitleddonotedit.sqd")
             openNote(note.path)
         dontOpen = false;
         // var reader = new Writer(note,"");
@@ -443,6 +443,51 @@ function list(pathToList, discret) {
                     notes.push(file)
                 }
                 notePath.push(file.path)
+            }
+
+            if (files.length == 0 && pathToList === "recentdb://") {
+                $("#emty-view").fadeOut("fast");
+                var noteTestTxt = new Note("untitleddonotedit.sqd", "These fake notes will disappear as soon as you create a new note by selecting the bottom right button", "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: [],
+                    rating: 5,
+                    color: "none"
+                }, oldNote != undefined ? oldNote.previews : undefined);
+                notes.push(noteTestTxt)
+                var noteTestTxt = new Note("untitleddonotedit.sqd", "Choose note/text colors, add keywords           ", "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: ["keyword"],
+                    rating: -1,
+                    color: "orange"
+                }, oldNote != undefined ? oldNote.previews : undefined);
+                notes.push(noteTestTxt)
+                var noteTestTxt = new Note("untitleddonotedit.sqd", "Rate your notes or texts", "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: [],
+                    rating: 3,
+                    color: "none"
+                }, oldNote != undefined ? oldNote.previews : undefined);
+                notes.push(noteTestTxt)
+                var noteTestTxt = new Note("untitleddonotedit.sqd", "Sync with your devices", "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: [],
+                    rating: -1,
+                    color: "green"
+                }, oldNote != undefined ? oldNote.previews : undefined);
+                notes.push(noteTestTxt)
+                var noteTestTxt = new Note("untitleddonotedit.sqd", "Format your notes and documents, add pictures and audio records", "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: [],
+                    rating: -1,
+                    color: "red"
+                }, oldNote != undefined ? oldNote.previews : undefined);
+                notes.push(noteTestTxt)
+
             }
             noteCardViewGrid.setNotesAndFolders(notes)
             if (discret) {
