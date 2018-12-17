@@ -55,11 +55,6 @@ KeywordsDBManager.prototype.getFlatenDB = function (callback) {
 }
 
 KeywordsDBManager.prototype.addToDB = function (keyword, path, callback) {
-    console.log("path 1 " + path)
-    if (path.startsWith("/"))
-        path = NoteUtils.getNoteRelativePath(settingsHelper.getNotePath(), path)
-    console.log("path 2 " + path)
-
     this.action(keyword, path, "add", callback)
 }
 
