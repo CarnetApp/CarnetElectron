@@ -14,7 +14,6 @@
     --carnet-icon-view-bg:rgb(36, 46, 100);
     --loading-view-bg:rgb(36, 46, 100);
     --fab-color: black;
-
 }   
 
 #drag-bar{
@@ -50,6 +49,10 @@ body{
     background: var(--grid-bg);
 }
 .mdl-card__supporting-text{
+    color:inherit;
+}
+
+.mdl-card{
     color:var(--note-text-color);
 }
 
@@ -63,10 +66,6 @@ body{
     transition: background-color 250ms linear, box-shadow 250ms linear;
 }
 
-.mdl-card:hover{
-    box-shadow: var(--note-shadow-hover);
-}
-
 
 .mdl-card:hover {
     background-color: var(--note-bg-hover);
@@ -74,11 +73,11 @@ body{
     cursor: pointer;
 }
 .card-text{
-    color:var(--note-text-color);
+    color:inherit;
 }
 
 .card-title {
-    color:var(--note-text-color);
+    color:inherit;
 }
 
 .card-text {
@@ -141,4 +140,47 @@ body{
 
 #sync-button{
     display: none;
+}
+
+
+.mdl-card.red{
+    background: var(--note-red);
+    box-shadow:none;
+}
+.mdl-card.orange{
+    background: var(--note-orange);
+    box-shadow:none;
+}
+.mdl-card.yellow{
+    background: var(--note-yellow);
+    box-shadow:none;
+}
+
+.mdl-card.green{
+    background: var(--note-green);
+    box-shadow:none;
+}
+.mdl-card.teal{
+    background: var(--note-teal);
+    box-shadow:none;
+}
+.mdl-card.blue{
+    background: var(--note-blue);
+    box-shadow:none;
+}
+.mdl-card.violet{
+    background: var(--note-violet);
+    box-shadow:none;
+}
+.mdl-card.purple{
+    background: var(--note-purple);
+    box-shadow:none;
+}
+.mdl-card.pink{
+    background: var(--note-pink);
+    box-shadow:none;
+}
+
+.mdl-card:hover{
+    box-shadow: var(--note-shadow-hover);
 }

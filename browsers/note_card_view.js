@@ -3,7 +3,14 @@ var NoteCardView = function (elem) {
     this.init();
 }
 NoteCardView.prototype.setNote = function (note) {
+    if (this.oldColor != undefined) {
+        this.elem.classList.remove(this.oldColor)
+    }
     this.note = note;
+    if (this.note.metadata != undefined && this.note.metadata.color != undefined) {
+        this.elem.classList.add(this.note.metadata.color)
+        this.oldColor = this.note.metadata.color;
+    }
     if (note.title.indexOf("untitled") == 0)
         this.cardTitleText.innerHTML = ""
     else

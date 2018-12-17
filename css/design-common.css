@@ -88,3 +88,17 @@ dialog{
 @-moz-keyframes spin { 100% { -moz-transform: rotate(-360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(-360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(-360deg); transform:rotate(-360deg); } }
+
+/* note color */
+:root{
+    --note-none: white;
+    --note-red: rgb(241, 166, 166);
+    --note-orange: rgb(241, 195, 165);
+    --note-yellow: rgb(255, 230, 157);
+    --note-green: rgb(174, 243, 190);
+    --note-teal: rgb(108, 247, 240);
+    --note-blue: rgb(122, 167, 201);
+    --note-violet: rgb(155, 135, 199);
+    --note-purple: rgb(178, 137, 192);
+    --note-pink: rgb(207, 157, 185);
+  }
