@@ -37,6 +37,10 @@ html {
     color:white;
 }
 
+.mdl-button[disabled][disabled], .mdl-button.mdl-button--disabled.mdl-button--disabled{
+    color:rgb(175, 175, 175);
+}
+
 .keyword {
     color:white;
     background:  #4d4d4d;
