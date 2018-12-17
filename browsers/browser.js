@@ -237,8 +237,15 @@ function resetGrid(discret) {
         list(folder.path)
     })
     noteCardViewGrid.onNoteClick(function (note) {
-        if (!dontOpen && note.path != "untitleddonotedit.sqd")
-            openNote(note.path)
+        if (!dontOpen) {
+            if (note.path != "untitleddonotedit.sqd")
+                openNote(note.path)
+            else
+                displaySnack({
+                    message: "Fake notes are not editable",
+                    timeout: 2000,
+                })
+        }
         dontOpen = false;
         // var reader = new Writer(note,"");
         // reader.extractNote()
