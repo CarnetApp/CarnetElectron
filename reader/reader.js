@@ -6,6 +6,8 @@ var Writer = function (elem) {
     this.seriesTaskExecutor = new SeriesTaskExecutor();
     this.saveNoteTask = new SaveNoteTask(this)
     this.hasTextChanged = false;
+    this.manager = new TodoListManager(document.getElementById("text"))
+
     resetScreenHeight();
     console.log("create Writer")
 
@@ -259,6 +261,12 @@ Writer.prototype.extractNote = function () {
             writer.note.metadata = new NoteMetadata();
         else
             writer.note.metadata = data.metadata;
+        writer.manager = new TodoListManager(document.getElementById("text"))
+        if (writer.note.metadata.todolists != undefined)
+            writer.manager.fromData(writer.note.metadata.todolists)
+        console.log("todo " + writer.note.metadata.todolists)
+        console.log(writer.note.metadata.todolists)
+
         writer.refreshKeywords()
         writer.refreshMedia();
         var ratingStars = document.querySelectorAll("input.star")
@@ -538,6 +546,9 @@ Writer.prototype.init = function () {
                     break;
                 case "statistics-button":
                     writer.displayCountDialog();
+                    break;
+                case "todolist-button":
+                    writer.manager.createTodolist()
                     break;
                 case "copy-button":
                     writer.copy();
@@ -946,12 +957,19 @@ SaveNoteTask.prototype.trySave = function (onEnd, trial) {
     const task = this;
     if (this.writer.note.metadata.creation_date === "")
         this.writer.note.metadata.creation_date = Date.now();
+    var tmpElem = this.writer.oEditor.cloneNode(true);
+    var todolists = tmpElem.getElementsByClassName("todo-list");
+    console.log("todolists length " + todolists.length)
 
+    for (var i = 0; i < todolists.length; i++) {
+        todolists[i].innerHTML = ""
+    }
+    this.writer.note.metadata.todolists = this.writer.manager.toData()
     this.writer.note.metadata.last_modification_date = Date.now();
     RequestBuilder.sRequestBuilder.post("/note/saveText", {
         id: this.writer.saveID,
         path: this.writer.note.path,
-        html: this.writer.oEditor.innerHTML,
+        html: tmpElem.innerHTML,
         metadata: JSON.stringify(this.writer.note.metadata)
     }, function (error, data) {
         if (error) {
@@ -1014,8 +1032,6 @@ if (loaded == undefined)
     var loaded = false; //don't know why, loaded twice on android
 
 var writer = undefined;
-
-
 
 $(document).ready(function () {
     rootpath = document.getElementById("root-url").innerHTML;

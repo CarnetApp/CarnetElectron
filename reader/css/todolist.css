@@ -1,0 +1,65 @@
+.mdl-checkbox{
+    height: auto;
+}
+
+.todo-list .todo-item-text{
+    width: calc(100% - 50px);
+    display: block;
+    min-height: 25px;
+    margin-left: 15px;
+    margin-top:-5px;
+    padding: 5px;
+}
+.remove-todo-list{
+    float: right;
+    cursor: pointer;
+    margin-right:10px;
+
+}
+.todo-item-text:hover{
+    cursor: text;
+}
+
+.mdl-checkbox {
+    width: calc(100% - 40px);
+
+}
+.move-item{
+    float: left;
+    margin-right: 7px;
+    margin-top: 1px;
+
+    font-size: 15px;
+}
+
+.move-item:hover {
+    cursor: grab;
+}
+
+.grabbing {
+    cursor: grabbing !important;
+}
+.remove-item{
+    float: right;
+    margin-right: 7px;
+    cursor: pointer;
+}
+
+.done .todo-item-text {
+    text-decoration: line-through;
+    color: #888;
+  }
+.todo-item{
+    margin-bottom: 10px;
+
+}
+.todo-list input{
+    padding: 5px;
+
+}
+.todo-list{
+    margin:auto;
+    margin-top:50px;
+    max-width: 300px;
+    width:100%;  
+}
