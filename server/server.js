@@ -170,6 +170,33 @@ var handle = function (method, path, data, callback) {
         }
     } else if (method === "POST") {
         switch (path) {
+            case "/notes/metadata":
+                var JSZip = require('jszip');
+
+                var path = data.path;
+                var metadata = data.metadata;
+                fs.readFile(settingsHelper.getNotePath() + "/" + path, 'base64', function (err, dataZ) {
+                    console.log(err)
+
+                    if (!err) {
+                        var zip = new JSZip();
+                        zip.loadAsync(dataZ, {
+                            base64: true
+                        }).then(function (contents) {
+                            zip.file("metadata.json", JSON.stringify(metadata))
+                            zip.generateAsync({ type: "base64" }).then(function (base64) {
+                                fs.writeFile(settingsHelper.getNotePath() + "/" + path, base64, 'base64', function (err) {
+                                    console.log(err)
+
+                                    if (!err) {
+                                    } else callback(true)
+                                });
+                            });
+
+                        });
+                    } else callback(true)
+                });
+                break;
             case "/settings/note_path":
                 settingsHelper.setNotePath(data.path)
                 callback(false, undefined)

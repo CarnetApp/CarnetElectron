@@ -236,6 +236,14 @@ function resetGrid(discret) {
     noteCardViewGrid.onFolderClick(function (folder) {
         list(folder.path)
     })
+    noteCardViewGrid.onTodoListChange = function (note) {
+        RequestBuilder.sRequestBuilder.post("/notes/metadata", {
+            path: note.path,
+            metadata: note.metadata
+        }, function (error) {
+
+        })
+    }
     noteCardViewGrid.onNoteClick(function (note) {
         if (!dontOpen) {
             if (note.path != "untitleddonotedit.sqd")

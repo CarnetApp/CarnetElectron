@@ -10,6 +10,10 @@
     margin-top:-5px;
     padding: 5px;
 }
+
+.add-item{
+    font-size:14px;
+}
 .remove-todo-list{
     float: right;
     cursor: pointer;
