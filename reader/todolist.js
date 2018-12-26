@@ -23,34 +23,33 @@ TodoListManager.prototype.createTodolist = function (data) {
     }
     if (todolistDiv == undefined)
         todolistDiv = document.createElement("div");
-    else hasFound = true;
+    else {
+        hasFound = true;
+        todolistDiv.innerHTML = ""
+
+    }
 
     if (data != undefined && data.id != undefined)
         todolistDiv.id = data.id;
     else
         todolistDiv.id = "todolist" + generateUID()
-    $(todolistDiv).on('DOMNodeRemoved', function (e) {
-        console.log("delete " + e.target)
-        if (e.target.classList != undefined && e.target.classList.contains("todo-list"))
-            document.execCommand("undo")
 
-    })
     todolistDiv.innerHTML = "";
     todolistDiv.contentEditable = false;
     todolistDiv.classList.add("todo-list")
+    var todolistContent = document.createElement("div");
+    todolistContent.classList.add("todo-list-content")
     var deleteElem = document.createElement("a");
     deleteElem.classList.add("remove-todo-list");
     deleteElem.innerHTML = "x"
-    deleteElem.onclick = function () {
-        manager.removeTodolist(todolistDiv.id)
-        return false;
-    }
+
     var todoTitle = document.createElement("h3");
     todoTitle.innerHTML = "To do"
     var doneTitle = document.createElement("h3");
     doneTitle.innerHTML = "Completed"
     var todo = document.createElement("div");
     todo.classList.add("todo")
+    todo.id = "todooo" + generateUID();
     var addItem = document.createElement("a");
     addItem.innerHTML = "Add item";
     addItem.classList.add("add-item");
@@ -58,23 +57,30 @@ TodoListManager.prototype.createTodolist = function (data) {
 
     var done = document.createElement("div");
     done.classList.add("done")
-    todolistDiv.appendChild(deleteElem)
-    todolistDiv.appendChild(todoTitle);
-    todolistDiv.appendChild(todo);
-    todolistDiv.appendChild(addItem);
-    todolistDiv.appendChild(doneTitle);
-
-    todolistDiv.appendChild(done);
+    todolistContent.appendChild(deleteElem)
+    todolistContent.appendChild(todoTitle);
+    todolistContent.appendChild(todo);
+    todolistDiv.todo = todo
+    todolistContent.appendChild(addItem);
+    todolistContent.appendChild(doneTitle);
+    todolistContent.appendChild(done);
+    todolistDiv.done = done
+    todolistDiv.appendChild(todolistContent)
     if (!hasFound) {
-        this.element.innerHTML += "<br />"
         this.element.appendChild(todolistDiv)
-        this.element.innerHTML += "<br />"
     }
 
     var todolist = new TodoList(todolistDiv);
     if (data != undefined)
         todolist.fromData(data)
     this.todolists.push(todolist)
+    deleteElem.onclick = function () {
+        console.log("click remove")
+        manager.removeTodolist(todolistDiv.id)
+        return false;
+    }
+    console.log("todoodod")
+
     return todolist;
 
 }
@@ -86,6 +92,15 @@ TodoListManager.prototype.fromData = function (data) {
 }
 
 TodoListManager.prototype.removeTodolist = function (id) {
+    console.log("remove")
+    var event = new Event('remove-todolist');
+    event.id = id;
+    event.previous = document.getElementById(id).previousSibling
+    event.next = document.getElementById(id).nextElementSibling
+    console.log("remove next")
+    console.log(document.getElementById(id).nextElementSibling)
+
+    this.element.dispatchEvent(event);
     $("#" + id).remove();
     for (var i = 0; i < this.todolists.length; i++) {
         var todol = this.todolists[i];
@@ -107,12 +122,13 @@ TodoListManager.prototype.toData = function () {
 var TodoList = function (element) {
     var todolist = this;
     this.element = element
-    this.todo = element.getElementsByClassName("todo")[0]
-    this.done = element.getElementsByClassName("done")[0]
+    this.todo = element.todo
+    this.done = element.done
     this.addItem = element.getElementsByClassName("add-item")[0]
-    this.addItem.onclick = function () {
-        todolist.createItem("", false)
-    }
+    if (this.addItem != undefined)
+        this.addItem.onclick = function () {
+            todolist.createItem("", false)
+        }
     $(this.todo).sortable({ handle: ".move-item" });
     $(this.todo).disableSelection();
 
@@ -132,6 +148,8 @@ TodoList.prototype.registerToMove = function (hand, item) {
 
 TodoList.prototype.toData = function () {
     var result = {};
+    if (this.todo == undefined)
+        return result
     var todo = [];
     var done = []
     var todoChildren = this.todo.childNodes;
@@ -152,6 +170,8 @@ TodoList.prototype.toData = function () {
 }
 
 TodoList.prototype.fromData = function (data) {
+    if (data.todo == undefined)
+        return
     for (var i = 0; i < data.todo.length; i++) {
         this.createItem(data.todo[i], false)
     }
@@ -188,10 +208,7 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
     //this.registerToMove(move, div)
 
     div.appendChild(move)
-    var checkbox = document.createElement("input");
-    checkbox.type = "checkbox"
-    checkbox.id = id;
-    //checkbox.classList.add("");
+
     var label = document.createElement("label");
     label.classList.add("mdl-checkbox")
     label.classList.add("mdl-js-checkbox")
@@ -236,7 +253,6 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
         return false;
     }
     label.appendChild(span)
-    div.checkbox = checkbox;
     div.label = label
     div.span = span
     div.appendChild(label)
@@ -280,18 +296,18 @@ TodoList.prototype.check = function (item) {
     item.label.classList.add("is-checked");
 
     item.material.check()
-    this.done.appendChild(item)
+    if (this.done != undefined)
+        this.done.appendChild(item)
 }
 
 TodoList.prototype.uncheck = function (item, after) {
     if (item.parentNode != null)
         item.parentNode.removeChild(item)
-    item.checkbox.checked = true;
     if (after != undefined)
         this.todo.insertBefore(item, after.nextSibling);
-    else
-
+    else {
         this.todo.appendChild(item)
+    }
     item.material.uncheck()
 
 }

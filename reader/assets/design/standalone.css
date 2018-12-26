@@ -370,6 +370,15 @@ div#container-button::-webkit-scrollbar {
 	  transform: scale(1.25); 
   }
 
+  .edit-zone{
+	  width:100%;
+  }
+
+  .edit-zone:focus {
+     outline: 0px solid transparent;
+  }
+
+
 
 /* Nextcloud */
 

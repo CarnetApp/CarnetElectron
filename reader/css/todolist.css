@@ -2,6 +2,15 @@
     height: auto;
 }
 
+.todo-list{
+    display:block;
+    width: 100%;
+}
+.todo-list h3{
+    font-size:16px;
+    margin:0px;
+    margin-bottom:10px;
+}
 .todo-list .todo-item-text{
     width: calc(100% - 50px);
     display: block;
@@ -37,7 +46,7 @@
 }
 
 .move-item:hover {
-    cursor: grab;
+    cursor: grab !important;
 }
 
 .grabbing {
@@ -61,9 +70,12 @@
     padding: 5px;
 
 }
-.todo-list{
+.todo-list-content{
     margin:auto;
-    margin-top:50px;
+    margin-top:0px;
     max-width: 300px;
     width:100%;  
+}
+.done .move-item{
+    visibility: hidden;
 }

@@ -237,7 +237,9 @@ Writer.prototype.addMedia = function () {
 }
 
 Writer.prototype.setDoNotEdit = function (b) {
-    document.getElementById("text").contentEditable = !b;
+    for (var edit of document.getElementsByClassName("edit-zone")) {
+        edit.contentEditable = !b;
+    }
     document.getElementById("name-input").disabled = b;
 }
 
@@ -262,6 +264,10 @@ Writer.prototype.extractNote = function () {
         else
             writer.note.metadata = data.metadata;
         writer.manager = new TodoListManager(document.getElementById("text"))
+        writer.oDoc.addEventListener('remove-todolist', function (e) {
+            e.previous.innerHTML += "<br />" + e.next.innerHTML
+            $(e.next).remove()
+        }, false);
         if (writer.note.metadata.todolists != undefined)
             writer.manager.fromData(writer.note.metadata.todolists)
         console.log("todo " + writer.note.metadata.todolists)
@@ -284,8 +290,35 @@ var saveTextIfChanged = function () {
         writer.seriesTaskExecutor.addTask(writer.saveNoteTask)
     writer.hasTextChanged = false;
 }
+
+Writer.prototype.createEditableZone = function () {
+    var div = document.createElement("div")
+    div.classList.add("edit-zone");
+    div.contentEditable = true
+    this.oDoc.appendChild(div)
+    return div;
+}
+
+Writer.prototype.placeCaretAtEnd = function (el) {
+    el.focus();
+    if (typeof window.getSelection != "undefined"
+        && typeof document.createRange != "undefined") {
+        var range = document.createRange();
+        range.selectNodeContents(el);
+        range.collapse(false);
+        var sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else if (typeof document.body.createTextRange != "undefined") {
+        var textRange = document.body.createTextRange();
+        textRange.moveToElementText(el);
+        textRange.collapse(false);
+        textRange.select();
+    }
+}
 Writer.prototype.fillWriter = function (extractedHTML) {
     console.log("fill")
+    var writer = this;
     if (extractedHTML != undefined)
         this.oEditor.innerHTML = extractedHTML;
     document.getElementById("name-input").value = FileUtils.stripExtensionFromName(FileUtils.getFilename(this.note.path))
@@ -294,11 +327,28 @@ Writer.prototype.fillWriter = function (extractedHTML) {
         console.log("onscroll")
     }
     this.oDoc = document.getElementById("text");
+    this.oDoc.contentEditable = false
+    if (this.oDoc.getElementsByClassName("edit-zone").length == 0) { //old note...
+        var toCopy = this.oDoc.innerHTML;
+        this.oDoc.innerHTML = "";
+        this.createEditableZone().innerHTML = toCopy
+    }
+    this.oDoc.onclick = function (event) {
+        if (event.target.id == "text") {
+            //focus on last editable element
+            var elements = event.target.getElementsByClassName("edit-zone");
+            writer.placeCaretAtEnd(elements[elements.length - 1]);
+        }
+    }
     this.oFloating = document.getElementById("floating");
     var writer = this
     this.oDoc.addEventListener("input", function () {
         writer.hasTextChanged = true;
     }, false);
+
+
+
+
     this.saveInterval = setInterval(saveTextIfChanged, 2000);
     this.sDefTxt = this.oDoc.innerHTML;
     /*simple initialization*/
@@ -549,6 +599,7 @@ Writer.prototype.init = function () {
                     break;
                 case "todolist-button":
                     writer.manager.createTodolist()
+                    writer.createEditableZone()
                     break;
                 case "copy-button":
                     writer.copy();

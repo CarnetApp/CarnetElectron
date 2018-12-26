@@ -8,8 +8,11 @@ NoteCardView.prototype.refreshTodoList = function () {
     console.oldlog("refreshTodoList")
     this.cardTodoLists.innerHTML = ""
     for (var i = 0; i < this.note.metadata.todolists.length; i++) {
+
         console.oldlog("arr")
         var todolist = this.note.metadata.todolists[i];
+        if (todolist.todo == undefined)
+            continue;
         var todolistDiv = document.createElement("div")
         todolistDiv.classList.add("todo-list")
         for (var j = 0; j < todolist.todo.length; j++) {
@@ -38,7 +41,6 @@ NoteCardView.prototype.refreshTodoList = function () {
             label.onclick = function () {
                 noteCard.elem.classList.add("noclick")
                 this.checkbox.check()
-                console.oldlog("check click " + j)
                 var item = noteCard.note.metadata.todolists[this.i].todo[this.j]
                 noteCard.note.metadata.todolists[this.i].todo.splice(this.j, 1)
                 noteCard.note.metadata.todolists[this.i].done.push(item)
@@ -251,8 +253,6 @@ NoteCardViewGrid.prototype.addNext = function (num) {
                 note: note,
                 callback: this.onNoteClick
             }, function (event) {
-                console.oldlog("note click " + noteCard.blockClick)
-
                 if (!$(this).hasClass('noclick')) {
 
                     var data = event.data;
