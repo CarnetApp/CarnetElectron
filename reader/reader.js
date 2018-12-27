@@ -73,8 +73,9 @@ Writer.prototype.displayMediaFullscreen = function (index) {
     downloadButton.classList.add('mdl-button');
     downloadButton.classList.add('mdl-js-button')
     downloadButton.classList.add('mdl-button--icon')
-    var imgD = document.createElement("img")
-    imgD.src = rootpath + "/img/ic_file_download_white_24px.svg"
+    var imgD = document.createElement("i")
+    imgD.classList.add("material-icons")
+    imgD.innerHTML = "file_download"
     downloadButton.appendChild(imgD)
     a.appendChild(downloadButton)
     toolbar.appendChild(a)
@@ -111,8 +112,9 @@ Writer.prototype.displayMediaFullscreen = function (index) {
     closeButton.classList.add('mdl-button');
     closeButton.classList.add('mdl-js-button')
     closeButton.classList.add('mdl-button--icon')
-    var imgC = document.createElement("img")
-    imgC.src = rootpath + "/img/ic_close_white_24px.svg"
+    var imgC = document.createElement("i")
+    imgC.classList.add("material-icons")
+    imgC.innerHTML = "close"
     closeButton.appendChild(imgC)
     toolbar.appendChild(closeButton)
 

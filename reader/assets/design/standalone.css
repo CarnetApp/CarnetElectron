@@ -24,6 +24,10 @@ html {
 	background-color: rgba(199, 196, 196, 0.452);
 }
 
+#header-carnet i{
+	color:white;
+}
+
 #loading {
 	display: none;
 	position: fixed;
@@ -61,6 +65,10 @@ html {
 	padding: 10px;
 	width: 100%;
 	text-align: right;
+}
+
+#add-media-button{
+	color:white;
 }
 
 #fullscreen-viewer button {

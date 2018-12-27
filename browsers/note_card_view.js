@@ -321,9 +321,10 @@ FolderView.prototype.init = function () {
     this.elem.classList.add("mdl-shadow--2dp");
     this.cardContent = document.createElement('div');
     this.cardContent.classList.add("mdl-card__supporting-text");
-    this.img = document.createElement('img');
+    this.img = document.createElement('i');
     this.img.classList.add("folder-icon")
-    this.img.src = root_url + "img/directory.png";
+    this.img.classList.add("material-icons")
+    this.img.innerHTML = "folder";
     this.cardContent.appendChild(this.img);
 
     this.cardTitle = document.createElement('h2');
