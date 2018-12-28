@@ -803,9 +803,10 @@ Writer.prototype.removeKeyword = function (word) {
 Writer.prototype.reset = function () {
     if (this.saveInterval !== undefined)
         clearInterval(this.saveInterval)
-    this.oEditor.innerHTML = '<div id="text" contenteditable="true" style="height:100%;">\
+    this.oEditor.innerHTML = '<div id="text" style="height:100%;">\
     <!-- be aware that THIS will be modified in java -->\
     <!-- soft won\'t save note if contains donotsave345oL -->\
+    <div class="edit-zone" contenteditable></div>\
 </div>\
 <div id="floating">\
 \
