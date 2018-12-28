@@ -810,6 +810,7 @@ Writer.prototype.reset = function () {
 <div id="floating">\
 \
 </div>';
+
     var dias = document.getElementsByClassName("mdl-dialog")
     for (var i = 0; i < dias.length; i++) {
         if (dias[i].open)
