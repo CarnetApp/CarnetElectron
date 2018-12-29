@@ -609,7 +609,7 @@ Writer.prototype.init = function () {
                     writer.displayCountDialog();
                     break;
                 case "todolist-button":
-                    writer.manager.createTodolist()
+                    writer.manager.createTodolist().createItem("")
                     writer.createEditableZone()
                     break;
                 case "copy-button":

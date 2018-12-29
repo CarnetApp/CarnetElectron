@@ -287,6 +287,11 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
         this.check(div)
     else
         this.uncheck(div, after)
+    span.onfocus = function () {
+
+    }
+    span.focus()
+
     return div
 }
 
