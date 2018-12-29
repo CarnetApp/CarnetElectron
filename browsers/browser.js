@@ -171,7 +171,7 @@ function resetGrid(discret) {
     noteCardViewGrid.onTodoListChange = function (note) {
         RequestBuilder.sRequestBuilder.post("/notes/metadata", {
             path: note.path,
-            metadata: note.metadata
+            metadata: JSON.stringify(note.metadata)
         }, function (error) {
 
         })

@@ -183,7 +183,7 @@ var handle = function (method, path, data, callback) {
                         zip.loadAsync(dataZ, {
                             base64: true
                         }).then(function (contents) {
-                            zip.file("metadata.json", JSON.stringify(metadata))
+                            zip.file("metadata.json", metadata)
                             zip.generateAsync({ type: "base64" }).then(function (base64) {
                                 fs.writeFile(settingsHelper.getNotePath() + "/" + path, base64, 'base64', function (err) {
                                     console.log(err)
