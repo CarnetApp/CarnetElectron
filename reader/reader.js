@@ -269,6 +269,10 @@ Writer.prototype.extractNote = function () {
         writer.oDoc.addEventListener('remove-todolist', function (e) {
             e.previous.innerHTML += "<br />" + e.next.innerHTML
             $(e.next).remove()
+            writer.hasTextChanged = true;
+        }, false);
+        writer.oDoc.addEventListener('todolist-changed', function (e) {
+            writer.hasTextChanged = true;
         }, false);
         if (writer.note.metadata.todolists != undefined)
             writer.manager.fromData(writer.note.metadata.todolists)
