@@ -287,6 +287,7 @@ Writer.prototype.extractNote = function () {
         };
         writer.updateRating(writer.note.metadata.rating)
         writer.updateNoteColor(writer.note.metadata.color != undefined ? writer.note.metadata.color : "none");
+        writer.setDoNotEdit(false)
     });
 }
 
@@ -294,6 +295,10 @@ var saveTextIfChanged = function () {
     console.log("has text changed ? " + writer.hasTextChanged)
     if (writer.hasTextChanged)
         writer.seriesTaskExecutor.addTask(writer.saveNoteTask)
+    else if (writer.exitOnSaved) {
+        writer.exitOnSaved = false
+        writer.askToExit()
+    }
     writer.hasTextChanged = false;
 }
 
@@ -695,9 +700,12 @@ Writer.prototype.toggleDrawer = function () {
 }
 
 Writer.prototype.askToExit = function () {
+    this.setDoNotEdit(true)
     console.log("exec? " + this.seriesTaskExecutor.isExecuting)
-    if (this.seriesTaskExecutor.isExecuting)
+    if (this.seriesTaskExecutor.isExecuting || this.hasTextChanged) {
+        this.exitOnSaved = true;
         return false;
+    }
     else {
         compatibility.exit();
     }
@@ -805,6 +813,7 @@ Writer.prototype.removeKeyword = function (word) {
 }
 
 Writer.prototype.reset = function () {
+    this.exitOnSaved = false
     if (this.saveInterval !== undefined)
         clearInterval(this.saveInterval)
     this.oEditor.innerHTML = '<div id="text" style="height:100%;">\
