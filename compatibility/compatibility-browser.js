@@ -107,7 +107,7 @@ class BrowserCompatibility extends Compatibility {
                                 type: "GET",
                                 success: function (newVersion) {
                                     console.log("new version " + newVersion)
-                                    if (version != newVersion) {
+                                    if (parseInt(version.replace(/\./g, "")) < parseInt(newVersion.replace(/\./g, ""))) {
                                         displaySnack(
                                             {
                                                 message: "New version available",
