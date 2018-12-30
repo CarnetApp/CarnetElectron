@@ -1,3 +1,13 @@
+# Version 0.12.0
+
+Todo-List (in editor, tools)
+Changelog dialog
+
+# Version 0.11.0
+
+New Themes
+Note Color
+
 # Version 0.10.2
 
 Fix Delete
