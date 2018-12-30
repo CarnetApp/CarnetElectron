@@ -44,6 +44,26 @@ var handle = function (method, path, data, callback) {
             case "/settings/settings_css":
                 callback(false, settingsHelper.getSettingsCss())
                 return;
+            case "/settings/changelog":
+                fs.readFile(__dirname + '/../CHANGELOG.md', 'utf8', function (err, data) {
+                    if (err) {
+                        callback(true, null)
+                        return;
+                    }
+                    const {
+                        app,
+                    } = require('electron');
+                    var version = app.getVersion();
+                    var last = settingsHelper.getLastChangelogVersion()
+                    if (last != version) {
+                        settingsHelper.setLastChangelogVersion(version)
+                    }
+                    callback(err, {
+                        shouldDisplayChangelog: last != version,
+                        changelog: data
+                    })
+                })
+                return;
             case "/notes/getSearchCache":
                 callback(false, currentSearch.result)
                 return;

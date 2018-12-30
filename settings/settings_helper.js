@@ -113,5 +113,13 @@ SettingsHelper.prototype.getSettingsCss = function () {
     return store.get("settings_css")
 }
 
+SettingsHelper.prototype.setLastChangelogVersion = function (md5) {
+    store.set("last_changelog_version", md5)
+}
+
+SettingsHelper.prototype.getLastChangelogVersion = function () {
+    return store.get("last_changelog_version")
+}
+
 
 exports.SettingsHelper = SettingsHelper;
