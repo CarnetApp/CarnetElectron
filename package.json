@@ -84,7 +84,7 @@
     "@babel/core": "^7.1.5",
     "@babel/preset-env": "^7.1.5",
     "@babel/cli": "^7.1.5",
-    "electron": "1.7.16",
+    "electron": "3.0.0",
     "electron-builder": "^20.36.2"
   }
 }
