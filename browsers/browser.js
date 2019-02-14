@@ -72,6 +72,7 @@ String.prototype.replaceAll = function (search, replacement) {
 };
 
 function openNote(notePath) {
+    isLoadCanceled = false;
     currentNotePath = notePath
     RequestBuilder.sRequestBuilder.get("/note/open/prepare", function (error, data) {
         console.log("opening " + data)
@@ -663,11 +664,30 @@ registerWriterEvent("exit", function () {
     wasNewNote = false;
 })
 
-registerWriterEvent("loaded", function () {
-    $(loadingView).fadeOut()
-    $("#no-drag-bar").show()
+var isLoadCanceled = false;
 
+registerWriterEvent("loaded", function () {
+    if (!isLoadCanceled) {
+        $(loadingView).fadeOut()
+        $("#no-drag-bar").show()
+    }
 })
+
+registerWriterEvent("error", function () {
+    cancelLoad()
+})
+
+function cancelLoad() {
+    isLoadCanceled = true;
+    $(loadingView).fadeOut()
+    $(writerFrame).fadeOut();
+    $("#no-drag-bar").hide()
+}
+
+document.getElementById("cancel-load-button").onclick = function () {
+    cancelLoad();
+    return false;
+}
 
 
 setTimeout(function () {
