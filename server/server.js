@@ -537,14 +537,15 @@ var NewNoteCreationTask = function (folder, callback) {
             while (sContinue) {
                 sContinue = false
                 for (let file of files) {
-                    if (file == name) {
+                    if (file.startsWith(name)) {
                         sContinue = true;
                         i++;
-                        name = "untitled " + i + ".sqd";
+                        name = "untitled " + i;
                     }
                 }
             }
-            callback(folder.substr(1) + name)
+            var set = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            callback(folder.substr(1) + name + set.charAt(Math.floor(Math.random() * set.length)) + ".sqd")
 
         });
     })
