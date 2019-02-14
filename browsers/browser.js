@@ -8,7 +8,8 @@ var wasNewNote = false
 var dontOpen = false;
 var currentNotePath = undefined
 var root_url = document.getElementById("root-url") != undefined ? document.getElementById("root-url").innerHTML : "";
-new RequestBuilder();
+var api_url = document.getElementById("api-url").innerHTML !== "!API_URL" ? document.getElementById("api-url").innerHTML : "./";
+new RequestBuilder(api_url);
 /*const {
     ipcRenderer,
     remote,

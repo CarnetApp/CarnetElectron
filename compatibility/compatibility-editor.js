@@ -20,8 +20,28 @@ class CompatibilityEditor extends Compatibility {
             var exports = function () { }
         }
     }
+
+    print() {
+        if (this.isAndroid) {
+            app.print(writer.oDoc.innerHTML)
+        } else {
+            var ifr = document.createElement('iframe');
+            ifr.style = 'height: 0px; width: 0px; position: absolute'
+            document.body.appendChild(ifr);
+
+            $(this.oDoc).clone().appendTo(ifr.contentDocument.body);
+            ifr.contentWindow.print();
+
+            ifr.parentElement.removeChild(ifr);
+        }
+    }
+
     exit() {
-        if (this.isElectron) {
+        if (this.isGtk) {
+            window.parent.document.title = "msgtopython:::exit"
+            parent.postMessage("exit", "*")
+        }
+        else if (this.isElectron) {
             const {
                 ipcRenderer
             } = require('electron')
@@ -34,6 +54,10 @@ class CompatibilityEditor extends Compatibility {
             parent.postMessage("exit", "*")
     }
     onNoteLoaded() {
+        if (this.isGtk) {
+            document.getElementsByClassName('mdl-layout__header')[0].style.display = "none"
+            window.parent.document.title = "msgtopython:::noteloaded"
+        }
         if (this.isElectron) {
             const {
                 ipcRenderer
