@@ -328,10 +328,11 @@ Writer.prototype.placeCaretAtEnd = function (el) {
     }
 }
 Writer.prototype.fillWriter = function (extractedHTML) {
-    console.log("fill")
+    console.log("fill " + extractedHTML)
     var writer = this;
-    if (extractedHTML != undefined)
+    if (extractedHTML != undefined && extractedHTML != "")
         this.oEditor.innerHTML = extractedHTML;
+    else this.putDefaultHTML();
     document.getElementById("name-input").value = FileUtils.stripExtensionFromName(FileUtils.getFilename(this.note.path))
     this.oEditor.onscroll = function () {
         lastscroll = $(writer.oEditor).scrollTop()
@@ -816,14 +817,7 @@ Writer.prototype.reset = function () {
     this.exitOnSaved = false
     if (this.saveInterval !== undefined)
         clearInterval(this.saveInterval)
-    this.oEditor.innerHTML = '<div id="text" style="height:100%;">\
-    <!-- be aware that THIS will be modified in java -->\
-    <!-- soft won\'t save note if contains donotsave345oL -->\
-    <div class="edit-zone" contenteditable></div>\
-</div>\
-<div id="floating">\
-\
-</div>';
+    this.putDefaultHTML()
 
     var dias = document.getElementsByClassName("mdl-dialog")
     for (var i = 0; i < dias.length; i++) {
@@ -836,6 +830,17 @@ Writer.prototype.reset = function () {
         snackbarContainer.MaterialSnackbar.cleanup_()
     }
     this.setDoNotEdit(false)
+}
+
+Writer.prototype.putDefaultHTML = function () {
+    this.oEditor.innerHTML = '<div id="text" style="height:100%;">\
+    <!-- be aware that THIS will be modified in java -->\
+    <!-- soft won\'t save note if contains donotsave345oL -->\
+    <div class="edit-zone" contenteditable></div>\
+</div>\
+<div id="floating">\
+\
+</div>';
 }
 
 Writer.prototype.setColor = function (color) {
