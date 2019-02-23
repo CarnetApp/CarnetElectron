@@ -224,7 +224,7 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
     input.classList.add("mdl-checkbox__input")
 
     label.appendChild(input)
-    var span = document.createElement("input");
+    var span = document.createElement("textarea");
     span.classList.add("mdl-checkbox__label")
     span.classList.add("todo-item-text")
     span.contentEditable = true
@@ -233,11 +233,8 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
         var key = e.which || e.keyCode;
         console.log("key " + key + " lenght " + span.value.trim().length)
         if (key === 13) {
-            if (span.value.trim().length > 0) { // 13 is enter
+            if (span.value.trim().length > 0 && ! e.shiftKey) { // 13 is enter
                 todolist.createItem("", false, div).span.focus()
-            } else {
-                e.preventDefault()
-
             }
         }
         console.log("removing? " + span.value.length)
