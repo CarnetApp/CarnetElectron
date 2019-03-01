@@ -311,6 +311,9 @@ mdl-layout--fixed-header">
 					<button id="todolist-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button">
 						Todo-List
 					</button>
+					<button id="print-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button">
+						Print
+					</button>
 
 				</div>
 			</div>
@@ -351,6 +354,25 @@ mdl-layout--fixed-header">
 
 
 			<span id="total-time">0:00</span>
+		</div>
+	</dialog>
+
+	<dialog class="mdl-dialog" id="print-dialog">
+		<div>
+			<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="mod-checkbox">
+				<input type="checkbox" id="mod-checkbox" class="mdl-checkbox__input" checked>
+				<span class="mdl-checkbox__label">Print modification date</span>
+			  </label>
+			  <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="creation-checkbox">
+				<input type="checkbox" id="creation-checkbox" class="mdl-checkbox__input" checked>
+				<span class="mdl-checkbox__label">Print creation date</span>
+			  </label>
+		</div>
+		<div>
+
+			<button class="mdl-button mdl-js-button" id="cancel">Cancel</button>
+			<button class="mdl-button mdl-js-button" id="print">Print</button>
+
 		</div>
 	</dialog>
 

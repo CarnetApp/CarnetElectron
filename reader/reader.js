@@ -310,6 +310,22 @@ Writer.prototype.createEditableZone = function () {
     return div;
 }
 
+
+
+Writer.prototype.openPrintDialog = function () {
+    var writer = this;
+    this.printDialog.showModal()
+    this.printDialog.querySelector("#cancel").onclick = function(){
+        writer.printDialog.close()
+    }
+    this.printDialog.querySelector("#print").onclick = function(){
+        compatibility.print(writer.printDialog.querySelector("#mod-checkbox").checked, writer.printDialog.querySelector("#creation-checkbox").checked, writer.note);
+    }
+    //compatibility.print();
+
+}
+
+
 Writer.prototype.placeCaretAtEnd = function (el) {
     el.focus();
     if (typeof window.getSelection != "undefined"
@@ -501,6 +517,9 @@ Writer.prototype.init = function () {
 
     this.newKeywordDialog = this.elem.querySelector('#new-keyword-dialog');
 
+    this.printDialog = this.elem.querySelector('#print-dialog');
+
+
     this.oEditor = document.getElementById("editor");
 
     this.mediaList = document.getElementById("media-list");
@@ -621,6 +640,9 @@ Writer.prototype.init = function () {
                     break;
                 case "select-all-button":
                     document.execCommand("selectAll");
+                    break;
+                case "print-button":
+                    writer.openPrintDialog();
                     break;
             }
         };
