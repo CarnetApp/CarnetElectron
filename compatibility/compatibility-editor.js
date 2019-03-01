@@ -21,12 +21,14 @@ class CompatibilityEditor extends Compatibility {
         }
     }
 
-    print(printMod, printCreation, note) {
+    print(printTitle, printMod, printCreation, note) {
         var dateC = new Date(note.metadata.creation_date)
         var dateM = new Date(note.metadata.last_modification_date)
         var tmpDiv = document.createElement('div');
+        if(printTitle)
+            tmpDiv.innerHTML += "<h3>"+FileUtils.stripExtensionFromName(FileUtils.getFilename(note.path))+"<h3>";
         if(printCreation)
-            tmpDiv.innerHTML = "<span> Created: "+dateC.toLocaleDateString()+" "+dateC.toLocaleTimeString()+"</span><br />";
+            tmpDiv.innerHTML += "<span> Created: "+dateC.toLocaleDateString()+" "+dateC.toLocaleTimeString()+"</span><br />";
         if(printMod)
             tmpDiv.innerHTML += "<span> Modified: "+dateM.toLocaleDateString()+" "+dateM.toLocaleTimeString()+"</span><br />";
         if(printMod || printCreation)
