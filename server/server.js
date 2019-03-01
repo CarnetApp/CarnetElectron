@@ -531,7 +531,7 @@ var NewNoteCreationTask = function (folder, callback) {
         }
         var task = this;
         fs.readdir(path, (err, files) => {
-            var name = "untitled.sqd";
+            var name = "untitled";
             var sContinue = true;
             var i = 1;
             while (sContinue) {
