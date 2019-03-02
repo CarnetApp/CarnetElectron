@@ -447,9 +447,15 @@ div#container-button::-webkit-scrollbar {
 	#add-media-button {
 		color: white;
 		position: fixed;
-		z-index: 400000;
+		z-index: 1;
 		top: 10px;
 		right: 20px;
+	}
+	#add-media-button ~ .mdl-menu__container{
+		position:fixed;
+		right:20px !important;
+		margin-top:10px;
+		left:unset !important;
 	}
 	
 	
