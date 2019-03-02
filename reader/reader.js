@@ -647,6 +647,9 @@ Writer.prototype.init = function () {
                 case "print-button":
                     writer.openPrintDialog();
                     break;
+                case "back-to-text-button":
+                    writer.toolbarManager.toggleToolbar(document.getElementById("media-toolbar"))
+                    break;
             }
         };
     }
@@ -949,10 +952,15 @@ ToolbarManager.prototype.toggleToolbar = function (elem) {
         if (toolbar != elem)
             $(toolbar).slideUp("fast", resetScreenHeight)
     }
+    if(elem.id=="media-toolbar" && !$(elem).is(":visible"))
+        document.getElementsByTagName("header")[0].style.zIndex = "unset";
+    else
+        document.getElementsByTagName("header")[0].style.zIndex = 3;
     if ($(elem).is(":visible"))
         $(elem).slideUp("fast", resetScreenHeight)
     else
         $(elem).slideDown("fast", resetScreenHeight)
+    
 
     resetScreenHeight()
 }
