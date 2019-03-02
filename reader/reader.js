@@ -858,6 +858,11 @@ Writer.prototype.reset = function () {
         snackbarContainer.MaterialSnackbar.cleanup_()
     }
     this.setDoNotEdit(false)
+    //close all toolbars
+    if(this.toolbarManager != undefined)
+        this.toolbarManager.toggleToolbar(undefined)
+    if(writer.fullscreenViewer != undefined)
+        $(writer.fullscreenViewer).hide()
 }
 
 Writer.prototype.putDefaultHTML = function () {
@@ -952,14 +957,16 @@ ToolbarManager.prototype.toggleToolbar = function (elem) {
         if (toolbar != elem)
             $(toolbar).slideUp("fast", resetScreenHeight)
     }
-    if(elem.id=="media-toolbar" && !$(elem).is(":visible"))
+    if(elem != undefined && elem.id=="media-toolbar" && !$(elem).is(":visible"))
         document.getElementsByTagName("header")[0].style.zIndex = "unset";
     else
         document.getElementsByTagName("header")[0].style.zIndex = 3;
-    if ($(elem).is(":visible"))
-        $(elem).slideUp("fast", resetScreenHeight)
-    else
-        $(elem).slideDown("fast", resetScreenHeight)
+    if(elem != undefined){
+        if ($(elem).is(":visible"))
+            $(elem).slideUp("fast", resetScreenHeight)
+        else
+            $(elem).slideDown("fast", resetScreenHeight)
+    }
     
 
     resetScreenHeight()
