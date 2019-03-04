@@ -926,7 +926,7 @@ Writer.prototype.getCaretPosition = function () {
     var x = 0;
     var y = 0;
     var sel = window.getSelection();
-    if (sel.rangeCount) {
+    if (sel != null && sel.rangeCount) {
         var range = sel.getRangeAt(0).cloneRange();
         if (range.getClientRects()) {
             range.collapse(true);
