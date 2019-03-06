@@ -715,11 +715,19 @@ Writer.prototype.init = function () {
         writer.nameTimout = setTimeout(function () {
             writer.seriesTaskExecutor.addTask(writer.saveNoteTask) // first, save.
             writer.seriesTaskExecutor.addTask(new RenameNoteTask(writer))
+            writer.nameTimout=undefined
 
 
-        }, 1000)
+        }, 10000)
     })
 
+    document.getElementById("name-input").addEventListener("focusout", function () {
+        if (writer.nameTimout != undefined){
+            clearTimeout(writer.nameTimout)
+            writer.seriesTaskExecutor.addTask(writer.saveNoteTask) // first, save.
+            writer.seriesTaskExecutor.addTask(new RenameNoteTask(writer))
+        }
+    })
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 }
 
