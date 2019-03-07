@@ -152,6 +152,11 @@ Writer.prototype.setMediaList = function (list) {
 
     if (list.length > 0) {
         this.addMediaMenu.parentNode.style.left = "unset"
+        if(this.oDoc.innerText.trim() == ""){
+            var mediaBar = document.getElementById("media-toolbar");
+            if(!$(mediaBar).is(":visible"))
+                this.toolbarManager.toggleToolbar(mediaBar)
+        }
     } else {
         this.addMediaMenu.parentNode.style.left = "0px"
 
@@ -649,6 +654,11 @@ Writer.prototype.init = function () {
                     break;
                 case "back-to-text-button":
                     writer.toolbarManager.toggleToolbar(document.getElementById("media-toolbar"))
+                    if(writer.oDoc.innerText.trim() == ""){
+                        //put focus
+                        var elements = writer.oDoc.getElementsByClassName("edit-zone");
+                        writer.placeCaretAtEnd(elements[elements.length - 1]);
+                    }
                     break;
             }
         };
@@ -867,9 +877,9 @@ Writer.prototype.reset = function () {
     }
     this.setDoNotEdit(false)
     //close all toolbars
-    if(this.toolbarManager != undefined)
+    if (this.toolbarManager != undefined)
         this.toolbarManager.toggleToolbar(undefined)
-    if(writer.fullscreenViewer != undefined)
+    if (writer.fullscreenViewer != undefined)
         $(writer.fullscreenViewer).hide()
 }
 
@@ -965,17 +975,18 @@ ToolbarManager.prototype.toggleToolbar = function (elem) {
         if (toolbar != elem)
             $(toolbar).slideUp("fast", resetScreenHeight)
     }
-    if(elem != undefined && elem.id=="media-toolbar" && !$(elem).is(":visible"))
+    if (elem != undefined && elem.id == "media-toolbar" && !$(elem).is(":visible"))
         document.getElementsByTagName("header")[0].style.zIndex = "unset";
     else
         document.getElementsByTagName("header")[0].style.zIndex = 3;
-    if(elem != undefined){
-        if ($(elem).is(":visible"))
+    if (elem != undefined) {
+        if ($(elem).is(":visible")){
             $(elem).slideUp("fast", resetScreenHeight)
+        }
         else
             $(elem).slideDown("fast", resetScreenHeight)
     }
-    
+
 
     resetScreenHeight()
 }
