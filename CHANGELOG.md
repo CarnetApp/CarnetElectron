@@ -1,18 +1,38 @@
+# Version 0.13.0
+
+Cache on server side
+
+Better media management of small screens
+
+Better search (ignoring accents + search amoung keywords)
+
+Rename after 10 secs instead of 2 in editor
+
+Print option 
+
+Cancel load option
+
+
 # Version 0.12.0
 
 Todo-List (in editor, tools)
+
 Changelog dialog
 
 # Version 0.11.0
 
 New Themes
+
 Note Color
 
 # Version 0.10.2
 
 Fix Delete
+
 Sync note immediately
+
 Bye bye logs
+
 Slow down sync a bit to avoid high cpu usage :(
 
 # Version 0.10.1
