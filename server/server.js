@@ -520,13 +520,16 @@ var openNote = function (path, callback) {
                         throw err;
                     }
                     result["html"] = data
-
+                    var text = textVersion(data)
+                    currentcache.shorttext = text.substr(0, text.length>200?200:text.length)
                     fs.readFile(tmppath + 'metadata.json', 'utf8', function read(err, metadata) {
                         if (err) {
                             throw err;
                         }
                         result["metadata"] = JSON.parse(metadata);
+                        currentcache.metadata = result["metadata"];
                         callback(result)
+
                     });
                 });
             } else {
