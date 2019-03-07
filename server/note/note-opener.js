@@ -133,6 +133,7 @@ var Extractor = function (data, dest, opener, callback) {
   this.startTime = Date.now()
   this.callback = callback;
   this.opener = opener;
+  this.previews = {}
 }
 
 Extractor.prototype.start = function () {
@@ -152,7 +153,7 @@ Extractor.prototype.fullExtract = function () {
   if (this.currentFile >= this.files.length) {
     console.logDebug("size = " + this.files.length)
     console.logDebug("took " + (Date.now() - this.startTime) + "ms")
-    this.callback()
+    this.callback(false, this.previews)
     return;
   }
   var filename = this.files[this.currentFile]
@@ -172,6 +173,9 @@ Extractor.prototype.fullExtract = function () {
         console.logDebug("mkdirok");
 
         fs.writeFileSync(dest, content, 'base64');
+        if(filename.startsWith("data/preview_")){
+          extractor.previews[filename.substr("data/".length)] = 'data:image/jpeg;base64,' + content;
+        }
 
 
       }

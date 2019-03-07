@@ -1,3 +1,6 @@
+var CacheManager = require('../cache_manager').CacheManager;
+var NoteOpener = require("../note/note-opener").NoteOpener;
+var Note = require("../../browsers/note").Note;
 
 var Sync = function (onSyncStart, onSyncEnd) {
     var SettingsHelper = require("../../settings/settings_helper").SettingsHelper;
@@ -185,6 +188,10 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
                 const stat = sync.fs.statSync(fpath)
                 sync.save(DBItem.fromFS(sync.settingsHelper.getNotePath(), fpath, stat), remoteDBItem)
                 sync.hasDownloadedSmt = true;
+                if(fpath.endsWith(".sqd")){
+                    sync.addToCache(fpath, remoteDBItem.path, stat);
+                    
+                }
                 callback();
             }).catch(function (err) {
                 console.logDebug(err);
@@ -193,10 +200,24 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
     }
 }
 
+Sync.prototype.addToCache = function(fullpath, relativePath, stat){
+    new NoteOpener(new Note("", "", fullpath)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
+        if (text != undefined) {
+            CacheManager.getInstance().put(relativePath, {
+                last_file_modification: CacheManager.getMTimeFromStat(stat),
+                shorttext: text!=undefined ? text.substr(0, text.length>200?200:text.length):"",
+                metadata: metadata,
+                previews: previews
+            })
+        }
+    })
+}
+
 Sync.prototype.exit = function (error) {
     this.isSyncing = false;
     console.logDebug("exit")
     var sync = this
+    CacheManager.getInstance().write()
     if (this.isFullSync) {
         console.log("setting sync to 10 minutes")
         this.nextFullSyncTO = setTimeout(function () {
@@ -223,6 +244,8 @@ Sync.prototype.deleteLocalAndSave = function (local, callback) {
                 sync.exit()
                 return
             }
+            if(local.path.endsWith(".sqd"))
+                CacheManager.remove(local.path)
             console.logDebug("err " + err)
             delete sync.db[local.path];
             sync.store.set("nextcloud_db", JSON.stringify(sync.db));
@@ -510,10 +533,16 @@ Sync.prototype.statFiles = function (fpath, callback) {
         sync.localFiles.push(localDBItem);
         if (localDBItem.type == "directory")
             sync.localFoldersToVisit.push(fpath)
+        else if(fpath.endsWith(".sqd")){
+            var cached = CacheManager.getInstance().get(localDBItem.path);
+            if(cached == undefined || cached == null || cached.last_file_modification !== CacheManager.getMTimeFromStat(stat)){
+                sync.addToCache(fpath, localDBItem.path,stat)
+            }
+        }
         if (sync.filesToStat.length !== 0) {
             setTimeout(function () {
                 sync.statFiles(sync.filesToStat.pop(), callback)
-            }, 150)
+            }, 10)
         } else if (sync.localFoldersToVisit.length !== 0) {
             setTimeout(function () {
                 sync.visitlocal(sync.localFoldersToVisit.pop(), callback)
