@@ -114,7 +114,7 @@ var handle = function (method, path, data, callback) {
                     return;
                 }
                 console.logDebug("get metadata "+step)
-                var stepCorrected = step.startsWith("/")?step.substr(1):step
+                var stepCorrected = cleanPath(step)
                 var cached = CacheManager.getInstance().get(stepCorrected)
                 if(cached != undefined){
                     handler.addResult(step, {
@@ -461,7 +461,15 @@ var saveTextToNote = function (path, html, metadata, callback) {
 
     });
 }
-
+var cleanPath = function(path){
+    if(path == undefined)
+        return undefined
+    if(path.startsWith("./"))
+        path = path.substr(2);
+    if(path.startsWith("/"))
+        path = path.substr(1)
+    return path;
+}
 var saveNote = function (path, callback) {
     var note = new Note("", "", settingsHelper.getNotePath() + "/" + path)
     var noteOpener = new NoteOpener(note)
@@ -480,7 +488,7 @@ var saveNote = function (path, callback) {
                 currentcache.previews.push(pre[i])
 
             currentcache.last_file_modification = CacheManager.getMTimeFromStat(stats)
-            CacheManager.getInstance().put(path, currentcache)
+            CacheManager.getInstance().put(cleanPath(path), currentcache)
             CacheManager.getInstance().write();
         })
     })
@@ -500,7 +508,9 @@ var openNote = function (path, callback) {
         noteOpener.extractTo(tmppath, function (noSuchFile, expreviews) {
             var result = {}
             result["id"] = 0;
-            currentcache = CacheManager.getInstance().get(path)
+            currentcache = CacheManager.getInstance().get(cleanPath(path))
+            if(currentcache == undefined)
+                currentcache = {}
             previews = expreviews
             console.logDebug("done " + noSuchFile)
             if (!noSuchFile) {
