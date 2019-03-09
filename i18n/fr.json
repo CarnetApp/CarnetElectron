@@ -5,5 +5,19 @@
     "settings": "Paramètres",
     "keywords": "Mots clefs",
     "welcome": "Bienvenue",
-    "discover_carnet": "À la découverte de Carnet !"
+    "discover_carnet": "À la découverte de Carnet !",
+    "modern": "Moderne",
+    "modern_subtext": "Profitez de vos notes et vos textes dans une interface moderne",
+    "synchronize": "Synchroniser",
+    "synchronize_subtext": "Et retrouvez toutes vos notes dans votre navigateur internet (fonctionne aussi sur iPhone), sur Android, et sur ordinateur",
+    "next": "Suivant",
+    "cancel": "Annuler",
+    "note_list_empty": "Aucune note à afficher, créez une nouvelle note !",
+    "pin": "Attacher",
+    "archive": "Archiver",
+    "delete": "Supprimer",
+    "ok": "OK",
+    "rename": "Renommer",
+    "rename_or_move": "Renommer ou déplacer",
+    "donation_message": "Cette application a été créée gratuitement, n'hésitez pas à faire un don"
 }
