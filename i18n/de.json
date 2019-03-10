@@ -1,6 +1,6 @@
 {
     "search": "Suchen",
-    "recent": "Letze",
+    "recent": "Kürzlich verwendet",
     "browser": "Browser",
     "settings": "Einstellungen",
     "keywords": "Schlüsselwörter",
@@ -26,7 +26,7 @@
     "fake_note_4": "Synchronisieren Sie ihre Geräte",
     "fake_note_5": "Formatieren Sie ihre Notizen und Dokumente, fügen Sie Bilder und Audioaufnahmen hinzu",
     "statistics": "Statistik",
-    "sentences": "Satz :",
+    "sentences": "Sätze :",
     "words": "Wörter :",
     "characters": "Zeichen :",
     "keyword": "Schlüsselwort",
@@ -49,5 +49,7 @@
     "print": "Drucken",
     "print_title": "Titel drucken",
     "print_modification_date": "Änderungsdatum drucken",
-    "print_creation_date": "Erstellungsdatum drucken"
+    "print_creation_date": "Erstellungsdatum drucken",
+    "error_save": "Es ist ein Fehler aufgetreten. Bitte speichern Sie Ihren Text und überprüfen Sie, ob er nicht in einem anderen Tab geöffnet ist",
+    "not_yet_implemented": "Noch nicht implementiert"
 }
