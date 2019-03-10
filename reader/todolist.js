@@ -234,6 +234,7 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
         console.log("key " + key + " lenght " + span.value.trim().length)
         if (key === 13) {
             if (span.value.trim().length > 0 && ! e.shiftKey) { // 13 is enter
+                e.preventDefault()
                 todolist.createItem("", false, div).span.focus()
             }
         }
