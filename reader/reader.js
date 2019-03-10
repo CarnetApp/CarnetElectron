@@ -468,7 +468,7 @@ Writer.prototype.displayStyleDialog = function () {
 
 Writer.prototype.warnNotYetImplemented = function () {
     var data = {
-        message: 'Not yet implemented',
+        message: $.i18n("not_yet_implemented"),
         timeout: 5000,
     };
     this.displaySnack(data);
@@ -1111,7 +1111,7 @@ SaveNoteTask.prototype.trySave = function (onEnd, trial) {
                 }, 1000)
             } else {
                 writer.displaySnack({
-                    message: 'An error occured, please save your text and check it is not open in another tab',
+                    message: $.i18n("error_save"),
                     timeout: 60000 * 300,
                 })
                 writer.setDoNotEdit(true)
@@ -1218,4 +1218,13 @@ $(document).ready(function () {
         event.stopPropagation();
         return false;
     };
+    $.i18n().load({
+        en: api_url + '/settings/lang/json?lang=en',
+        fr: api_url + '/settings/lang/json?lang=fr'
+    
+    }).done(function () {
+        $('body').i18n();
+        list(initPath)
+    })
+    $.i18n().locale = navigator.language;
 });

@@ -53,5 +53,7 @@
     "print":"Print",
     "print_title":"Print title",
     "print_modification_date":"Print modification date",
-    "print_creation_date":"Print creation date"
+    "print_creation_date":"Print creation date",
+    "error_save":"An error occured, please save your text and check it is not open in another tab",
+    "not_yet_implemented":"Not yet implemented"
 }

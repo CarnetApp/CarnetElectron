@@ -39,43 +39,56 @@
 
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="libs/material-icons.css">
+
+
+    <!-- localization -->
+    <script src="libs/jquery_i18n/CLDRPluralRuleParser.js"></script>
+    <script src="libs/jquery_i18n/jquery.i18n.js"></script>
+    <script src="libs/jquery_i18n/jquery.i18n.messagestore.js"></script>
+    <script src="libs/jquery_i18n/jquery.i18n.fallbacks.js"></script>
+    <script src="libs/jquery_i18n/jquery.i18n.language.js"></script>
+    <script src="libs/jquery_i18n/jquery.i18n.parser.js"></script>
+    <script src="libs/jquery_i18n/jquery.i18n.emitter.js"></script>
+    <script src="libs/jquery_i18n/jquery.i18n.emitter.bidi.js"></script>
 </head>
 
 <body>
 
     <dialog class="mdl-dialog" id="contextual-dialog">
         <div style="text-align: center">
-            <button type="button" class="mdl-button" id="pin-button">Pin</button>
-            <button type="button" class="mdl-button" id="archive-button">Archive</button>
-            <button type="button" class="mdl-button delete-button">Delete</button>
+            <button type="button" class="mdl-button" id="pin-button" data-i18n="pin">Pin</button>
+            <button type="button" class="mdl-button" id="archive-button" data-i18n="archive">Archive</button>
+            <button type="button" class="mdl-button delete-button" data-i18n="delete">Delete</button>
         </div>
         <div class="mdl-dialog__content">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" id="name-input">
-                <label class="mdl-textfield__label" for="sample3" style="top:4px; color: rgb(63,81,181); font-size: 12px;">Rename
+                <label class="mdl-textfield__label" for="sample3"
+                    style="top:4px; color: rgb(63,81,181); font-size: 12px;" data-i18n="rename_or_move">Rename
                     or move</label>
             </div>
         </div>
         <div class="mdl-dialog__actions">
-            <button type="button" class="mdl-button ok">OK</button>
-            <button type="button" class="mdl-button cancel">Cancel</button>
+            <button type="button" class="mdl-button ok" data-i18n="ok">OK</button>
+            <button type="button" class="mdl-button cancel" data-i18n="cancel">Cancel</button>
 
         </div>
     </dialog>
 
     <dialog class="mdl-dialog" id="folder-dialog">
         <div style="text-align: center">
-            <button type="button" class="mdl-button delete-button">Delete</button>
+            <button type="button" class="mdl-button delete-button" data-i18n="delete">Delete</button>
         </div>
         <div class="mdl-dialog__content">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <input class="mdl-textfield__input" type="text" id="name-input">
-                <label class="mdl-textfield__label" for="sample3" style="top:4px; color: rgb(63,81,181); font-size: 12px;">Rename</label>
+                <label class="mdl-textfield__label" for="sample3"
+                    style="top:4px; color: rgb(63,81,181); font-size: 12px;" data-i18n="rename">Rename</label>
             </div>
         </div>
         <div class="mdl-dialog__actions">
-            <button type="button" class="mdl-button ok">OK</button>
-            <button type="button" class="mdl-button cancel">Cancel</button>
+            <button type="button" class="mdl-button ok" data-i18n="ok">OK</button>
+            <button type="button" class="mdl-button cancel" data-i18n="cancel">Cancel</button>
 
         </div>
     </dialog>
@@ -86,7 +99,7 @@
 
         </div>
         <div class="mdl-dialog__actions" style="">
-            <button type="button" class="mdl-button ok">OK</button>
+            <button type="button" class="mdl-button ok" data-i18n="ok">OK</button>
         </div>
     </dialog>
 
@@ -103,8 +116,9 @@
                 </button>
                 <div id="search-bar" class="mdl-textfield mdl-js-textfield">
                     <input class="mdl-textfield__input" type="text" id="search-input">
-                    <label class="mdl-textfield__label" for="search-input">Search...</label>
-                    <button class="mdl-button mdl-js-button mdl-button--icon" style="position:absolute; right:0px;" id="search-button">
+                    <label class="mdl-textfield__label" for="search-input" data-i18n="search"></label>
+                    <button class="mdl-button mdl-js-button mdl-button--icon" style="position:absolute; right:0px;"
+                        id="search-button">
                         <i class="material-icons">search</i>
                     </button>
                 </div>
@@ -116,28 +130,32 @@
                             sync
                         </i>
                     </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon" id="minus-button" style="margin-right:5px">
+                    <button class="mdl-button mdl-js-button mdl-button--icon" id="minus-button"
+                        style="margin-right:5px">
                         <i class="material-icons">remove</i>
                     </button>
                     <button class="mdl-button mdl-js-button mdl-button--icon" id="size-button" style="margin-right:5px">
                         <i class="material-icons">aspect_ratio</i>
                     </button>
-                    <button class="mdl-button mdl-js-button mdl-button--icon" id="close-button" style="margin-right:15px">
+                    <button class="mdl-button mdl-js-button mdl-button--icon" id="close-button"
+                        style="margin-right:15px">
                         <i class="material-icons">close</i>
                     </button>
                 </div>
-                <div id="no-drag-bar" style="position:absolute; top : 20px; height:20px; width:100%; display:none; -webkit-app-region: no-drag;"></div>
+                <div id="no-drag-bar"
+                    style="position:absolute; top : 20px; height:20px; width:100%; display:none; -webkit-app-region: no-drag;">
+                </div>
 
             </div>
         </header>
         <div class="mdl-layout__drawer">
             <nav class="mdl-navigation">
-                <a class="mdl-navigation__link" href="" id="recent-button">Recent</a>
-                <a class="mdl-navigation__link" href="" id="browser-button">Browser</a>
+                <a class="mdl-navigation__link" href="" id="recent-button" data-i18n="recent">Recent</a>
+                <a class="mdl-navigation__link" href="" id="browser-button" data-i18n="browser">Browser</a>
                 <!--can be modified in browser.js -->
-                <a class="mdl-navigation__link" href="settings/index.html" id="settings-button">Settings</a>
+                <a class="mdl-navigation__link" href="settings/index.html" id="settings-button" data-i18n="settings">Settings</a>
             </nav>
-            <span style="text-align:center; margin:10px;"> Keywords</span>
+            <span style="text-align:center; margin:10px;" data-i18n="keywords"> Keywords</span>
             <div id="keywords-scrollview">
                 <nav class="mdl-navigation" id="keywords">
                 </nav>
@@ -162,7 +180,8 @@
                     margin-left:-50px;width:100px; height:100px; "></div>
                 </div>
             </div>
-            <div id="emty-view" style="display:none; top:50%; left:50%; margin-left:-170px; position:absolute; text-align:center ">No
+            <div id="emty-view"
+                style="display:none; top:50%; left:50%; margin-left:-170px; position:absolute; text-align:center " data-i18n="note_list_empty">No
                 notes to display, please start by creating a new one !</div>
             <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
                 <div class="mdl-snackbar__text"></div>
@@ -177,7 +196,7 @@
 
     <div id="loading-view" style="position:fixed; top:0px; display:none; left:0px;height:100%; width:100%; z-index:100;
                     right:0; bottom:0;">
-        <button class="mdl-button mdl-js-button" id="cancel-load-button">Cancel</button>
+        <button class="mdl-button mdl-js-button" id="cancel-load-button" data-i18n="cancel">Cancel</button>
         <div class="mdl-spinner mdl-js-spinner is-active " style="position:absolute; top:50%; margin-top:-75px; left:50%;
                     margin-left:-75px;width:150px; height:150px; "></div>
 
@@ -204,15 +223,15 @@
                     <br />
                     <br />
                     <img src="img/ic_launcher_white.png" style="width:190px;text-align:center;" />
-                    <h1>Welcome</h1>
-                    Let's discover Carnet
+                    <h1 data-i18n="welcome">Welcome</h1>
+                    <span data-i18n="discover_carnet">Let's discover Carnet</span>
                 </div>
                 <div class="mySlides fade" style="text-align:center;">
                     <br />
                     <br />
                     <img src="img/ui.png" style="width:300px;text-align:center;" />
-                    <h1>Modern</h1>
-                    Enjoy taking notes and writing texts in a modern UI
+                    <h1 data-i18n="modern">Modern</h1>
+                    <span data-i18n="modern_subtext">Enjoy taking notes and writing texts in a modern UI</span>
                     <br />
                 </div>
                 <div class="mySlides fade" style="text-align:center;">
@@ -220,16 +239,17 @@
                     <br />
                     <img src="img/sync.svg" style="width:190px;text-align:center;" />
 
-                    <h1>Synchronize</h1>
-                    And find all your notes on your web browser (also works with iPhone), your Android phone, and
+                    <h1 data-i18n="synchronize">Synchronize</h1>
+                    <span data-i18n="synchronize_subtext">And find all your notes on your web browser (also works with iPhone), your Android phone, and
                     your
-                    desktop
+                    desktop</span>
                     <br />
                     <br />
-                    <a href='https://github.com/PhieF/CarnetDocumentation/blob/master/README.md' target="_blank" style="color:white;">Learn
+                    <a href='https://github.com/PhieF/CarnetDocumentation/blob/master/README.md' target="_blank"
+                        style="color:white;" data-i18n="learn_more">Learn
                         more</a>
                 </div>
-                <a class="next">Next</a>
+                <a class="next" data-i18n="next">Next</a>
             </div>
 
         </div>
