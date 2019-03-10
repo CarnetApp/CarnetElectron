@@ -1,6 +1,6 @@
 var fs = require("fs");
 var Search = function (keyword, path) {
-    this.keyword = keyword.toLowerCase();
+    this.keyword = cleanText(keyword);
     this.path = path
 }
 
@@ -37,6 +37,9 @@ function getFilenameFromPath(path) {
 function stripExtensionFromName(name) {
     return name.replace(/\.[^/.]+$/, "")
 }
+function cleanText(text){
+    return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+}
 Search.prototype.searchInFile = function (filePath, callback) {
     console.log("searchInFile " + filePath)
     var NoteOpener = require("./note/note-opener").NoteOpener
@@ -49,7 +52,17 @@ Search.prototype.searchInFile = function (filePath, callback) {
         opener.getMainTextMetadataAndPreviews(function (txt, metadata) {
             var fileName = stripExtensionFromName(getFilenameFromPath(filePath));
 
-            if (fileName.toLowerCase().indexOf(search.keyword) >= 0 || txt !== undefined && txt.toLowerCase().indexOf(search.keyword) >= 0 || metadata !== undefined && metadata.keywords.indexOf(search.keyword) >= 0) {
+            var inKeywords = false
+            if(metadata !== undefined){
+                for (var keyword of metadata.keywords){
+                    if(cleanText(keyword).indexOf(search.keyword) >= 0){
+                        inKeywords = true;
+                        break;
+                    }
+                }
+            }
+
+            if (inKeywords || cleanText(fileName).indexOf(search.keyword) >= 0 || txt !== undefined && cleanText(txt).indexOf(search.keyword) >= 0) {
                 search.result.push({
                     name: fileName,
                     path: filePath.substr(search.path.length),

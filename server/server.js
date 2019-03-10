@@ -1,6 +1,7 @@
 
 var RecentDBManager = require('./recent/local_recent_db_manager').LocalRecentDBManager;
 var KeywordsDBManager = require('./keywords/keywords_db_manager').KeywordsDBManager;
+var CacheManager = require('./cache_manager').CacheManager;
 
 var SettingsHelper = require("../settings/settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
@@ -11,6 +12,9 @@ var currentSearch = undefined;
 var Note = require("../browsers/note").Note;
 var fs = require('fs');
 const path = require('path')
+var textVersion = require("textversionjs");
+var currentcache = {}
+var previews = {}
 
 var handle = function (method, path, data, callback) {
     console.logDebug(path)
@@ -99,6 +103,8 @@ var handle = function (method, path, data, callback) {
                 return;
         }
         if (path.startsWith("/metadata?")) {
+            console.logDebug("get metadata")
+
             var params = path.split("?")[1].split("=")[1].split("%2C");
 
             var handler = new ArrayHandler(params, function (step) {
@@ -107,18 +113,41 @@ var handle = function (method, path, data, callback) {
                     this.next()
                     return;
                 }
-
-                new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
-                    if (text != undefined) {
-                        handler.addResult(step, {
-                            shorttext: text.substr(0, 200),
-                            metadata: metadata,
-                            previews: previews
-                        })
-                    }
-
+                console.logDebug("get metadata "+step)
+                var stepCorrected = cleanPath(step)
+                var cached = CacheManager.getInstance().get(stepCorrected)
+                if(cached != undefined){
+                    handler.addResult(step, {
+                        shorttext: cached.shorttext,
+                        metadata: cached.metadata,
+                        previews: cached.previews
+                    })
                     handler.next();
-                })
+                    console.logDebug("from cache"+cached.shorttext)
+                } else {
+                    console.logDebug("not from cache")
+                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
+                        if (text != undefined) {
+                            handler.addResult(step, {
+                                shorttext: text.substr(0, text.length>200?200:text.length),
+                                metadata: metadata,
+                                previews: previews
+                            })
+                        }
+                        fs.stat(settingsHelper.getNotePath() + "/" + step, function (error, stats) {
+                            if(error)
+                                return;
+                            CacheManager.getInstance().put(stepCorrected, {
+                                last_file_modification: CacheManager.getMTimeFromStat(stats),
+                                shorttext: text!=undefined ? text.substr(0, text.length>200?200:text.length):"",
+                                metadata: metadata,
+                                previews: previews
+                            })
+                            CacheManager.getInstance().write()
+                        })
+                        handler.next();
+                    })
+                }
             }, function (result) {
                 callback(false, JSON.stringify(result))
             });
@@ -196,7 +225,7 @@ var handle = function (method, path, data, callback) {
                 var path = data.path;
                 var metadata = data.metadata;
                 fs.readFile(settingsHelper.getNotePath() + "/" + path, 'base64', function (err, dataZ) {
-                    console.log(err)
+                    console.logDebug(err)
 
                     if (!err) {
                         var zip = new JSZip();
@@ -206,7 +235,7 @@ var handle = function (method, path, data, callback) {
                             zip.file("metadata.json", metadata)
                             zip.generateAsync({ type: "base64" }).then(function (base64) {
                                 fs.writeFile(settingsHelper.getNotePath() + "/" + path, base64, 'base64', function (err) {
-                                    console.log(err)
+                                    console.logDebug(err)
 
                                     if (!err) {
                                     } else callback(true)
@@ -334,8 +363,13 @@ var handle = function (method, path, data, callback) {
                 }
                 var tmppath = getTmpPath() + "/note/data" + toDelete;
                 fs.unlink(tmppath, function () {
+
                     fs.unlink(getTmpPath() + "/note/data/preview_" + toDelete.substring(1) + ".jpg", function (e) {
                         console.logDebug(e)
+                        console.logDebug(JSON.stringify(previews))
+                        if(!e)
+                            delete previews["preview_" + toDelete.substring(1) + ".jpg"]
+
                         saveNote(note, function () {
                             getMediaList(callback)
                         })
@@ -377,6 +411,7 @@ var addMedias = function (path, files, callback) {
                     if (!err) {
                         image.scaleToFit(200, 200);
                         image.getBase64(Jimp.MIME_JPEG, function (err, base) {
+                            previews['preview_' + file.name + ".jpg"] = base;
                             fs.writeFile(tmppath + 'data/preview_' + file.name + ".jpg", base.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
                                 handler.next()
                             })
@@ -417,12 +452,24 @@ var saveTextToNote = function (path, html, metadata, callback) {
                 return console.logDebug(err);
             }
             console.logDebug("compress")
+            var text = textVersion(html)
+            currentcache.shorttext = text.substr(0, text.length>200?200:text.length)
+            currentcache.metadata = JSON.parse(metadata)
             saveNote(path, callback)
+            
         });
 
     });
 }
-
+var cleanPath = function(path){
+    if(path == undefined)
+        return undefined
+    if(path.startsWith("./"))
+        path = path.substr(2);
+    if(path.startsWith("/"))
+        path = path.substr(1)
+    return path;
+}
 var saveNote = function (path, callback) {
     var note = new Note("", "", settingsHelper.getNotePath() + "/" + path)
     var noteOpener = new NoteOpener(note)
@@ -430,12 +477,27 @@ var saveNote = function (path, callback) {
     noteOpener.compressFrom(tmppath, function () {
         console.logDebug("compressed")
         callback(false, "")
+        fs.stat(settingsHelper.getNotePath() + "/" + path, function (error, stats) {
+            if(error)
+                return;
+            if(path.startsWith("/"))
+                path = path.substr(1)
+            var pre = Object.values(previews)
+            currentcache.previews = []
+            for (var i = 0; i<pre.length && i < 2; i++)
+                currentcache.previews.push(pre[i])
+
+            currentcache.last_file_modification = CacheManager.getMTimeFromStat(stats)
+            CacheManager.getInstance().put(cleanPath(path), currentcache)
+            CacheManager.getInstance().write();
+        })
     })
 
 }
 
 var openNote = function (path, callback) {
-    var writer = this;
+    currentcache = {};
+    previews = {}
     const tmppath = getTmpPath() + "/note/";
     console.logDebug("extractNote" + settingsHelper.getNotePath() + "/" + path + " to " + tmppath)
     var rimraf = require('rimraf');
@@ -443,10 +505,13 @@ var openNote = function (path, callback) {
         var mkdirp = require('mkdirp');
         mkdirp.sync(tmppath);
         const noteOpener = new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + path));
-        noteOpener.extractTo(tmppath, function (noSuchFile) {
+        noteOpener.extractTo(tmppath, function (noSuchFile, expreviews) {
             var result = {}
             result["id"] = 0;
-
+            currentcache = CacheManager.getInstance().get(cleanPath(path))
+            if(currentcache == undefined)
+                currentcache = {}
+            previews = expreviews
             console.logDebug("done " + noSuchFile)
             if (!noSuchFile) {
                 fs.readFile(tmppath + 'index.html', 'utf8', function read(err, data) {
@@ -455,13 +520,16 @@ var openNote = function (path, callback) {
                         throw err;
                     }
                     result["html"] = data
-
+                    var text = textVersion(data)
+                    currentcache.shorttext = text.substr(0, text.length>200?200:text.length)
                     fs.readFile(tmppath + 'metadata.json', 'utf8', function read(err, metadata) {
                         if (err) {
                             throw err;
                         }
                         result["metadata"] = JSON.parse(metadata);
+                        currentcache.metadata = result["metadata"];
                         callback(result)
+
                     });
                 });
             } else {
@@ -531,7 +599,7 @@ var NewNoteCreationTask = function (folder, callback) {
         }
         var task = this;
         fs.readdir(path, (err, files) => {
-            var name = "untitled.sqd";
+            var name = "untitled";
             var sContinue = true;
             var i = 1;
             while (sContinue) {

@@ -121,5 +121,17 @@ SettingsHelper.prototype.getLastChangelogVersion = function () {
     return store.get("last_changelog_version")
 }
 
+SettingsHelper.prototype.setMetadataCache = function (cache) {
+    store.set("metadata_cache", cache);
+}
+
+SettingsHelper.prototype.getMetadataCache = function () {
+    var cache = String(store.get("metadata_cache"));
+    if (cache == null || cache == "undefined") {
+        cache = "{}"
+    }
+    return cache;
+}
+
 
 exports.SettingsHelper = SettingsHelper;

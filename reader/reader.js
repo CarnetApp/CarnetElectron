@@ -152,6 +152,11 @@ Writer.prototype.setMediaList = function (list) {
 
     if (list.length > 0) {
         this.addMediaMenu.parentNode.style.left = "unset"
+        if(this.oDoc.innerText.trim() == ""){
+            var mediaBar = document.getElementById("media-toolbar");
+            if(!$(mediaBar).is(":visible"))
+                this.toolbarManager.toggleToolbar(mediaBar)
+        }
     } else {
         this.addMediaMenu.parentNode.style.left = "0px"
 
@@ -310,6 +315,22 @@ Writer.prototype.createEditableZone = function () {
     return div;
 }
 
+
+
+Writer.prototype.openPrintDialog = function () {
+    var writer = this;
+    this.printDialog.showModal()
+    this.printDialog.querySelector("#cancel").onclick = function(){
+        writer.printDialog.close()
+    }
+    this.printDialog.querySelector("#print").onclick = function(){
+        compatibility.print(writer.printDialog.querySelector("#title-checkbox").checked, writer.printDialog.querySelector("#mod-checkbox").checked, writer.printDialog.querySelector("#creation-checkbox").checked, writer.note);
+    }
+    //compatibility.print();
+
+}
+
+
 Writer.prototype.placeCaretAtEnd = function (el) {
     el.focus();
     if (typeof window.getSelection != "undefined"
@@ -352,6 +373,9 @@ Writer.prototype.fillWriter = function (extractedHTML) {
             writer.placeCaretAtEnd(elements[elements.length - 1]);
         }
     }
+    //focus on last editable element
+    var elements = this.oDoc.getElementsByClassName("edit-zone");
+    writer.placeCaretAtEnd(elements[elements.length - 1]);
     this.oFloating = document.getElementById("floating");
     var writer = this
     this.oDoc.addEventListener("input", function () {
@@ -501,6 +525,9 @@ Writer.prototype.init = function () {
 
     this.newKeywordDialog = this.elem.querySelector('#new-keyword-dialog');
 
+    this.printDialog = this.elem.querySelector('#print-dialog');
+
+
     this.oEditor = document.getElementById("editor");
 
     this.mediaList = document.getElementById("media-list");
@@ -622,6 +649,17 @@ Writer.prototype.init = function () {
                 case "select-all-button":
                     document.execCommand("selectAll");
                     break;
+                case "print-button":
+                    writer.openPrintDialog();
+                    break;
+                case "back-to-text-button":
+                    writer.toolbarManager.toggleToolbar(document.getElementById("media-toolbar"))
+                    if(writer.oDoc.innerText.trim() == ""){
+                        //put focus
+                        var elements = writer.oDoc.getElementsByClassName("edit-zone");
+                        writer.placeCaretAtEnd(elements[elements.length - 1]);
+                    }
+                    break;
             }
         };
     }
@@ -687,11 +725,19 @@ Writer.prototype.init = function () {
         writer.nameTimout = setTimeout(function () {
             writer.seriesTaskExecutor.addTask(writer.saveNoteTask) // first, save.
             writer.seriesTaskExecutor.addTask(new RenameNoteTask(writer))
+            writer.nameTimout=undefined
 
 
-        }, 1000)
+        }, 10000)
     })
 
+    document.getElementById("name-input").addEventListener("focusout", function () {
+        if (writer.nameTimout != undefined){
+            clearTimeout(writer.nameTimout)
+            writer.seriesTaskExecutor.addTask(writer.saveNoteTask) // first, save.
+            writer.seriesTaskExecutor.addTask(new RenameNoteTask(writer))
+        }
+    })
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 }
 
@@ -830,6 +876,11 @@ Writer.prototype.reset = function () {
         snackbarContainer.MaterialSnackbar.cleanup_()
     }
     this.setDoNotEdit(false)
+    //close all toolbars
+    if (this.toolbarManager != undefined)
+        this.toolbarManager.toggleToolbar(undefined)
+    if (writer.fullscreenViewer != undefined)
+        $(writer.fullscreenViewer).hide()
 }
 
 Writer.prototype.putDefaultHTML = function () {
@@ -893,7 +944,7 @@ Writer.prototype.getCaretPosition = function () {
     var x = 0;
     var y = 0;
     var sel = window.getSelection();
-    if (sel.rangeCount) {
+    if (sel != null && sel.rangeCount) {
         var range = sel.getRangeAt(0).cloneRange();
         if (range.getClientRects()) {
             range.collapse(true);
@@ -924,10 +975,18 @@ ToolbarManager.prototype.toggleToolbar = function (elem) {
         if (toolbar != elem)
             $(toolbar).slideUp("fast", resetScreenHeight)
     }
-    if ($(elem).is(":visible"))
-        $(elem).slideUp("fast", resetScreenHeight)
+    if (elem != undefined && elem.id == "media-toolbar" && !$(elem).is(":visible"))
+        document.getElementsByTagName("header")[0].style.zIndex = "unset";
     else
-        $(elem).slideDown("fast", resetScreenHeight)
+        document.getElementsByTagName("header")[0].style.zIndex = 3;
+    if (elem != undefined) {
+        if ($(elem).is(":visible")){
+            $(elem).slideUp("fast", resetScreenHeight)
+        }
+        else
+            $(elem).slideDown("fast", resetScreenHeight)
+    }
+
 
     resetScreenHeight()
 }

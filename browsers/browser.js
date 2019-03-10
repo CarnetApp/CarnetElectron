@@ -44,7 +44,7 @@ TextGetterTask.prototype.getNext = function () {
 
     var paths = "";
     var start = this.current;
-    for (var i = start; i < this.stopAt && i < this.list.length && i - start < 10; i++) { //do it ten by ten
+    for (var i = start; i < this.stopAt && i < this.list.length && i - start < 20; i++) { //do it 20 by 20
         this.current = i + 1
         if (!(this.list[i] instanceof Note))
             continue;
