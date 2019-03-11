@@ -55,23 +55,23 @@
 	<script src="<!ROOTPATH>reader/libs/recorder/recorder.min.js"></script>
 	<script src="<!ROOTPATH>reader/carnet-recorder.js"></script>
 	<script src="<!ROOTPATH>reader/libs/wavesurfer.min.js"></script>
-
+	<script src="<!ROOTPATH>reader/libs/jquery.printElement.min.js"></script>
 	<script src="<!ROOTPATH>keywords/keywords_db_manager.js"></script>
 
 	<script src="<!ROOTPATH>reader/reader.js"></script>
 	<link rel="stylesheet" href="<!ROOTPATH>reader/css/todolist.css">
 	<script src="<!ROOTPATH>reader/todolist.js"></script>
 
-    <!-- localization -->
-    <script src="<!ROOTPATH>libs/jquery_i18n/CLDRPluralRuleParser.js"></script>
-    <script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.js"></script>
-    <script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.messagestore.js"></script>
-    <script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.fallbacks.js"></script>
-    <script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.language.js"></script>
-    <script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.parser.js"></script>
-    <script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.emitter.js"></script>
+	<!-- localization -->
+	<script src="<!ROOTPATH>libs/jquery_i18n/CLDRPluralRuleParser.js"></script>
+	<script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.js"></script>
+	<script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.messagestore.js"></script>
+	<script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.fallbacks.js"></script>
+	<script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.language.js"></script>
+	<script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.parser.js"></script>
+	<script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.emitter.js"></script>
 	<script src="<!ROOTPATH>libs/jquery_i18n/jquery.i18n.emitter.bidi.js"></script>
-	
+
 
 	<!-- dialogs declaration -->
 
@@ -129,8 +129,9 @@
 
 
 	<dialog class="mdl-dialog" id="color-picker-dialog" style="padding: 0;">
-		<div class="mdl-dialog__content jscolor {valueElement:'chosen-value', onFineChange:'writer.setPickerColor(this)' , shadow:false}"
-		 id="color-picker-div">
+		<div
+			class="mdl-dialog__content jscolor {valueElement:'chosen-value', onFineChange:'writer.setPickerColor(this)' , shadow:false}"
+			id="color-picker-div">
 		</div>
 		<div class="mdl-dialog__actions">
 			<button type="button" class="mdl-button ok" data-i18n="ok">OK</button>
@@ -143,7 +144,8 @@
 				<input class="mdl-textfield__input" type="text" id="keyword-input">
 				<label class="mdl-textfield__label" for="sample3" data-i18n="keyword">Keyword</label>
 			</div>
-			<table style="width:100%;" id="keywords" class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
+			<table style="width:100%;" id="keywords"
+				class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp">
 
 			</table>
 
@@ -157,17 +159,17 @@
 mdl-layout--fixed-header">
 		<header id="header-carnet" class="mdl-layout__header">
 			<div class="mdl-layout__header-row" id="container-button" style="overflow-x: auto;overflow-y: hidden">
-				<button id="format-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="format-toolbar" data-i18n="format">
+				<button id="format-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="format-toolbar"
+					data-i18n="format">
 					Format
 				</button>
 
-				<button id="edit-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="edit-toolbar" data-i18n="edit">
+				<button id="edit-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="edit-toolbar"
+					data-i18n="edit">
 					Edit
 				</button>
-				<button id="media-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="media-toolbar" data-i18n="media">
-					Media
-				</button>
-				<button id="tools-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="tools-toolbar" data-i18n="tools">
+
+				<button id="tools-button" class="mdl-button mdl-js-button headerbar-button toolbar-button" for="tools-toolbar">
 					Tools
 				</button>
 
@@ -197,10 +199,14 @@ mdl-layout--fixed-header">
 					<form action="">
 						<input class="star star-5" id="star-5" type="radio" name="star" value="5" />
 						<label class="star star-5" for="star-5"></label>
-						<input class="star star-4" id="star-4" type="radio" name="star" value="4" //> <label class="star star-4" for="star-4"></label>
-						<input class="star star-3" id="star-3" type="radio" name="star" value="3" //> <label class="star star-3" for="star-3"></label>
-						<input class="star star-2" id="star-2" type="radio" name="star" value="2" //> <label class="star star-2" for="star-2"></label>
-						<input class="star star-1" id="star-1" type="radio" name="star" value="1" //> <label class="star star-1" for="star-1"></label>
+						<input class="star star-4" id="star-4" type="radio" name="star" value="4" //> <label class="star star-4"
+							for="star-4"></label>
+						<input class="star star-3" id="star-3" type="radio" name="star" value="3" //> <label class="star star-3"
+							for="star-3"></label>
+						<input class="star star-2" id="star-2" type="radio" name="star" value="2" //> <label class="star star-2"
+							for="star-2"></label>
+						<input class="star star-1" id="star-1" type="radio" name="star" value="1" //> <label class="star star-1"
+							for="star-1"></label>
 					</form>
 				</div>
 				<div id="note-color">
@@ -248,22 +254,6 @@ mdl-layout--fixed-header">
 		</script>
 		<main class="mdl-layout__content" style="overflow-y: hidden">
 			<div id="toolbars">
-				<div id="media-toolbar" class="toolbar">
-					<div id="media-header">
-						<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="back-to-text-button" data-i18n="back_to_text">
-							Back to text
-						</button>
-					</div>
-					<div id="media-list"></div>
-					<div class="mdl-spinner mdl-js-spinner is-active " id="media-loading"></div>
-					<button id="add-media-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button">
-						<i class="material-icons">add</i>
-					</button>
-					<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" id="add-media-menu" for="add-media-button">
-						<li class="mdl-menu__item" id="add-file-button" data-i18n="file_photo">File/Photo</li>
-						<li class="mdl-menu__item" id="add-recording-button" data-i18n="recording">Recording</li>
-					</ul>
-				</div>
 
 				<div id="format-toolbar" class="toolbar">
 					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="bold">
@@ -312,29 +302,63 @@ mdl-layout--fixed-header">
 					<button id="copy-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button" data-i18n="copy">
 						copy
 					</button>
-					<button id="paste-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button" data-i18n="paste">
+					<button id="paste-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+						data-i18n="paste">
 						paste
 					</button>
-					<button id="select-all-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button" data-i18n="select_all">
+					<button id="select-all-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+						data-i18n="select_all">
 						Select All
 					</button>
 				</div>
 				<div id="tools-toolbar" class="toolbar">
-					<button id="statistics-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button" data-i18n="statistics">
+					<button id="statistics-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+						data-i18n="statistics">
 						Statistics
 					</button>
-					<button id="todolist-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button" data-i18n="todo_list">
+					<button id="todolist-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+						data-i18n="todo_list">
 						Todo-List
 					</button>
-					<button id="print-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button" data-i18n="print">
+					<button id="print-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+						data-i18n="print">
 						Print
 					</button>
 
 				</div>
 			</div>
 			<div id="page-content" class="page-content">
-				<div id="center" style="height:100%;padding:0px;">
-					<div id="editor" style="height:100%;overflow-y: auto;overflow-x: none;margin:0px;position: relative;">
+				<div id="center" style="height:100%;padding:0px;overflow-y: auto;">
+					<div id="media-toolbar">
+						<div id="media-header">
+							<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="back-to-text-button">
+								Back to text
+							</button>
+						</div>
+						<div id="media-list">
+						</div>
+						<div class="mdl-spinner mdl-js-spinner is-active " id="media-loading"></div>
+
+						<div style="display: inline-grid;float: right;vertical-align: middle;">
+							<button id="fullscreen-media-button"
+								class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button in-toolbar-button"
+								data-upgraded=",MaterialButton">
+								<i class="material-icons">aspect_ratio</i>
+								<span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></button><button
+								id="add-media-button" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button"
+								data-upgraded=",MaterialButton">
+								<i class="material-icons">add</i>
+								<span class="mdl-button__ripple-container"><span class="mdl-ripple"></span></span></button>
+							<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" id="add-media-menu"
+								for="add-media-button">
+								<li class="mdl-menu__item" id="add-file-button">File/Photo</li>
+								<li class="mdl-menu__item" id="add-recording-button">Recording</li>
+							</ul>
+						</div>
+						<div style="clear:both"></div>
+
+					</div>
+					<div id="editor" style="height:100%;overflow-x: none;margin:0px;position: relative;">
 
 					</div>
 				</div>
@@ -381,11 +405,11 @@ mdl-layout--fixed-header">
 			<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="mod-checkbox">
 				<input type="checkbox" id="mod-checkbox" class="mdl-checkbox__input" checked>
 				<span class="mdl-checkbox__label" data-i18n="print_modification_date">Print modification date</span>
-			  </label>
-			  <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="creation-checkbox">
+			</label>
+			<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="creation-checkbox">
 				<input type="checkbox" id="creation-checkbox" class="mdl-checkbox__input" checked>
 				<span class="mdl-checkbox__label" data-i18n="print_creation_date">Print creation date</span>
-			  </label>
+			</label>
 		</div>
 		<div>
 
@@ -396,15 +420,18 @@ mdl-layout--fixed-header">
 	</dialog>
 
 	<div id="loading">
-		<div class="mdl-spinner mdl-js-spinner is-active" style="width:200px; height:200px; top:50%; left:50%; margin-top:-150px; margin-left:-100px;"></div>
+		<div class="mdl-spinner mdl-js-spinner is-active"
+			style="width:200px; height:200px; top:50%; left:50%; margin-top:-150px; margin-left:-100px;"></div>
 
 	</div>
 
 	<input type="file" id="input_file" />
 	<span style="display:none;" id="api-url">
-		<!APIURL></span>
+		<!APIURL>
+	</span>
 	<span style="display:none;" id="root-url">
-		<!ROOTURL></span>
+		<!ROOTURL>
+	</span>
 
 </body>
 </head>

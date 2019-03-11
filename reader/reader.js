@@ -151,14 +151,18 @@ Writer.prototype.setMediaList = function (list) {
         list = []
 
     if (list.length > 0) {
+        document.getElementById("fullscreen-media-button").style.display = "block"
+
         this.addMediaMenu.parentNode.style.left = "unset"
-        if(this.oDoc.innerText.trim() == ""){
+        if (this.oDoc.innerText.trim() == "") {
             var mediaBar = document.getElementById("media-toolbar");
-            if(!$(mediaBar).is(":visible"))
+            if (!$(mediaBar).is(":visible"))
                 this.toolbarManager.toggleToolbar(mediaBar)
         }
     } else {
-        this.addMediaMenu.parentNode.style.left = "0px"
+        //this.addMediaMenu.parentNode.style.left = "0px"
+        writer.mediaList.innerHTML = "<span id='media-empty-view'>Select the + button to add images / sounds</span>";
+        document.getElementById("fullscreen-media-button").style.display = "none"
 
     }
 
@@ -320,10 +324,10 @@ Writer.prototype.createEditableZone = function () {
 Writer.prototype.openPrintDialog = function () {
     var writer = this;
     this.printDialog.showModal()
-    this.printDialog.querySelector("#cancel").onclick = function(){
+    this.printDialog.querySelector("#cancel").onclick = function () {
         writer.printDialog.close()
     }
-    this.printDialog.querySelector("#print").onclick = function(){
+    this.printDialog.querySelector("#print").onclick = function () {
         compatibility.print(writer.printDialog.querySelector("#title-checkbox").checked, writer.printDialog.querySelector("#mod-checkbox").checked, writer.printDialog.querySelector("#creation-checkbox").checked, writer.note);
     }
     //compatibility.print();
@@ -355,8 +359,8 @@ Writer.prototype.fillWriter = function (extractedHTML) {
         this.oEditor.innerHTML = extractedHTML;
     else this.putDefaultHTML();
     document.getElementById("name-input").value = FileUtils.stripExtensionFromName(FileUtils.getFilename(this.note.path))
-    this.oEditor.onscroll = function () {
-        lastscroll = $(writer.oEditor).scrollTop()
+    this.oCenter.onscroll = function () {
+        lastscroll = $(writer.oCenter).scrollTop()
         console.log("onscroll")
     }
     this.oDoc = document.getElementById("text");
@@ -530,6 +534,8 @@ Writer.prototype.init = function () {
 
     this.oEditor = document.getElementById("editor");
 
+    this.oCenter = document.getElementById("center");
+
     this.mediaList = document.getElementById("media-list");
     this.fullscreenViewer = document.getElementById("fullscreen-viewer");
     $(document).bind('keydown', function (event) {
@@ -605,6 +611,7 @@ Writer.prototype.init = function () {
         writer.addKeyword(document.getElementById('keyword-input').value);
         writer.newKeywordDialog.close();
     }
+    this.mediaToolbar = document.getElementById("media-toolbar");
     var inToolbarButtons = document.getElementsByClassName("in-toolbar-button");
 
     for (var i = 0; i < inToolbarButtons.length; i++) {
@@ -652,13 +659,15 @@ Writer.prototype.init = function () {
                 case "print-button":
                     writer.openPrintDialog();
                     break;
+                case "fullscreen-media-button":
+                    writer.mediaToolbar.classList.add("fullscreen-media-toolbar")
+                    var layout = document.getElementsByClassName("mdl-layout")[0]
+                    layout.classList.remove("mdl-layout--fixed-drawer")
+                    document.getElementsByTagName("header")[0].style.zIndex = "unset";
+                    break;
                 case "back-to-text-button":
-                    writer.toolbarManager.toggleToolbar(document.getElementById("media-toolbar"))
-                    if(writer.oDoc.innerText.trim() == ""){
-                        //put focus
-                        var elements = writer.oDoc.getElementsByClassName("edit-zone");
-                        writer.placeCaretAtEnd(elements[elements.length - 1]);
-                    }
+                    writer.closeFullscreenMediaToolbar();
+
                     break;
             }
         };
@@ -725,14 +734,14 @@ Writer.prototype.init = function () {
         writer.nameTimout = setTimeout(function () {
             writer.seriesTaskExecutor.addTask(writer.saveNoteTask) // first, save.
             writer.seriesTaskExecutor.addTask(new RenameNoteTask(writer))
-            writer.nameTimout=undefined
+            writer.nameTimout = undefined
 
 
         }, 10000)
     })
 
     document.getElementById("name-input").addEventListener("focusout", function () {
-        if (writer.nameTimout != undefined){
+        if (writer.nameTimout != undefined) {
             clearTimeout(writer.nameTimout)
             writer.seriesTaskExecutor.addTask(writer.saveNoteTask) // first, save.
             writer.seriesTaskExecutor.addTask(new RenameNoteTask(writer))
@@ -741,8 +750,22 @@ Writer.prototype.init = function () {
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 }
 
+Writer.prototype.closeFullscreenMediaToolbar = function () {
+    var layout = document.getElementsByClassName("mdl-layout")[0]
+    if (!layout.classList.contains("mdl-layout--fixed-drawer")) {
+        document.getElementsByTagName("header")[0].style.zIndex = "3";
+        layout.classList.add("mdl-layout--fixed-drawer")
+        this.mediaToolbar.classList.remove("fullscreen-media-toolbar")
+        if (this.oDoc.innerText.trim() == "") {
+            //put focus
+            var elements = this.oDoc.getElementsByClassName("edit-zone");
+            this.placeCaretAtEnd(elements[elements.length - 1]);
+        }
+    }
+}
+
 Writer.prototype.toggleDrawer = function () {
-    if (document.getElementsByClassName("is-small-screen").length > 0)
+    if (document.getElementsByClassName("is-small-screen").length > 0 || /* close also on big screen when media toolbar is fullscreen */document.getElementsByClassName("mdl-layout--fixed-drawer").length == 0)
         document.getElementsByClassName("mdl-layout__drawer-button")[0].click()
 }
 
@@ -754,6 +777,7 @@ Writer.prototype.askToExit = function () {
         return false;
     }
     else {
+        this.closeFullscreenMediaToolbar()
         compatibility.exit();
     }
     return false;
@@ -879,8 +903,9 @@ Writer.prototype.reset = function () {
     //close all toolbars
     if (this.toolbarManager != undefined)
         this.toolbarManager.toggleToolbar(undefined)
-    if (writer.fullscreenViewer != undefined)
-        $(writer.fullscreenViewer).hide()
+    if (this.fullscreenViewer != undefined)
+        $(this.fullscreenViewer).hide()
+
 }
 
 Writer.prototype.putDefaultHTML = function () {
@@ -975,12 +1000,9 @@ ToolbarManager.prototype.toggleToolbar = function (elem) {
         if (toolbar != elem)
             $(toolbar).slideUp("fast", resetScreenHeight)
     }
-    if (elem != undefined && elem.id == "media-toolbar" && !$(elem).is(":visible"))
-        document.getElementsByTagName("header")[0].style.zIndex = "unset";
-    else
-        document.getElementsByTagName("header")[0].style.zIndex = 3;
+
     if (elem != undefined) {
-        if ($(elem).is(":visible")){
+        if ($(elem).is(":visible")) {
             $(elem).slideUp("fast", resetScreenHeight)
         }
         else
@@ -1086,6 +1108,29 @@ var SaveNoteTask = function (writer) {
 
 }
 SaveNoteTask.prototype.trySave = function (onEnd, trial) {
+    // /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/ 
+    //var re = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+    var re = /\b(https?:\/\/.*?\.[a-z]{2,4}\b)/gi;
+    //var m;
+    var urls = this.writer.oEditor.innerText.match(re)
+    if (urls == null)
+        urls = []
+    urls = urls.map(function (x) { return x.toLowerCase() })
+    if (this.writer.note.metadata.urls == undefined) {
+        this.writer.note.metadata.urls = {}
+    }
+    var currentUrls = Object.keys(this.writer.note.metadata.urls)
+    for (var url of urls) {
+        url = url.toLowerCase()
+        if (currentUrls.indexOf(url) < 0)
+            this.writer.note.metadata.urls[url] = {}
+    }
+
+    for (var url of currentUrls) {
+        if (urls.indexOf(url) < 0)
+            delete this.writer.note.metadata.urls[url]
+    }
+
     const task = this;
     if (this.writer.note.metadata.creation_date === "")
         this.writer.note.metadata.creation_date = Date.now();
@@ -1140,12 +1185,12 @@ function resetScreenHeight() {
         content = screen;
     $("#center").height(content);
     $("#editor").height(content - 45);
-    $("#editor").scrollTop(lastscroll);
+    $("#center").scrollTop(lastscroll);
     if (writer != undefined) {
         var diff = content - 45 - writer.getCaretPosition().y + header
         console.log(diff)
         if (diff < 0)
-            $("#editor").scrollTop(lastscroll - diff);
+            $("#center").scrollTop(lastscroll - diff);
     }
     console.log(content - 45)
 }
@@ -1212,19 +1257,20 @@ $(document).ready(function () {
 
         loaded = true;
     }
-    window.oldOncontextmenu = window.oncontextmenu;
-    window.oncontextmenu = function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
-    };
+    /* window.oldOncontextmenu = window.oncontextmenu;
+     window.oncontextmenu = function (event) {
+         event.preventDefault();
+         event.stopPropagation();
+         return false;
+     };*/
     $.i18n().load({
         en: api_url + '/settings/lang/json?lang=en',
         fr: api_url + '/settings/lang/json?lang=fr'
-    
+
     }).done(function () {
         $('body').i18n();
         list(initPath)
     })
     $.i18n().locale = navigator.language;
+
 });
