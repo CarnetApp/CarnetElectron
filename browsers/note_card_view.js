@@ -79,7 +79,7 @@ NoteCardView.prototype.setNote = function (note) {
     if (note.metadata.todolists != undefined) {
         this.refreshTodoList();
     }
-    else if(note.text != undefined){
+    else if (note.text != undefined) {
         if (note.text.length < 40 && this.cardTitleText.innerHTML == "")
             this.cardText.classList.add("big-text")
         else if (note.text.length < 100 && this.cardTitleText.innerHTML == "") {
@@ -106,6 +106,26 @@ NoteCardView.prototype.setNote = function (note) {
             var img = document.createElement('img');
             img.src = preview;
             this.cardMedias.appendChild(img);
+        }
+    this.cardUrls.innerHTML = "";
+    if (note.metadata.urls != undefined)
+        for (let url of Object.keys(note.metadata.urls)) {
+            var div = document.createElement('div');
+            div.classList.add("note-url")
+
+            var a = document.createElement('a');
+            a.href = url;
+            a.onclick = function () {
+                return false;
+            }
+            div.onclick = function (event) {
+                event.stopPropagation()
+                compatibility.openUrl(url)
+                return false
+            }
+            a.innerHTML = url
+            div.appendChild(a)
+            this.cardUrls.appendChild(div);
         }
 
 }
@@ -150,10 +170,13 @@ NoteCardView.prototype.init = function () {
     this.cardKeywords.classList.add("keywords");
     this.cardContent.appendChild(this.cardKeywords)
 
+    this.cardUrls = document.createElement('div');
+    this.cardUrls.classList.add("card-urls");
+    this.cardContent.appendChild(this.cardUrls)
+
     this.cardMedias = document.createElement('div');
     this.cardMedias.classList.add("card-medias");
     this.cardContent.appendChild(this.cardMedias)
-
     this.elem.appendChild(this.cardContent);
 
 }

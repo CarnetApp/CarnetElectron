@@ -1019,16 +1019,21 @@ Writer.prototype.getWord = function (elem) {
         sel.collapseToStart();
         sel.modify("move", "backward", "word");
         console.log("pos " + this.getCaretCharacterOffsetWithin(elem))
+        var i = 0;
+        var lastPos = -1
         if (this.getCaretCharacterOffsetWithin(elem) !== 0)
             while (true) {
                 sel.modify("move", "backward", "character") + "mod";
                 sel.modify("extend", "forward", "character");
                 console.log(this.getCaretCharacterOffsetWithin(elem))
                 var tmpword = sel.toString();
-                if (tmpword == " " || tmpword == "\n" || this.getCaretCharacterOffsetWithin(elem) == 1) {
+                var newPos = this.getCaretCharacterOffsetWithin(elem)
+                if (tmpword == " " || tmpword == "\n" || newPos == 1 || newPos == lastPos || i > 200) {
                     break;
                 }
+                lastPos = newPos
                 sel.modify("move", "backward", "character");
+                i++;
             }
         sel.modify("extend", "forward", "word");
         word = sel.toString();
@@ -1056,14 +1061,15 @@ Writer.prototype.getWord = function (elem) {
 
 Writer.prototype.onEditableClick = function (event) {
     var word = this.getWord(event.target)
-    if (word.match(Writer.httpReg)) {
+    var match = word.match(Writer.httpReg)
+    if (match) {
         var data = {
             actionText: $.i18n("open"),
             actionHandler: function () {
-                const url = word.trim();
+                const url = match[0];
                 compatibility.openUrl(url)
             },
-            message: word.trim(),
+            message: match[0],
             timeout: 2000,
         };
         this.displaySnack(data);
@@ -1071,7 +1077,7 @@ Writer.prototype.onEditableClick = function (event) {
 
 }
 
-Writer.httpReg = /\b(https?:\/\/.*?\.[a-z]{2,4}\b)/gi
+Writer.httpReg = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
 var ToolbarManager = function () {
     this.toolbars = [];
