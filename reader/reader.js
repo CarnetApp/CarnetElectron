@@ -370,6 +370,12 @@ Writer.prototype.fillWriter = function (extractedHTML) {
         this.oDoc.innerHTML = "";
         this.createEditableZone().innerHTML = toCopy
     }
+
+    for (var editable of this.oDoc.getElementsByClassName("edit-zone")) {
+        editable.onclick = function (event) {
+            writer.onEditableClick(event);
+        }
+    }
     this.oDoc.onclick = function (event) {
         if (event.target.id == "text") {
             //focus on last editable element
@@ -645,7 +651,9 @@ Writer.prototype.init = function () {
                     break;
                 case "todolist-button":
                     writer.manager.createTodolist().createItem("")
-                    writer.createEditableZone()
+                    writer.createEditableZone().onclick = function (event) {
+                        writer.onEditableClick(event);
+                    }
                     break;
                 case "copy-button":
                     writer.copy();
@@ -986,6 +994,85 @@ Writer.prototype.getCaretPosition = function () {
     };
 }
 
+Writer.prototype.getCaretCharacterOffsetWithin = function (element) {
+    var caretOffset = 0;
+    if (typeof window.getSelection != "undefined") {
+        var range = window.getSelection().getRangeAt(0);
+        var preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        caretOffset = preCaretRange.toString().length;
+    } else if (typeof document.selection != "undefined" && document.selection.type != "Control") {
+        var textRange = document.selection.createRange();
+        var preCaretTextRange = document.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
+
+Writer.prototype.getWord = function (elem) {
+    var sel, word = "";
+    if (window.getSelection && (sel = window.getSelection()).modify) {
+        var selectedRange = sel.getRangeAt(0);
+        sel.collapseToStart();
+        sel.modify("move", "backward", "word");
+        console.log("pos " + this.getCaretCharacterOffsetWithin(elem))
+        if (this.getCaretCharacterOffsetWithin(elem) !== 0)
+            while (true) {
+                sel.modify("move", "backward", "character") + "mod";
+                sel.modify("extend", "forward", "character");
+                console.log(this.getCaretCharacterOffsetWithin(elem))
+                var tmpword = sel.toString();
+                if (tmpword == " " || tmpword == "\n" || this.getCaretCharacterOffsetWithin(elem) == 1) {
+                    break;
+                }
+                sel.modify("move", "backward", "character");
+            }
+        sel.modify("extend", "forward", "word");
+        word = sel.toString();
+        while (true) {
+            sel.modify("extend", "forward", "character");
+            var tmpword = sel.toString();
+            if (tmpword.endsWith(" ") || tmpword.endsWith("\n") || tmpword == word) {
+                console.log("break1" + tmpword);
+                break;
+            }
+            word = tmpword;
+
+        }
+        // Restore selection
+        sel.removeAllRanges();
+        sel.addRange(selectedRange);
+    } else if ((sel = document.selection) && sel.type != "Control") {
+        var range = sel.createRange();
+        range.collapse(true);
+        range.expand("word");
+        word = range.text;
+    }
+    return word;
+}
+
+Writer.prototype.onEditableClick = function (event) {
+    var word = this.getWord(event.target)
+    if (word.match(Writer.httpReg)) {
+        var data = {
+            actionText: $.i18n("open"),
+            actionHandler: function () {
+                const url = word.trim();
+                compatibility.openUrl(url)
+            },
+            message: word.trim(),
+            timeout: 2000,
+        };
+        this.displaySnack(data);
+    }
+
+}
+
+Writer.httpReg = /\b(https?:\/\/.*?\.[a-z]{2,4}\b)/gi
+
 var ToolbarManager = function () {
     this.toolbars = [];
 }
@@ -1110,9 +1197,8 @@ var SaveNoteTask = function (writer) {
 SaveNoteTask.prototype.trySave = function (onEnd, trial) {
     // /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/ 
     //var re = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
-    var re = /\b(https?:\/\/.*?\.[a-z]{2,4}\b)/gi;
     //var m;
-    var urls = this.writer.oEditor.innerText.match(re)
+    var urls = this.writer.oEditor.innerText.match(Writer.httpReg)
     if (urls == null)
         urls = []
     urls = urls.map(function (x) { return x.toLowerCase() })
