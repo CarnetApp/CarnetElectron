@@ -1303,8 +1303,8 @@ if (loaded == undefined)
 var writer = undefined;
 
 $(document).ready(function () {
-    rootpath = document.getElementById("root-url").innerHTML;
-    api_url = document.getElementById("api-url").innerHTML;
+    rootpath = document.getElementById("root-url").innerHTML.trim();
+    api_url = document.getElementById("api-url").innerHTML.trim();
 
     new RequestBuilder(api_url);
     RequestBuilder.sRequestBuilder.get("/settings/editor_css", function (error, data) {
@@ -1356,12 +1356,11 @@ $(document).ready(function () {
          return false;
      };*/
     $.i18n().load({
-        en: api_url + '/settings/lang/json?lang=en',
-        fr: api_url + '/settings/lang/json?lang=fr'
+        en: api_url + 'settings/lang/json?lang=en',
+        fr: api_url + 'settings/lang/json?lang=fr'
 
     }).done(function () {
         $('body').i18n();
-        list(initPath)
     })
     $.i18n().locale = navigator.language;
 

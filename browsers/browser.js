@@ -766,8 +766,8 @@ console.log = function (m) {
 
 
 $.i18n().load({
-    en: api_url + '/settings/lang/json?lang=en',
-    fr: api_url + '/settings/lang/json?lang=fr'
+    en: api_url + 'settings/lang/json?lang=en',
+    fr: api_url + 'settings/lang/json?lang=fr'
 
 }).done(function () {
     $('body').i18n();
