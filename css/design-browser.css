@@ -225,7 +225,7 @@ body{
     padding-top:15px;
     padding-bottom: 15px;
     max-width: calc(100% - 15px);
-    border-top: #dadada solid 1px;
+    border-top: #9e9d9d6e solid 1px;
     cursor: pointer;
     text-overflow: ellipsis;
     overflow: hidden;
