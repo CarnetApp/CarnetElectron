@@ -1069,7 +1069,7 @@ Writer.prototype.onEditableClick = function (event) {
                 const url = match[0];
                 compatibility.openUrl(url)
             },
-            message: match[0],
+            message: match[0].substr(0, 20) + "...",
             timeout: 2000,
         };
         this.displaySnack(data);
