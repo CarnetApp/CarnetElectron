@@ -23,5 +23,34 @@ class Compatibility {
             win.focus();
         }
     }
+
+    loadLang(callback) {
+        var langs = ["en", "fr", "de"];
+        var toLoad = {}
+
+        for (var lang of langs) {
+            toLoad[lang] = (!this.isElectron ? RequestBuilder.sRequestBuilder.api_url : "/") + 'settings/lang/json?lang=' + lang
+        }
+
+        if (!this.isElectron) {
+            $.i18n().load(toLoad).done(callback)
+        }
+        else {
+            var size = Object.keys(toLoad).length
+            var i = 0;
+            var total = {}
+            for (const key of Object.keys(toLoad)) {
+                RequestBuilder.sRequestBuilder.get(toLoad[key], function (error, data) {
+                    i++;
+                    total[key] = data
+                    if (i == size) {
+                        $.i18n().load(total).done(callback)
+                    }
+                })
+
+            }
+        }
+
+    }
 }
 

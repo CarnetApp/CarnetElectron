@@ -17,7 +17,7 @@ var currentcache = {}
 var previews = {}
 
 var handle = function (method, path, data, callback) {
-    console.logDebug(path)
+    console.logDebug(method + " " + path)
     var splitPath = path.split("?")
     var pathBeforeArgs = splitPath[0]
     if (splitPath[1] != undefined) {
@@ -29,6 +29,7 @@ var handle = function (method, path, data, callback) {
             args[decodeURIComponent(argSplit[0])] = decodeURIComponent(argSplit[1])
         }
     }
+
     if (method === "GET") {
         switch (pathBeforeArgs) {
             case "/notes/search":
@@ -47,6 +48,19 @@ var handle = function (method, path, data, callback) {
                 return;
             case "/settings/settings_css":
                 callback(false, settingsHelper.getSettingsCss())
+                return;
+            case "/settings/lang/json":
+                var lang = args["lang"]
+                if (lang.indexOf("../") !== -1)
+                    return;
+                fs.readFile(__dirname + '/../i18n/' + lang + ".json", 'utf8', function (err, data) {
+                    if (err) {
+                        callback(true, null)
+                        return;
+                    }
+
+                    callback(err, data)
+                })
                 return;
             case "/settings/changelog":
                 fs.readFile(__dirname + '/../CHANGELOG.md', 'utf8', function (err, data) {

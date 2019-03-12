@@ -764,13 +764,9 @@ console.log = function (m) {
 
 
 
-
-$.i18n().load({
-    en: RequestBuilder.sRequestBuilder.api_url + 'settings/lang/json?lang=en',
-    fr: RequestBuilder.sRequestBuilder.api_url + 'settings/lang/json?lang=fr'
-
-}).done(function () {
+compatibility.loadLang(function () {
     $('body').i18n();
     list(initPath)
 })
+
 $.i18n().locale = navigator.language;
