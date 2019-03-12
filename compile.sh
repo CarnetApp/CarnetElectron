@@ -18,6 +18,7 @@ if [ "$1" == "android" ]; then
     cp img dist/build/ -R
     cp css dist/build/ -R
     cp keywords dist/build/ -R
+    cp i18n dist/build/ -R
     cp requests dist/build/ -R
     ./node_modules/.bin/babel --presets @babel/preset-env  dist/build/ -d dist/build/
     cp reader/libs/Countable.js dist/build/reader/libs/
