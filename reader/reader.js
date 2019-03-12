@@ -161,7 +161,7 @@ Writer.prototype.setMediaList = function (list) {
         }
     } else {
         //this.addMediaMenu.parentNode.style.left = "0px"
-        writer.mediaList.innerHTML = "<span id='media-empty-view'>Select the + button to add images / sounds</span>";
+        writer.mediaList.innerHTML = "<span id='media-empty-view'>" + $.i18n("media_empty_text") + "</span>";
         document.getElementById("fullscreen-media-button").style.display = "none"
 
     }
