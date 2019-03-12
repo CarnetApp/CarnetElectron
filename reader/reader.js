@@ -730,9 +730,21 @@ Writer.prototype.init = function () {
         writer.recorder.new()
         writer.recorderDialog.showModal()
     }
-    document.getElementById("export-button").onclick = function () {
+    document.getElementById("date-button").onclick = function () {
         writer.toggleDrawer();
-        writer.warnNotYetImplemented()
+        var date = writer.note.metadata.custom_date;
+        if (date == undefined)
+            date = writer.note.metadata.last_modification_date;
+        if (date == undefined)
+            date = writer.note.metadata.creation_date;
+        if (date == undefined)
+            date = new Date().now()
+        const picker = new MaterialDatetimePicker({ default: moment(date) })
+            .on('submit', (val) => {
+                writer.note.metadata.custom_date = val.unix() * 1000;
+                writer.hasTextChanged = true
+            });
+        picker.open();
         return false;
     }
     writer.nameTimout = undefined
