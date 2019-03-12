@@ -1061,7 +1061,7 @@ Writer.prototype.getWord = function (elem) {
 
 Writer.prototype.onEditableClick = function (event) {
     var word = this.getWord(event.target)
-    var match = word.match(Writer.httpReg)
+    var match = word.match(Utils.httpReg)
     if (match) {
         var data = {
             actionText: $.i18n("open"),
@@ -1076,8 +1076,6 @@ Writer.prototype.onEditableClick = function (event) {
     }
 
 }
-
-Writer.httpReg = /(?:(?:https?|ftp|file):\/\/|www\.|ftp\.)(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[-A-Z0-9+&@#\/%=~_|$?!:,.])*(?:\([-A-Z0-9+&@#\/%=~_|$?!:,.]*\)|[A-Z0-9+&@#\/%=~_|$])/igm
 
 var ToolbarManager = function () {
     this.toolbars = [];
@@ -1204,7 +1202,7 @@ SaveNoteTask.prototype.trySave = function (onEnd, trial) {
     // /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/ 
     //var re = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
     //var m;
-    var urls = this.writer.oEditor.innerText.match(Writer.httpReg)
+    var urls = this.writer.oEditor.innerText.match(Utils.httpReg)
     if (urls == null)
         urls = []
     urls = urls.map(function (x) { return x.toLowerCase() })
