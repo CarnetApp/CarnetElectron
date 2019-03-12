@@ -1274,7 +1274,7 @@ function resetScreenHeight() {
     if (style.getPropertyValue('display') == "none")
         content = screen;
     $("#center").height(content);
-    $("#editor").height(content - 45);
+    $("#editor").height(content - 45 - $("#media-toolbar").height());
     $("#center").scrollTop(lastscroll);
     if (writer != undefined) {
         var diff = content - 45 - writer.getCaretPosition().y + header
