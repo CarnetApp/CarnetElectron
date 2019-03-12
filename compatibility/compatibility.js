@@ -16,6 +16,8 @@ class Compatibility {
                 shell
             } = require('electron');
             shell.openExternal(url);
+        } else if (compatibility.isAndroid) {
+            app.openUrl(url)
         } else {
             var win = window.open(url, '_blank');
             win.focus();
