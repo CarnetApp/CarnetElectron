@@ -184,7 +184,7 @@ function resetGrid(discret) {
                 openNote(note.path)
             else
                 displaySnack({
-                    message: "Fake notes are not editable",
+                    message: $.i18n("fake_notes_warning"),
                     timeout: 2000,
                 })
         }
@@ -404,6 +404,18 @@ function list(pathToList, discret) {
                     color: "none"
                 }, undefined);
                 notes.push(noteTestTxt)
+
+                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_5"), "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: [],
+                    rating: -1,
+                    color: "red"
+                }, undefined);
+                noteTestTxt.previews = []
+                noteTestTxt.previews.push(root_url + "img/bike.png");
+                notes.push(noteTestTxt)
+
                 var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_2"), "untitleddonotedit.sqd", {
                     creation_date: new Date().getTime(),
                     last_modification_date: new Date().getTime(),
@@ -428,13 +440,18 @@ function list(pathToList, discret) {
                     color: "green"
                 }, undefined);
                 notes.push(noteTestTxt)
-                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_5"), "untitleddonotedit.sqd", {
+
+
+                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_6"), "untitleddonotedit.sqd", {
                     creation_date: new Date().getTime(),
                     last_modification_date: new Date().getTime(),
                     keywords: [],
                     rating: -1,
-                    color: "red"
+                    urls: { "https://carnet.live": {} },
+                    todolists: [{ todo: [$.i18n("fake_note_todo_item_1"), $.i18n("fake_note_todo_item_2")] }],
+                    color: "none"
                 }, undefined);
+
                 notes.push(noteTestTxt)
 
             }
