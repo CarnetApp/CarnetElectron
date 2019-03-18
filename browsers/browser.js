@@ -264,7 +264,7 @@ class NoteContextualDialog extends ContextualDialog {
         var context = this;
         this.nameInput.value = note.title;
         this.deleteButton.onclick = function () {
-            var db = new RecentDBManager()
+            var db = RecentDBManager.getInstance()
             var keywordDB = new KeywordsDBManager();
             context.dialog.close();
             db.removeFromDB(note.path, function (error, data) {
@@ -280,12 +280,26 @@ class NoteContextualDialog extends ContextualDialog {
             });
 
         }
+        if (RecentDBManager.getInstance().lastDb.indexOf(note.path) < 0) {
+            this.archiveButton.innerHTML = $.i18n("unarchive")
+        }
+        else
+            this.archiveButton.innerHTML = $.i18n("archive")
+
         this.archiveButton.onclick = function () {
-            var db = new RecentDBManager()
-            db.removeFromDB(note.path, function () {
-                context.dialog.close();
-                list(currentPath, true)
-            });
+            var db = RecentDBManager.getInstance()
+            if (RecentDBManager.getInstance().lastDb.indexOf(note.path) < 0) {
+                db.addToDB(note.path, function () {
+                    context.dialog.close();
+                    list(currentPath, true)
+                });
+
+            } else {
+                db.removeFromDB(note.path, function () {
+                    context.dialog.close();
+                    list(currentPath, true)
+                });
+            }
 
         }
         if (note.isPinned == true) {
@@ -293,7 +307,7 @@ class NoteContextualDialog extends ContextualDialog {
         } else this.pinButton.innerHTML = "Pin"
 
         this.pinButton.onclick = function () {
-            var db = new RecentDBManager()
+            var db = RecentDBManager.getInstance()
             if (note.isPinned == true)
                 db.unpin(note.path, function () {
                     context.dialog.close();
@@ -508,7 +522,7 @@ document.getElementById("add-note-button").onclick = function () {
         if (error) return;
         console.log("found " + data)
         wasNewNote = true;
-        var db = new RecentDBManager()
+        var db = RecentDBManager.getInstance()
         db.addToDB(data, function () {
             openNote(data)
         });
@@ -623,7 +637,7 @@ const right = document.getElementById("right-bar");
 
 var isElectron = typeof require === "function";
 var writerFrame = undefined;
-events = []
+var events = []
 
 if (isElectron) {
     writerFrame = document.getElementById("writer-webview");

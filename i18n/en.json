@@ -1,6 +1,6 @@
 {
     "search": "Search",
-    "recent": "Recent",
+    "recent": "Latest",
     "browser": "Browser",
     "settings": "Settings",
     "keywords": "Keywords",
@@ -15,6 +15,7 @@
     "note_list_empty": "No notes to display, please start by creating a new one !",
     "pin": "Pin",
     "archive": "Archive",
+    "unarchive": "Unarchive",
     "delete": "Delete",
     "ok": "OK",
     "rename": "Rename",
