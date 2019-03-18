@@ -1,6 +1,6 @@
 {
     "search": "Suchen",
-    "recent": "Neuste",
+    "recent": "Neueste",
     "browser": "Explorer",
     "settings": "Einstellungen",
     "keywords": "Schlüsselwörter",
@@ -14,7 +14,7 @@
     "cancel": "Abbrechen",
     "note_list_empty": "Keine Notizen zum Anzeigen, bitte erstellen Sie eine neue!",
     "pin": "Anheften",
-    "archive": "Archiv",
+    "archive": "Archivieren",
     "delete": "Löschen",
     "ok": "OK",
     "rename": "Umbenennen",
@@ -58,5 +58,6 @@
     "fake_note_6": "Aufgabenlisten und URLs hinzufügen",
     "fake_note_todo_item_1": "Carnet ausprobieren",
     "fake_note_todo_item_2": "Carnet teilen",
-    "fake_notes_warning": "Diese Notizen können nicht bearbeitet werden"
+    "fake_notes_warning": "Diese Notizen können nicht bearbeitet werden",
+    "unarchive": "Aus Archiv entpacken"
 }
