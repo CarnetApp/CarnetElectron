@@ -36,8 +36,10 @@ KeywordsDBManager.prototype.getFlatenDB = function (callback) {
                 if (keyword == undefined) {
                     for (var key in flaten) {
                         var indexBis = flaten[key].indexOf(item.path);
-                        if (indexBis >= -1)
+
+                        if (indexBis >= 0) {
                             flaten[key].splice(indexBis, 1)
+                        }
                     }
                 }
             } else if (item.action == "move") {
