@@ -184,7 +184,7 @@ function resetGrid(discret) {
                 openNote(note.path)
             else
                 displaySnack({
-                    message: "Fake notes are not editable",
+                    message: $.i18n("fake_notes_warning"),
                     timeout: 2000,
                 })
         }
@@ -264,7 +264,7 @@ class NoteContextualDialog extends ContextualDialog {
         var context = this;
         this.nameInput.value = note.title;
         this.deleteButton.onclick = function () {
-            var db = new RecentDBManager()
+            var db = RecentDBManager.getInstance()
             var keywordDB = new KeywordsDBManager();
             context.dialog.close();
             db.removeFromDB(note.path, function (error, data) {
@@ -280,12 +280,26 @@ class NoteContextualDialog extends ContextualDialog {
             });
 
         }
+        if (RecentDBManager.getInstance().lastDb.indexOf(note.path) < 0) {
+            this.archiveButton.innerHTML = $.i18n("unarchive")
+        }
+        else
+            this.archiveButton.innerHTML = $.i18n("archive")
+
         this.archiveButton.onclick = function () {
-            var db = new RecentDBManager()
-            db.removeFromDB(note.path, function () {
-                context.dialog.close();
-                list(currentPath, true)
-            });
+            var db = RecentDBManager.getInstance()
+            if (RecentDBManager.getInstance().lastDb.indexOf(note.path) < 0) {
+                db.addToDB(note.path, function () {
+                    context.dialog.close();
+                    list(currentPath, true)
+                });
+
+            } else {
+                db.removeFromDB(note.path, function () {
+                    context.dialog.close();
+                    list(currentPath, true)
+                });
+            }
 
         }
         if (note.isPinned == true) {
@@ -293,7 +307,7 @@ class NoteContextualDialog extends ContextualDialog {
         } else this.pinButton.innerHTML = "Pin"
 
         this.pinButton.onclick = function () {
-            var db = new RecentDBManager()
+            var db = RecentDBManager.getInstance()
             if (note.isPinned == true)
                 db.unpin(note.path, function () {
                     context.dialog.close();
@@ -396,45 +410,62 @@ function list(pathToList, discret) {
 
             if (files.length == 0 && pathToList === "recentdb://") {
                 $("#emty-view").fadeOut("fast");
-                var noteTestTxt = new Note("untitleddonotedit.sqd", "These fake notes will disappear as soon as you create a new note by selecting the bottom right button", "untitleddonotedit.sqd", {
+                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_1"), "untitleddonotedit.sqd", {
                     creation_date: new Date().getTime(),
                     last_modification_date: new Date().getTime(),
                     keywords: [],
                     rating: 5,
                     color: "none"
-                }, oldNote != undefined ? oldNote.previews : undefined);
+                }, undefined);
                 notes.push(noteTestTxt)
-                var noteTestTxt = new Note("untitleddonotedit.sqd", "Choose note/text colors, add keywords           ", "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: ["keyword"],
-                    rating: -1,
-                    color: "orange"
-                }, oldNote != undefined ? oldNote.previews : undefined);
-                notes.push(noteTestTxt)
-                var noteTestTxt = new Note("untitleddonotedit.sqd", "Rate your notes or texts", "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: [],
-                    rating: 3,
-                    color: "none"
-                }, oldNote != undefined ? oldNote.previews : undefined);
-                notes.push(noteTestTxt)
-                var noteTestTxt = new Note("untitleddonotedit.sqd", "Sync with your devices", "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: [],
-                    rating: -1,
-                    color: "green"
-                }, oldNote != undefined ? oldNote.previews : undefined);
-                notes.push(noteTestTxt)
-                var noteTestTxt = new Note("untitleddonotedit.sqd", "Format your notes and documents, add pictures and audio records", "untitleddonotedit.sqd", {
+
+                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_5"), "untitleddonotedit.sqd", {
                     creation_date: new Date().getTime(),
                     last_modification_date: new Date().getTime(),
                     keywords: [],
                     rating: -1,
                     color: "red"
-                }, oldNote != undefined ? oldNote.previews : undefined);
+                }, undefined);
+                noteTestTxt.previews = []
+                noteTestTxt.previews.push(root_url + "img/bike.png");
+                notes.push(noteTestTxt)
+
+                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_2"), "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: ["keyword"],
+                    rating: -1,
+                    color: "orange"
+                }, undefined);
+                notes.push(noteTestTxt)
+                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_3"), "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: [],
+                    rating: 3,
+                    color: "none"
+                }, undefined);
+                notes.push(noteTestTxt)
+                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_4"), "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: [],
+                    rating: -1,
+                    color: "green"
+                }, undefined);
+                notes.push(noteTestTxt)
+
+
+                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_6"), "untitleddonotedit.sqd", {
+                    creation_date: new Date().getTime(),
+                    last_modification_date: new Date().getTime(),
+                    keywords: [],
+                    rating: -1,
+                    urls: { "https://carnet.live": {} },
+                    todolists: [{ todo: [$.i18n("fake_note_todo_item_1"), $.i18n("fake_note_todo_item_2")] }],
+                    color: "none"
+                }, undefined);
+
                 notes.push(noteTestTxt)
 
             }
@@ -461,7 +492,6 @@ function list(pathToList, discret) {
     });
 
 }
-list(initPath)
 refreshKeywords();
 
 function minimize() {
@@ -492,7 +522,7 @@ document.getElementById("add-note-button").onclick = function () {
         if (error) return;
         console.log("found " + data)
         wasNewNote = true;
-        var db = new RecentDBManager()
+        var db = RecentDBManager.getInstance()
         db.addToDB(data, function () {
             openNote(data)
         });
@@ -607,7 +637,7 @@ const right = document.getElementById("right-bar");
 
 var isElectron = typeof require === "function";
 var writerFrame = undefined;
-events = []
+var events = []
 
 if (isElectron) {
     writerFrame = document.getElementById("writer-webview");
@@ -762,3 +792,12 @@ console.log = function (m) {
     if (isDebug)
         console.oldlog(m)
 }
+
+
+
+compatibility.loadLang(function () {
+    $('body').i18n();
+    list(initPath)
+})
+
+$.i18n().locale = navigator.language;

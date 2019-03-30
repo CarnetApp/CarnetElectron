@@ -71,18 +71,28 @@ NoteCardView.prototype.setNote = function (note) {
         this.cardTitleText.innerHTML = ""
     else
         this.cardTitleText.innerHTML = note.title;
-    var date = new Date(note.metadata.last_modification_date).toLocaleDateString();
-    this.cardText.innerHTML = note.text;
+    var dateStamp = note.metadata.custom_date;
+    if (dateStamp == undefined)
+        dateStamp = note.metadata.last_modification_date;
+    var date = new Date(dateStamp).toLocaleDateString();
+    var text = ""
+    if (note.text != undefined)
+        if (note.metadata.urls != undefined && note.metadata.urls.length > 0) {
+            text = note.text.replace(Utils.httpReg, "")
+        } else
+            text = note.text //avoid empty note for old notes
+    this.cardText.innerHTML = text;
     this.cardText.classList.remove("big-text")
     this.cardText.classList.remove("medium-text")
 
     if (note.metadata.todolists != undefined) {
         this.refreshTodoList();
     }
-    else if(note.text != undefined){
-        if (note.text.length < 40 && this.cardTitleText.innerHTML == "")
+    else {
+
+        if (text.length < 40 && this.cardTitleText.innerHTML == "")
             this.cardText.classList.add("big-text")
-        else if (note.text.length < 100 && this.cardTitleText.innerHTML == "") {
+        else if (text.length < 100 && this.cardTitleText.innerHTML == "") {
             this.cardText.classList.add("medium-text")
 
         }
@@ -106,6 +116,26 @@ NoteCardView.prototype.setNote = function (note) {
             var img = document.createElement('img');
             img.src = preview;
             this.cardMedias.appendChild(img);
+        }
+    this.cardUrls.innerHTML = "";
+    if (note.metadata.urls != undefined)
+        for (let url of Object.keys(note.metadata.urls)) {
+            var div = document.createElement('div');
+            div.classList.add("note-url")
+
+            var a = document.createElement('a');
+            a.href = url;
+            a.onclick = function () {
+                return false;
+            }
+            div.onclick = function (event) {
+                event.stopPropagation()
+                compatibility.openUrl(url)
+                return false
+            }
+            a.innerHTML = url
+            div.appendChild(a)
+            this.cardUrls.appendChild(div);
         }
 
 }
@@ -150,10 +180,13 @@ NoteCardView.prototype.init = function () {
     this.cardKeywords.classList.add("keywords");
     this.cardContent.appendChild(this.cardKeywords)
 
+    this.cardUrls = document.createElement('div');
+    this.cardUrls.classList.add("card-urls");
+    this.cardContent.appendChild(this.cardUrls)
+
     this.cardMedias = document.createElement('div');
     this.cardMedias.classList.add("card-medias");
     this.cardContent.appendChild(this.cardMedias)
-
     this.elem.appendChild(this.cardContent);
 
 }

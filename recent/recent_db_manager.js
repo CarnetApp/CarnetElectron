@@ -51,15 +51,26 @@ RecentDBManager.prototype.getFlatenDB = function (callback) {
         }
         flaten.reverse()
         pin.reverse()
+        RecentDBManager.getInstance().notPinned = flaten
+        RecentDBManager.getInstance().pinned = pin;
+        RecentDBManager.getInstance().lastDb = pin.concat(flaten)
         callback(false, flaten, pin);
     });
 }
 
+RecentDBManager.getInstance = function () {
+    if (RecentDBManager.instance == undefined)
+        RecentDBManager.instance = new RecentDBManager();
+    return RecentDBManager.instance
+}
+
 RecentDBManager.prototype.addToDB = function (path, callback) {
+    RecentDBManager.getInstance().lastDb.push(path)
     this.action(path, "add", callback)
 }
 
 RecentDBManager.prototype.removeFromDB = function (path, callback) {
+    RecentDBManager.getInstance().lastDb.splice(RecentDBManager.getInstance().lastDb.indexOf(path), 1);
     this.action(path, "remove", callback)
 }
 

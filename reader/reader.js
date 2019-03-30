@@ -151,14 +151,18 @@ Writer.prototype.setMediaList = function (list) {
         list = []
 
     if (list.length > 0) {
+        document.getElementById("fullscreen-media-button").style.display = "block"
+
         this.addMediaMenu.parentNode.style.left = "unset"
-        if(this.oDoc.innerText.trim() == ""){
+        if (this.oDoc.innerText.trim() == "") {
             var mediaBar = document.getElementById("media-toolbar");
-            if(!$(mediaBar).is(":visible"))
+            if (!$(mediaBar).is(":visible"))
                 this.toolbarManager.toggleToolbar(mediaBar)
         }
     } else {
-        this.addMediaMenu.parentNode.style.left = "0px"
+        //this.addMediaMenu.parentNode.style.left = "0px"
+        writer.mediaList.innerHTML = "<span id='media-empty-view'>" + $.i18n("media_empty_text") + "</span>";
+        document.getElementById("fullscreen-media-button").style.display = "none"
 
     }
 
@@ -320,10 +324,10 @@ Writer.prototype.createEditableZone = function () {
 Writer.prototype.openPrintDialog = function () {
     var writer = this;
     this.printDialog.showModal()
-    this.printDialog.querySelector("#cancel").onclick = function(){
+    this.printDialog.querySelector("#cancel").onclick = function () {
         writer.printDialog.close()
     }
-    this.printDialog.querySelector("#print").onclick = function(){
+    this.printDialog.querySelector("#print").onclick = function () {
         compatibility.print(writer.printDialog.querySelector("#title-checkbox").checked, writer.printDialog.querySelector("#mod-checkbox").checked, writer.printDialog.querySelector("#creation-checkbox").checked, writer.note);
     }
     //compatibility.print();
@@ -355,8 +359,8 @@ Writer.prototype.fillWriter = function (extractedHTML) {
         this.oEditor.innerHTML = extractedHTML;
     else this.putDefaultHTML();
     document.getElementById("name-input").value = FileUtils.stripExtensionFromName(FileUtils.getFilename(this.note.path))
-    this.oEditor.onscroll = function () {
-        lastscroll = $(writer.oEditor).scrollTop()
+    this.oCenter.onscroll = function () {
+        lastscroll = $(writer.oCenter).scrollTop()
         console.log("onscroll")
     }
     this.oDoc = document.getElementById("text");
@@ -365,6 +369,12 @@ Writer.prototype.fillWriter = function (extractedHTML) {
         var toCopy = this.oDoc.innerHTML;
         this.oDoc.innerHTML = "";
         this.createEditableZone().innerHTML = toCopy
+    }
+
+    for (var editable of this.oDoc.getElementsByClassName("edit-zone")) {
+        editable.onclick = function (event) {
+            writer.onEditableClick(event);
+        }
     }
     this.oDoc.onclick = function (event) {
         if (event.target.id == "text") {
@@ -468,7 +478,7 @@ Writer.prototype.displayStyleDialog = function () {
 
 Writer.prototype.warnNotYetImplemented = function () {
     var data = {
-        message: 'Not yet implemented',
+        message: $.i18n("not_yet_implemented"),
         timeout: 5000,
     };
     this.displaySnack(data);
@@ -529,6 +539,8 @@ Writer.prototype.init = function () {
 
 
     this.oEditor = document.getElementById("editor");
+
+    this.oCenter = document.getElementById("center");
 
     this.mediaList = document.getElementById("media-list");
     this.fullscreenViewer = document.getElementById("fullscreen-viewer");
@@ -605,6 +617,7 @@ Writer.prototype.init = function () {
         writer.addKeyword(document.getElementById('keyword-input').value);
         writer.newKeywordDialog.close();
     }
+    this.mediaToolbar = document.getElementById("media-toolbar");
     var inToolbarButtons = document.getElementsByClassName("in-toolbar-button");
 
     for (var i = 0; i < inToolbarButtons.length; i++) {
@@ -638,7 +651,9 @@ Writer.prototype.init = function () {
                     break;
                 case "todolist-button":
                     writer.manager.createTodolist().createItem("")
-                    writer.createEditableZone()
+                    writer.createEditableZone().onclick = function (event) {
+                        writer.onEditableClick(event);
+                    }
                     break;
                 case "copy-button":
                     writer.copy();
@@ -652,13 +667,15 @@ Writer.prototype.init = function () {
                 case "print-button":
                     writer.openPrintDialog();
                     break;
+                case "fullscreen-media-button":
+                    writer.mediaToolbar.classList.add("fullscreen-media-toolbar")
+                    var layout = document.getElementsByClassName("mdl-layout")[0]
+                    layout.classList.remove("mdl-layout--fixed-drawer")
+                    document.getElementsByTagName("header")[0].style.zIndex = "unset";
+                    break;
                 case "back-to-text-button":
-                    writer.toolbarManager.toggleToolbar(document.getElementById("media-toolbar"))
-                    if(writer.oDoc.innerText.trim() == ""){
-                        //put focus
-                        var elements = writer.oDoc.getElementsByClassName("edit-zone");
-                        writer.placeCaretAtEnd(elements[elements.length - 1]);
-                    }
+                    writer.closeFullscreenMediaToolbar();
+
                     break;
             }
         };
@@ -713,9 +730,21 @@ Writer.prototype.init = function () {
         writer.recorder.new()
         writer.recorderDialog.showModal()
     }
-    document.getElementById("export-button").onclick = function () {
+    document.getElementById("date-button").onclick = function () {
         writer.toggleDrawer();
-        writer.warnNotYetImplemented()
+        var date = writer.note.metadata.custom_date;
+        if (date == undefined)
+            date = writer.note.metadata.last_modification_date;
+        if (date == undefined)
+            date = writer.note.metadata.creation_date;
+        if (date == undefined)
+            date = new Date().now()
+        const picker = new MaterialDatetimePicker({ default: moment(date) })
+            .on('submit', (val) => {
+                writer.note.metadata.custom_date = val.unix() * 1000;
+                writer.hasTextChanged = true
+            });
+        picker.open();
         return false;
     }
     writer.nameTimout = undefined
@@ -725,14 +754,14 @@ Writer.prototype.init = function () {
         writer.nameTimout = setTimeout(function () {
             writer.seriesTaskExecutor.addTask(writer.saveNoteTask) // first, save.
             writer.seriesTaskExecutor.addTask(new RenameNoteTask(writer))
-            writer.nameTimout=undefined
+            writer.nameTimout = undefined
 
 
         }, 10000)
     })
 
     document.getElementById("name-input").addEventListener("focusout", function () {
-        if (writer.nameTimout != undefined){
+        if (writer.nameTimout != undefined) {
             clearTimeout(writer.nameTimout)
             writer.seriesTaskExecutor.addTask(writer.saveNoteTask) // first, save.
             writer.seriesTaskExecutor.addTask(new RenameNoteTask(writer))
@@ -741,8 +770,22 @@ Writer.prototype.init = function () {
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 }
 
+Writer.prototype.closeFullscreenMediaToolbar = function () {
+    var layout = document.getElementsByClassName("mdl-layout")[0]
+    if (!layout.classList.contains("mdl-layout--fixed-drawer")) {
+        document.getElementsByTagName("header")[0].style.zIndex = "3";
+        layout.classList.add("mdl-layout--fixed-drawer")
+        this.mediaToolbar.classList.remove("fullscreen-media-toolbar")
+        if (this.oDoc.innerText.trim() == "") {
+            //put focus
+            var elements = this.oDoc.getElementsByClassName("edit-zone");
+            this.placeCaretAtEnd(elements[elements.length - 1]);
+        }
+    }
+}
+
 Writer.prototype.toggleDrawer = function () {
-    if (document.getElementsByClassName("is-small-screen").length > 0)
+    if (document.getElementsByClassName("is-small-screen").length > 0 || /* close also on big screen when media toolbar is fullscreen */document.getElementsByClassName("mdl-layout--fixed-drawer").length == 0)
         document.getElementsByClassName("mdl-layout__drawer-button")[0].click()
 }
 
@@ -754,6 +797,7 @@ Writer.prototype.askToExit = function () {
         return false;
     }
     else {
+        this.closeFullscreenMediaToolbar()
         compatibility.exit();
     }
     return false;
@@ -879,8 +923,9 @@ Writer.prototype.reset = function () {
     //close all toolbars
     if (this.toolbarManager != undefined)
         this.toolbarManager.toggleToolbar(undefined)
-    if (writer.fullscreenViewer != undefined)
-        $(writer.fullscreenViewer).hide()
+    if (this.fullscreenViewer != undefined)
+        $(this.fullscreenViewer).hide()
+
 }
 
 Writer.prototype.putDefaultHTML = function () {
@@ -961,6 +1006,89 @@ Writer.prototype.getCaretPosition = function () {
     };
 }
 
+Writer.prototype.getCaretCharacterOffsetWithin = function (element) {
+    var caretOffset = 0;
+    if (typeof window.getSelection != "undefined") {
+        var range = window.getSelection().getRangeAt(0);
+        var preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        caretOffset = preCaretRange.toString().length;
+    } else if (typeof document.selection != "undefined" && document.selection.type != "Control") {
+        var textRange = document.selection.createRange();
+        var preCaretTextRange = document.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+}
+
+Writer.prototype.getWord = function (elem) {
+    var sel, word = "";
+    if (window.getSelection && (sel = window.getSelection()).modify) {
+        var selectedRange = sel.getRangeAt(0);
+        sel.collapseToStart();
+        sel.modify("move", "backward", "word");
+        console.log("pos " + this.getCaretCharacterOffsetWithin(elem))
+        var i = 0;
+        var lastPos = -1
+        if (this.getCaretCharacterOffsetWithin(elem) !== 0)
+            while (true) {
+                sel.modify("move", "backward", "character") + "mod";
+                sel.modify("extend", "forward", "character");
+                console.log(this.getCaretCharacterOffsetWithin(elem))
+                var tmpword = sel.toString();
+                var newPos = this.getCaretCharacterOffsetWithin(elem)
+                if (tmpword == " " || tmpword == "\n" || newPos == 1 || newPos == lastPos || i > 200) {
+                    break;
+                }
+                lastPos = newPos
+                sel.modify("move", "backward", "character");
+                i++;
+            }
+        sel.modify("extend", "forward", "word");
+        word = sel.toString();
+        while (true) {
+            sel.modify("extend", "forward", "character");
+            var tmpword = sel.toString();
+            if (tmpword.endsWith(" ") || tmpword.endsWith("\n") || tmpword == word) {
+                console.log("break1" + tmpword);
+                break;
+            }
+            word = tmpword;
+
+        }
+        // Restore selection
+        sel.removeAllRanges();
+        sel.addRange(selectedRange);
+    } else if ((sel = document.selection) && sel.type != "Control") {
+        var range = sel.createRange();
+        range.collapse(true);
+        range.expand("word");
+        word = range.text;
+    }
+    return word;
+}
+
+Writer.prototype.onEditableClick = function (event) {
+    var word = this.getWord(event.target)
+    var match = word.match(Utils.httpReg)
+    if (match) {
+        var data = {
+            actionText: $.i18n("open"),
+            actionHandler: function () {
+                const url = match[0];
+                compatibility.openUrl(url)
+            },
+            message: match[0].substr(0, 20) + "...",
+            timeout: 2000,
+        };
+        this.displaySnack(data);
+    }
+
+}
+
 var ToolbarManager = function () {
     this.toolbars = [];
 }
@@ -975,12 +1103,9 @@ ToolbarManager.prototype.toggleToolbar = function (elem) {
         if (toolbar != elem)
             $(toolbar).slideUp("fast", resetScreenHeight)
     }
-    if (elem != undefined && elem.id == "media-toolbar" && !$(elem).is(":visible"))
-        document.getElementsByTagName("header")[0].style.zIndex = "unset";
-    else
-        document.getElementsByTagName("header")[0].style.zIndex = 3;
+
     if (elem != undefined) {
-        if ($(elem).is(":visible")){
+        if ($(elem).is(":visible")) {
             $(elem).slideUp("fast", resetScreenHeight)
         }
         else
@@ -1086,6 +1211,28 @@ var SaveNoteTask = function (writer) {
 
 }
 SaveNoteTask.prototype.trySave = function (onEnd, trial) {
+    // /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/ 
+    //var re = /[-a-zA-Z0-9@:%_\+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi;
+    //var m;
+    var urls = this.writer.oEditor.innerText.match(Utils.httpReg)
+    if (urls == null)
+        urls = []
+    urls = urls.map(function (x) { return x.toLowerCase() })
+    if (this.writer.note.metadata.urls == undefined) {
+        this.writer.note.metadata.urls = {}
+    }
+    var currentUrls = Object.keys(this.writer.note.metadata.urls)
+    for (var url of urls) {
+        url = url.toLowerCase()
+        if (currentUrls.indexOf(url) < 0)
+            this.writer.note.metadata.urls[url] = {}
+    }
+
+    for (var url of currentUrls) {
+        if (urls.indexOf(url) < 0)
+            delete this.writer.note.metadata.urls[url]
+    }
+
     const task = this;
     if (this.writer.note.metadata.creation_date === "")
         this.writer.note.metadata.creation_date = Date.now();
@@ -1111,7 +1258,7 @@ SaveNoteTask.prototype.trySave = function (onEnd, trial) {
                 }, 1000)
             } else {
                 writer.displaySnack({
-                    message: 'An error occured, please save your text and check it is not open in another tab',
+                    message: $.i18n("error_save"),
                     timeout: 60000 * 300,
                 })
                 writer.setDoNotEdit(true)
@@ -1139,13 +1286,13 @@ function resetScreenHeight() {
     if (style.getPropertyValue('display') == "none")
         content = screen;
     $("#center").height(content);
-    $("#editor").height(content - 45);
-    $("#editor").scrollTop(lastscroll);
+    $("#editor").height(content - 45 - $("#media-toolbar").height());
+    $("#center").scrollTop(lastscroll);
     if (writer != undefined) {
         var diff = content - 45 - writer.getCaretPosition().y + header
         console.log(diff)
         if (diff < 0)
-            $("#editor").scrollTop(lastscroll - diff);
+            $("#center").scrollTop(lastscroll - diff);
     }
     console.log(content - 45)
 }
@@ -1166,8 +1313,8 @@ if (loaded == undefined)
 var writer = undefined;
 
 $(document).ready(function () {
-    rootpath = document.getElementById("root-url").innerHTML;
-    api_url = document.getElementById("api-url").innerHTML;
+    rootpath = document.getElementById("root-url").innerHTML.trim();
+    api_url = document.getElementById("api-url").innerHTML.trim();
 
     new RequestBuilder(api_url);
     RequestBuilder.sRequestBuilder.get("/settings/editor_css", function (error, data) {
@@ -1212,10 +1359,15 @@ $(document).ready(function () {
 
         loaded = true;
     }
-    window.oldOncontextmenu = window.oncontextmenu;
-    window.oncontextmenu = function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        return false;
-    };
+    /* window.oldOncontextmenu = window.oncontextmenu;
+     window.oncontextmenu = function (event) {
+         event.preventDefault();
+         event.stopPropagation();
+         return false;
+     };*/
+    compatibility.loadLang(function () {
+        $('body').i18n();
+    })
+    $.i18n().locale = navigator.language;
+
 });

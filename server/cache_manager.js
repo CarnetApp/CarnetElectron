@@ -1,40 +1,37 @@
 
 
-var CacheManager = function(){
+var CacheManager = function () {
     var SettingsHelper = require("../settings/settings_helper").SettingsHelper;
     this.settingsHelper = new SettingsHelper();
     this.cache = JSON.parse(this.settingsHelper.getMetadataCache());
-    for(var key in this.cache){
-        console.log("in cache "+key)
-    }
+
 }
 
 CacheManager.sCacheManager = undefined;
 
-CacheManager.getInstance = function(){
-    if(CacheManager.sCacheManager == undefined)
+CacheManager.getInstance = function () {
+    if (CacheManager.sCacheManager == undefined)
         CacheManager.sCacheManager = new CacheManager();
-    return CacheManager.sCacheManager 
+    return CacheManager.sCacheManager
 }
 
-CacheManager.prototype.get = function(path){
+CacheManager.prototype.get = function (path) {
     return this.cache[path]
 }
 
-CacheManager.prototype.remove = function(path){
+CacheManager.prototype.remove = function (path) {
     delete this.cache[path]
 }
 
-CacheManager.prototype.put = function(path, data){
+CacheManager.prototype.put = function (path, data) {
     this.cache[path] = data
-    console.log("added to cache "+path)
 }
 
-CacheManager.prototype.write = function(){
+CacheManager.prototype.write = function () {
     this.settingsHelper.setMetadataCache(JSON.stringify(this.cache))
 }
 
-CacheManager.getMTimeFromStat = function(stat){
+CacheManager.getMTimeFromStat = function (stat) {
     return stat.mtimeMs != undefined ? stat.mtimeMs / 1000 : new Date(stat.mtime).getTime() / 1000
 }
 

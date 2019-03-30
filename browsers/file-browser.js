@@ -14,7 +14,7 @@ FileBrowser.prototype.list = function (callback) {
 
     if (this.path == "recentdb://") {
         console.log("getting recent")
-        var db = new RecentDBManager()
+        var db = RecentDBManager.getInstance()
         db.getFlatenDB(function (err, flaten, pin) {
             console.log(JSON.stringify(flaten))
             var files = [];

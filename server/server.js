@@ -17,7 +17,7 @@ var currentcache = {}
 var previews = {}
 
 var handle = function (method, path, data, callback) {
-    console.logDebug(path)
+    console.logDebug(method + " " + path)
     var splitPath = path.split("?")
     var pathBeforeArgs = splitPath[0]
     if (splitPath[1] != undefined) {
@@ -29,6 +29,7 @@ var handle = function (method, path, data, callback) {
             args[decodeURIComponent(argSplit[0])] = decodeURIComponent(argSplit[1])
         }
     }
+
     if (method === "GET") {
         switch (pathBeforeArgs) {
             case "/notes/search":
@@ -47,6 +48,19 @@ var handle = function (method, path, data, callback) {
                 return;
             case "/settings/settings_css":
                 callback(false, settingsHelper.getSettingsCss())
+                return;
+            case "/settings/lang/json":
+                var lang = args["lang"]
+                if (lang.indexOf("../") !== -1)
+                    return;
+                fs.readFile(__dirname + '/../i18n/' + lang + ".json", 'utf8', function (err, data) {
+                    if (err) {
+                        callback(true, null)
+                        return;
+                    }
+
+                    callback(err, data)
+                })
                 return;
             case "/settings/changelog":
                 fs.readFile(__dirname + '/../CHANGELOG.md', 'utf8', function (err, data) {
@@ -113,33 +127,33 @@ var handle = function (method, path, data, callback) {
                     this.next()
                     return;
                 }
-                console.logDebug("get metadata "+step)
+                console.logDebug("get metadata " + step)
                 var stepCorrected = cleanPath(step)
                 var cached = CacheManager.getInstance().get(stepCorrected)
-                if(cached != undefined){
+                if (cached != undefined) {
                     handler.addResult(step, {
                         shorttext: cached.shorttext,
                         metadata: cached.metadata,
                         previews: cached.previews
                     })
                     handler.next();
-                    console.logDebug("from cache"+cached.shorttext)
+                    console.logDebug("from cache" + cached.shorttext)
                 } else {
                     console.logDebug("not from cache")
                     new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
                         if (text != undefined) {
                             handler.addResult(step, {
-                                shorttext: text.substr(0, text.length>200?200:text.length),
+                                shorttext: text.substr(0, text.length > 200 ? 200 : text.length),
                                 metadata: metadata,
                                 previews: previews
                             })
                         }
                         fs.stat(settingsHelper.getNotePath() + "/" + step, function (error, stats) {
-                            if(error)
+                            if (error)
                                 return;
                             CacheManager.getInstance().put(stepCorrected, {
                                 last_file_modification: CacheManager.getMTimeFromStat(stats),
-                                shorttext: text!=undefined ? text.substr(0, text.length>200?200:text.length):"",
+                                shorttext: text != undefined ? text.substr(0, text.length > 200 ? 200 : text.length) : "",
                                 metadata: metadata,
                                 previews: previews
                             })
@@ -367,7 +381,7 @@ var handle = function (method, path, data, callback) {
                     fs.unlink(getTmpPath() + "/note/data/preview_" + toDelete.substring(1) + ".jpg", function (e) {
                         console.logDebug(e)
                         console.logDebug(JSON.stringify(previews))
-                        if(!e)
+                        if (!e)
                             delete previews["preview_" + toDelete.substring(1) + ".jpg"]
 
                         saveNote(note, function () {
@@ -409,7 +423,7 @@ var addMedias = function (path, files, callback) {
             if (!err) {
                 Jimp.read(tmppath + 'data/' + file.name, (err, image) => {
                     if (!err) {
-                        image.scaleToFit(200, 200);
+                        image.scaleToFit(400, 400);
                         image.getBase64(Jimp.MIME_JPEG, function (err, base) {
                             previews['preview_' + file.name + ".jpg"] = base;
                             fs.writeFile(tmppath + 'data/preview_' + file.name + ".jpg", base.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
@@ -453,20 +467,20 @@ var saveTextToNote = function (path, html, metadata, callback) {
             }
             console.logDebug("compress")
             var text = textVersion(html)
-            currentcache.shorttext = text.substr(0, text.length>200?200:text.length)
+            currentcache.shorttext = text.substr(0, text.length > 200 ? 200 : text.length)
             currentcache.metadata = JSON.parse(metadata)
             saveNote(path, callback)
-            
+
         });
 
     });
 }
-var cleanPath = function(path){
-    if(path == undefined)
+var cleanPath = function (path) {
+    if (path == undefined)
         return undefined
-    if(path.startsWith("./"))
+    if (path.startsWith("./"))
         path = path.substr(2);
-    if(path.startsWith("/"))
+    if (path.startsWith("/"))
         path = path.substr(1)
     return path;
 }
@@ -478,13 +492,13 @@ var saveNote = function (path, callback) {
         console.logDebug("compressed")
         callback(false, "")
         fs.stat(settingsHelper.getNotePath() + "/" + path, function (error, stats) {
-            if(error)
+            if (error)
                 return;
-            if(path.startsWith("/"))
+            if (path.startsWith("/"))
                 path = path.substr(1)
             var pre = Object.values(previews)
             currentcache.previews = []
-            for (var i = 0; i<pre.length && i < 2; i++)
+            for (var i = 0; i < pre.length && i < 2; i++)
                 currentcache.previews.push(pre[i])
 
             currentcache.last_file_modification = CacheManager.getMTimeFromStat(stats)
@@ -509,7 +523,7 @@ var openNote = function (path, callback) {
             var result = {}
             result["id"] = 0;
             currentcache = CacheManager.getInstance().get(cleanPath(path))
-            if(currentcache == undefined)
+            if (currentcache == undefined)
                 currentcache = {}
             previews = expreviews
             console.logDebug("done " + noSuchFile)
@@ -521,7 +535,7 @@ var openNote = function (path, callback) {
                     }
                     result["html"] = data
                     var text = textVersion(data)
-                    currentcache.shorttext = text.substr(0, text.length>200?200:text.length)
+                    currentcache.shorttext = text.substr(0, text.length > 200 ? 200 : text.length)
                     fs.readFile(tmppath + 'metadata.json', 'utf8', function read(err, metadata) {
                         if (err) {
                             throw err;
