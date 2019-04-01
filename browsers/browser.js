@@ -482,11 +482,11 @@ function list(pathToList, discret) {
         if (!endOfSearch) {
             refreshTimeout = setTimeout(function () {
                 list(pathToList, files.length > 0);
-            }, 1000);
+            }, 4000);
         } else {
             refreshTimeout = setTimeout(function () {
                 list(pathToList, true);
-            }, 20000);
+            }, 60000);
         }
 
     });
