@@ -46,23 +46,25 @@ TextGetterTask.prototype.getNext = function () {
     var start = this.current;
     for (var i = start; i < this.stopAt && i < this.list.length && i - start < 20; i++) { //do it 20 by 20
         this.current = i + 1
-        if (!(this.list[i] instanceof Note))
+        if (!(this.list[i] instanceof Note) || !this.list[i].needsRefresh)
             continue;
         paths += this.list[i].path + ",";
         if (oldNotes[this.list[i].path] == undefined)
             oldNotes[this.list[i].path] = this.list[i];
     }
     var myTask = this;
-    RequestBuilder.sRequestBuilder.get("/metadata?paths=" + encodeURIComponent(paths), function (error, data) {
-        for (var meta in data) {
-            oldNotes[meta].metadata = data[meta].metadata != undefined ? data[meta].metadata : new NoteMetadata();
-            oldNotes[meta].text = data[meta].shorttext;
-            oldNotes[meta].previews = data[meta].previews;
-            noteCardViewGrid.updateNote(oldNotes[meta])
-            noteCardViewGrid.msnry.layout();
-        }
-        myTask.getNext();
-    });
+    if (paths.length > 0) {
+        RequestBuilder.sRequestBuilder.get("/metadata?paths=" + encodeURIComponent(paths), function (error, data) {
+            for (var meta in data) {
+                oldNotes[meta].metadata = data[meta].metadata != undefined ? data[meta].metadata : new NoteMetadata();
+                oldNotes[meta].text = data[meta].shorttext;
+                oldNotes[meta].previews = data[meta].previews;
+                noteCardViewGrid.updateNote(oldNotes[meta])
+                noteCardViewGrid.msnry.layout();
+            }
+            myTask.getNext();
+        });
+    } else myTask.getNext();
 }
 
 
@@ -376,7 +378,7 @@ function list(pathToList, discret) {
 
     }
     var fb = new FileBrowser(pathToList);
-    fb.list(function (files, endOfSearch) {
+    fb.list(function (files, endOfSearch, metadata) {
         if (endOfSearch || files.length > 0) {
             document.getElementById("page-content").style.display = "block";
             document.getElementById("note-loading-view").style.display = "none";
@@ -396,9 +398,9 @@ function list(pathToList, discret) {
             for (let file of files) {
                 var filename = getFilenameFromPath(file.path);
                 if (file.isFile && filename.endsWith(".sqd")) {
-                    var oldNote = oldNotes[file.path];
+                    var metadata = metadata != undefined ? metadata[file.path] : undefined;
 
-                    var noteTestTxt = new Note(stripExtensionFromName(filename), oldNote != undefined ? oldNote.text : "", file.path, oldNote != undefined ? oldNote.metadata : undefined, oldNote != undefined ? oldNote.previews : undefined);
+                    var noteTestTxt = new Note(stripExtensionFromName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined);
                     noteTestTxt.isPinned = file.isPinned
                     notes.push(noteTestTxt)
                 } else if (!file.isFile) {
@@ -686,6 +688,7 @@ registerWriterEvent("exit", function () {
             const index = notePath.indexOf(currentNotePath)
             currentTask.current = index
             currentTask.stopAt = index + 1;
+            currentTask.list[index].needsRefresh = true
             currentTask.startList()
         }
 

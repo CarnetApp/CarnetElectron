@@ -15,7 +15,7 @@ FileBrowser.prototype.list = function (callback) {
     if (this.path == "recentdb://") {
         console.log("getting recent")
         var db = RecentDBManager.getInstance()
-        db.getFlatenDB(function (err, flaten, pin) {
+        db.getFlatenDB(function (err, flaten, pin, metadata) {
             console.log(JSON.stringify(flaten))
             var files = [];
             for (let filePath of pin) {
@@ -33,7 +33,7 @@ FileBrowser.prototype.list = function (callback) {
                 file = new File(filePath, true, filename);
                 files.push(file)
             }
-            callback(files, true)
+            callback(files, true, metadata)
         })
     } else if (this.path.startsWith("keyword://")) {
         console.log("getting keyword")

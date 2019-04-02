@@ -54,7 +54,7 @@ RecentDBManager.prototype.getFlatenDB = function (callback) {
         RecentDBManager.getInstance().notPinned = flaten
         RecentDBManager.getInstance().pinned = pin;
         RecentDBManager.getInstance().lastDb = pin.concat(flaten)
-        callback(false, flaten, pin);
+        callback(false, flaten, pin, data["metadata"]);
     });
 }
 

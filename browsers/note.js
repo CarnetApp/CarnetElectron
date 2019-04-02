@@ -1,8 +1,9 @@
-var Note = function (title, text, path, metadata, previews) {
+var Note = function (title, text, path, metadata, previews, needsRefresh = false) {
     this.title = title;
     this.text = text;
     this.path = path;
     this.previews = previews;
+    this.needsRefresh = needsRefresh
     if (metadata == undefined) {
         this.metadata = new NoteMetadata();
         this.metadata.creation_date = Date.now();
