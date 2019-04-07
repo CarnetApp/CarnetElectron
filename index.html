@@ -130,6 +130,46 @@
                             sync
                         </i>
                     </button>
+                    <button class="mdl-button mdl-js-button mdl-button--icon" id="sort-button" style="margin-right:5px">
+                        <i class="material-icons">sort</i>
+                    </button>
+                    <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="sort-button">
+                        <li class="mdl-menu__item mdl-menu__item--full-bleed-divider">
+                            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="reversed-order">
+                                <input type="checkbox" id="reversed-order" class="mdl-checkbox__input sort-item">
+                                <span class="mdl-checkbox__label" style="position: absolute">Reversed order</span>
+                            </label>
+                        </li>
+                        <li class="mdl-menu__item">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="default-radio">
+                                <input type="radio" id="default-radio" name="sort-by"
+                                    class="mdl-radio__button sort-item" value="default">
+                                <span class="mdl-checkbox__label">Default</span>
+                            </label>
+                        </li>
+                        <li class="mdl-menu__item">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="creation-radio">
+                                <input type="radio" id="creation-radio" name="sort-by"
+                                    class="mdl-radio__button sort-item" value="creation">
+                                <span class="mdl-checkbox__label">Creation date</span>
+                            </label>
+                        </li>
+                        <li class="mdl-menu__item">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="modification-radio">
+                                <input type="radio" id="modification-radio" name="sort-by"
+                                    class="mdl-radio__button sort-item" value="modification">
+                                <span class="mdl-checkbox__label">Modification date</span>
+                            </label>
+                        </li>
+                        <li class="mdl-menu__item">
+                            <label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="custom-radio">
+                                <input type="radio" id="custom-radio" name="sort-by" class="mdl-radio__button sort-item"
+                                    value="custom">
+                                <span class="mdl-checkbox__label">Custom date</span>
+                            </label>
+                        </li>
+
+                    </ul>
                     <button class="mdl-button mdl-js-button mdl-button--icon" id="minus-button"
                         style="margin-right:5px">
                         <i class="material-icons">remove</i>

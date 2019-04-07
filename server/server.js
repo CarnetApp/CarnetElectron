@@ -3,7 +3,7 @@ var RecentDBManager = require('./recent/local_recent_db_manager').LocalRecentDBM
 var KeywordsDBManager = require('./keywords/keywords_db_manager').KeywordsDBManager;
 var CacheManager = require('./cache_manager').CacheManager;
 
-var SettingsHelper = require("../settings/settings_helper").SettingsHelper;
+var SettingsHelper = require("./settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
 var NoteOpener = require("./note/note-opener").NoteOpener;
 var NoteUtils = require("./note/NoteUtils").NoteUtils;

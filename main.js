@@ -8,7 +8,7 @@ const url = require('url')
 
 const Store = require('electron-store');
 const store = new Store();
-var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
+var SettingsHelper = require("./server/settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
 
 var uid = null;
@@ -171,7 +171,7 @@ exports.hideMainWindow = () => {
 }
 
 exports.getNotePath = function () {
-    var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
+    var SettingsHelper = require("./server/settings_helper").SettingsHelper;
     return new SettingsHelper().getNotePath();
 }
 var mergeListener

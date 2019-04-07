@@ -10,19 +10,11 @@ var currentNotePath = undefined
 var root_url = document.getElementById("root-url") != undefined ? document.getElementById("root-url").innerHTML : "";
 var api_url = document.getElementById("api-url").innerHTML !== "!API_URL" ? document.getElementById("api-url").innerHTML : "./";
 new RequestBuilder(api_url);
-/*const {
-    ipcRenderer,
-    remote,
-    app
-} = require('electron');*/
 const store = new Store();
 var noteCacheStr = String(store.get("note_cache"))
 if (noteCacheStr == "undefined")
     noteCacheStr = "{}"
-var oldNotes = JSON.parse(noteCacheStr);
-/*var main = remote.require("./main.js");
-var SettingsHelper = require("./settings/settings_helper").SettingsHelper
-var settingsHelper = new SettingsHelper()*/
+var cachedMetadata = JSON.parse(noteCacheStr);
 var TextGetterTask = function (list) {
     this.list = list;
     this.current = 0;
@@ -38,7 +30,7 @@ TextGetterTask.prototype.getNext = function () {
     console.log(this.current)
     if (this.current >= this.stopAt || this.current >= this.list.length) {
         console.log("save cache ")
-        store.set("note_cache", JSON.stringify(oldNotes))
+        store.set("note_cache", JSON.stringify(cachedMetadata))
         return;
     }
 
@@ -49,20 +41,20 @@ TextGetterTask.prototype.getNext = function () {
         if (!(this.list[i] instanceof Note) || !this.list[i].needsRefresh)
             continue;
         paths += this.list[i].path + ",";
-        if (oldNotes[this.list[i].path] == undefined)
-            oldNotes[this.list[i].path] = this.list[i];
+        if (cachedMetadata[this.list[i].path] == undefined)
+            cachedMetadata[this.list[i].path] = this.list[i];
     }
     var myTask = this;
     if (paths.length > 0) {
         RequestBuilder.sRequestBuilder.get("/metadata?paths=" + encodeURIComponent(paths), function (error, data) {
-            for (var meta in data) {
-                oldNotes[meta].metadata = data[meta].metadata != undefined ? data[meta].metadata : new NoteMetadata();
-                oldNotes[meta].text = data[meta].shorttext;
-                oldNotes[meta].previews = data[meta].previews;
-                noteCardViewGrid.updateNote(oldNotes[meta])
+            /*for (var meta in data) {
+                var note = new Note(stripExtensionFromName(getFilenameFromPath(meta)), data[meta].shorttext, meta, data[meta].metadata, data[meta].previews, false)
+                cachedMetadata[meta] = note
+                notes[notePath.indexOf(meta)] = note
+                noteCardViewGrid.updateNote(note)
                 noteCardViewGrid.msnry.layout();
             }
-            myTask.getNext();
+            myTask.getNext();*/
         });
     } else myTask.getNext();
 }
@@ -107,7 +99,6 @@ function openNote(notePath) {
             })
         }
     })
-    //window.location.assign("writer?path=" + encodeURIComponent(notePath));
 }
 
 var displaySnack = function (data) {
@@ -191,8 +182,6 @@ function resetGrid(discret) {
                 })
         }
         dontOpen = false;
-        // var reader = new Writer(note,"");
-        // reader.extractNote()
     })
 
 
@@ -350,6 +339,37 @@ var mNoteContextualDialog = new NoteContextualDialog()
 var mNewFolderDialog = new NewFolderDialog()
 
 var refreshTimeout = undefined;
+
+function sortBy(sortBy, reversed) {
+    console.oldlog("sort " + sortBy + "reversed " + reversed)
+    notePath = []
+    var sorter = Utils.sortByDefault
+    switch (sortBy) {
+        case "creation":
+            sorter = Utils.sortByCreationDate
+            break;
+        case "modification":
+            sorter = Utils.sortByModificationDate
+            break;
+        case "custom":
+            sorter = Utils.sortByCustomDate
+            break;
+    }
+    resetGrid(false);
+    notes.sort(reversed ? function (a, b) {
+        return -sorter(a, b);
+    } : sorter)
+
+    for (var item of notes) {
+        notePath.push(item.path)
+    }
+    noteCardViewGrid.setNotesAndFolders(notes)
+    currentTask = new TextGetterTask(notes);
+    console.log("stopping and starting task")
+    currentTask.startList();
+
+}
+var notes = [];
 function list(pathToList, discret) {
     if (refreshTimeout !== undefined)
         clearTimeout(refreshTimeout)
@@ -378,7 +398,7 @@ function list(pathToList, discret) {
 
     }
     var fb = new FileBrowser(pathToList);
-    fb.list(function (files, endOfSearch, metadata) {
+    fb.list(function (files, endOfSearch, metadatas) {
         if (endOfSearch || files.length > 0) {
             document.getElementById("page-content").style.display = "block";
             document.getElementById("note-loading-view").style.display = "none";
@@ -387,7 +407,7 @@ function list(pathToList, discret) {
             var scroll = resetGrid(discret);
             oldFiles = files;
             var noteCardViewGrid = this.noteCardViewGrid
-            var notes = [];
+            notes = [];
             notePath = [];
             if (currentTask != undefined)
                 currentTask.continue = false
@@ -395,19 +415,21 @@ function list(pathToList, discret) {
                 $("#emty-view").fadeOut("fast");
             } else if (endOfSearch)
                 $("#emty-view").fadeIn("fast");
+            var i = 0
             for (let file of files) {
                 var filename = getFilenameFromPath(file.path);
                 if (file.isFile && filename.endsWith(".sqd")) {
-                    var metadata = metadata != undefined ? metadata[file.path] : undefined;
-
+                    let metadata = metadatas != undefined ? metadatas[file.path] : undefined;
+                    console.oldlog("jfkjkfjk is " + (metadata != undefined))
                     var noteTestTxt = new Note(stripExtensionFromName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined);
                     noteTestTxt.isPinned = file.isPinned
+                    noteTestTxt.originalIndex = i;
                     notes.push(noteTestTxt)
                 } else if (!file.isFile) {
-
+                    file.originalIndex = i;
                     notes.push(file)
                 }
-                notePath.push(file.path)
+                i++
             }
 
             if (files.length == 0 && pathToList === "recentdb://") {
@@ -471,15 +493,13 @@ function list(pathToList, discret) {
                 notes.push(noteTestTxt)
 
             }
-            noteCardViewGrid.setNotesAndFolders(notes)
+            sortBy(lastSortBy, lastReversed);
             if (discret) {
                 document.getElementById("grid-container").scrollTop = scroll;
                 console.log("scroll : " + scroll)
 
             }
-            currentTask = new TextGetterTask(notes);
-            console.log("stopping and starting task")
-            currentTask.startList();
+
         }
         if (!endOfSearch) {
             refreshTimeout = setTimeout(function () {
@@ -797,10 +817,22 @@ console.log = function (m) {
 }
 
 
-
+var lastSortBy = "default"
+var lastReversed = false
 compatibility.loadLang(function () {
     $('body').i18n();
     list(initPath)
 })
 
 $.i18n().locale = navigator.language;
+$(".sort-item").click(function () {
+    var radioValue = $("input[name='sort-by']:checked").val();
+
+    if (radioValue) {
+        console.oldlog("document.getElementById(reversed-order).checked " + document.getElementById("reversed-order").checked)
+        sortBy(radioValue, document.getElementById("reversed-order").checked)
+    }
+
+});
+
+

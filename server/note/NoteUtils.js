@@ -1,4 +1,4 @@
-var SettingsHelper = require("../../settings/settings_helper").SettingsHelper;
+var SettingsHelper = require("../settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
 var RecentDBManager = require('../recent/local_recent_db_manager').LocalRecentDBManager;
 

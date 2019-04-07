@@ -1,7 +1,7 @@
 
 
 var CacheManager = function () {
-    var SettingsHelper = require("../settings/settings_helper").SettingsHelper;
+    var SettingsHelper = require("./settings_helper").SettingsHelper;
     this.settingsHelper = new SettingsHelper();
     this.cache = JSON.parse(this.settingsHelper.getMetadataCache());
 

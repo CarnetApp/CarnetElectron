@@ -76,7 +76,7 @@ class BrowserCompatibility extends Compatibility {
                         win.setMenu(null)
                     }
                 }
-                var SettingsHelper = require("./settings/settings_helper").SettingsHelper;
+                var SettingsHelper = require("./server/settings_helper").SettingsHelper;
                 var settingsHelper = new SettingsHelper();
                 if (settingsHelper.displayFrame()) {
                     document.getElementById("minus-button").style.display = "none"
