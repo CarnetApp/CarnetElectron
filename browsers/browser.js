@@ -47,14 +47,14 @@ TextGetterTask.prototype.getNext = function () {
     var myTask = this;
     if (paths.length > 0) {
         RequestBuilder.sRequestBuilder.get("/metadata?paths=" + encodeURIComponent(paths), function (error, data) {
-            /*for (var meta in data) {
+            for (var meta in data) {
                 var note = new Note(stripExtensionFromName(getFilenameFromPath(meta)), data[meta].shorttext, meta, data[meta].metadata, data[meta].previews, false)
                 cachedMetadata[meta] = note
                 notes[notePath.indexOf(meta)] = note
                 noteCardViewGrid.updateNote(note)
                 noteCardViewGrid.msnry.layout();
             }
-            myTask.getNext();*/
+            myTask.getNext();
         });
     } else myTask.getNext();
 }
@@ -143,9 +143,11 @@ function refreshKeywords() {
 function searchInNotes(searching) {
     resetGrid(false)
     notes = [];
+    document.getElementById("note-loading-view").style.display = "inline";
 
     RequestBuilder.sRequestBuilder.get("/notes/search?path=." + "&query=" + encodeURIComponent(searching), function (error, data) {
         if (!error) {
+
             list("search://", true);
         }
     });
