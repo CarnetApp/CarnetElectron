@@ -59,5 +59,10 @@
     "fake_note_todo_item_1": "Carnet ausprobieren",
     "fake_note_todo_item_2": "Carnet teilen",
     "fake_notes_warning": "Diese Notizen können nicht bearbeitet werden",
-    "unarchive": "Aus Archiv entpacken"
+    "unarchive": "Aus Archiv entpacken",
+    "sort_reversed": "Reihenfolge umkehren",
+    "sort_default": "Standard",
+    "sort_creation_date": "Erstellungsdatum",
+    "sort_modification_date": "Änderungsdatum",
+    "sort_custom_date": "Benutzerdefiniertes Datum"
 }
