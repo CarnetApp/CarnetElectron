@@ -831,7 +831,6 @@ $(".sort-item").click(function () {
     var radioValue = $("input[name='sort-by']:checked").val();
 
     if (radioValue) {
-        console.oldlog("document.getElementById(reversed-order).checked " + document.getElementById("reversed-order").checked)
         sortBy(radioValue, document.getElementById("reversed-order").checked)
     }
 
