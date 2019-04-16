@@ -343,6 +343,8 @@ var mNewFolderDialog = new NewFolderDialog()
 var refreshTimeout = undefined;
 
 function sortBy(sortBy, reversed) {
+    lastSortBy = sortBy
+    lastReversed = reversed
     console.oldlog("sort " + sortBy + "reversed " + reversed)
     notePath = []
     var sorter = Utils.sortByDefault
