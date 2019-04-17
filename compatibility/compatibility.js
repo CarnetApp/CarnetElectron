@@ -25,7 +25,7 @@ class Compatibility {
     }
 
     loadLang(callback) {
-        var langs = ["en", "fr", "de"];
+        var langs = ["en", "fr", "de", "ru", "nl", "cs", "sk"];
         var toLoad = {}
 
         for (var lang of langs) {
