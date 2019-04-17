@@ -508,7 +508,7 @@ function list(pathToList, discret) {
         if (!endOfSearch) {
             refreshTimeout = setTimeout(function () {
                 list(pathToList, files.length > 0);
-            }, 4000);
+            }, 1000);
         } else {
             refreshTimeout = setTimeout(function () {
                 list(pathToList, true);
