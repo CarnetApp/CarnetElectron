@@ -270,8 +270,10 @@ Writer.prototype.extractNote = function () {
         console.log(data)
         writer.saveID = data.id;
         writer.fillWriter(data.html)
-        if (data.metadata == null)
+        if (data.metadata == null){
+            writer.note.is_not_created = true;
             writer.note.metadata = new NoteMetadata();
+        }
         else
             writer.note.metadata = data.metadata;
         writer.manager = new TodoListManager(document.getElementById("text"))
@@ -300,16 +302,20 @@ Writer.prototype.extractNote = function () {
     });
 }
 
-var saveTextIfChanged = function () {
+var saveTextIfChanged = function (onSaved) {
     console.log("has text changed ? " + writer.hasTextChanged)
-    if (writer.hasTextChanged)
+    if (writer.hasTextChanged){
         writer.seriesTaskExecutor.addTask(writer.saveNoteTask, function(){
             console.log("exitOnSaved "+writer.exitOnSaved)
+            writer.note.is_not_created = false
             if(writer.exitOnSaved){
                 writer.exitOnSaved = false
                 writer.askToExit()
             }
+            if(onSaved!=undefined)
+                onSaved()
         })
+    }
     else if (writer.exitOnSaved) {
     /*    writer.exitOnSaved = false
         writer.askToExit()*/
@@ -526,7 +532,16 @@ Writer.prototype.init = function () {
 
     document.execCommand('styleWithCSS', false, true);
     document.getElementById("input_file").onchange = function () {
-        writer.sendFiles(this.files);
+        var input = this;
+        if(writer.note.is_not_created){
+            writer.hasTextChanged = true
+            //first we need to create it
+            saveTextIfChanged(function(){
+                writer.sendFiles(input.files);
+            })
+        } else{
+            writer.sendFiles(this.files);
+        }
     }
     this.statsDialog = this.elem.querySelector('#statsdialog');
     this.showDialogButton = this.elem.querySelector('#show-dialog');
