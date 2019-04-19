@@ -63,7 +63,7 @@ FileBrowser.prototype.list = function (callback) {
             var dirs_in = [];
             var files_in = [];
             var endOfSearch = !fbrowser.path.startsWith("search://");
-            for (let node of data) {
+            for (let node of data['files']) {
                 console.log(node);
                 if (node == "end_of_search") {
                     endOfSearch = true;
@@ -80,7 +80,7 @@ FileBrowser.prototype.list = function (callback) {
             }
             files = files.concat(dirs_in)
             files = files.concat(files_in)
-            callback(files, endOfSearch)
+            callback(files, endOfSearch, data['metadata'])
 
         });
 

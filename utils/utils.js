@@ -16,6 +16,8 @@ Utils.sortByDefault = function (a, b) {
 }
 
 Utils.sortByCreationDate = function (a, b) {
+    if(a.metadata == undefined || b.metadata == undefined)
+        return a.originalIndex < b.originalIndex ? -1 : 1
     var dateA = a.metadata.last_modification_date
     if (a.metadata.creation_date != undefined && a.metadata.creation_date !== "") {
         dateA = a.metadata.creation_date
