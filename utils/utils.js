@@ -30,6 +30,8 @@ Utils.sortByCreationDate = function (a, b) {
 }
 
 Utils.sortByCustomDate = function (a, b) {
+    if(a.metadata == undefined || b.metadata == undefined)
+        return a.originalIndex < b.originalIndex ? -1 : 1
     var dateA = a.metadata.custom_date
     if (dateA == undefined || dateA == "") {
         dateA = a.metadata.creation_date
@@ -48,6 +50,8 @@ Utils.sortByCustomDate = function (a, b) {
 }
 
 Utils.sortByModificationDate = function (a, b) {
+    if(a.metadata == undefined || b.metadata == undefined)
+        return a.originalIndex < b.originalIndex ? -1 : 1
     var dateA = a.metadata.creation_date
     if (a.metadata.last_modification_date != undefined) {
         dateA = a.metadata.last_modification_date
