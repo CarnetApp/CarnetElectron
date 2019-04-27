@@ -751,6 +751,12 @@ Writer.prototype.init = function () {
         writer.toggleDrawer();
         writer.askToExit();
     }
+
+    document.getElementById("reminders-button").onclick = function () {
+        document.getElementById("reminders").showModal()
+        return false;
+    }
+
     document.getElementById("add-file-button").onclick = function () {
         writer.addMedia();
     }
