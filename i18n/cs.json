@@ -62,7 +62,7 @@
     "print_creation_date": "Vytisknout datum vytvoření",
     "error_save": "Vyskytla se chyba. Uložte prosím váš text a zkontrolujte, jestli není otevřen v jiné záložce",
     "not_yet_implemented": "Zatím neimplementováno",
-    "open": "",
+    "open": "Otevřít",
     "date_time": "Datum a čas",
     "media_empty_text": "Pro přidání obrázků/zvuků použijte tlačítko +"
 }
