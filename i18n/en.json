@@ -70,5 +70,12 @@
     "once-a-year": "Once a year",
     "days-of-week": "Days of week",
     "once": "Once",
-    "frequency": "Frequency"
+    "frequency": "Frequency",
+    "monday": "Monday",
+    "tuesday": "Tuesday",
+    "wednesday": "Wednesday",
+    "thursday": "Thursday",
+    "friday": "Friday",
+    "saturday": "Saturday",
+    "sunday": "Sunday"
 }

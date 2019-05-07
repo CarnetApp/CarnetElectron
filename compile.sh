@@ -24,6 +24,9 @@ if [ "$1" == "android" ]; then
     cp libs/moment.js dist/build/libs/
     cp reader/libs/material-datetime-picker.js dist/build/reader/libs/
     cp reader/libs/rome.standalone.js dist/build/reader/libs/
+    cp reader/reminders.js dist/build/reader/
+
+    cp libs/polyfill.js dist/build/libs/
 
     cp reader/libs/Countable.js dist/build/reader/libs/
     rm "$2"/app/src/main/assets/reader  -R

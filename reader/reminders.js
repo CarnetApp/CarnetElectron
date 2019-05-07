@@ -1,6 +1,25 @@
+var RemindersUtils = function(){
+
+}
+
+/*
+    This method translates an absolute UTC timestamp and translates it to locale TS
+
+    16:20 in UK will remain 16:20 in China
+*/
+
+RemindersUtils.translateTimeToLocalTime = function(timestamp){
+    var dUtc = new Date(timestamp);
+    var d = new Date();
+    d.setHours(dUtc.getUTCHours())
+    d.setMinutes(dUtc.getUTCMinutes())
+    return d.getTime()
+}
+
 var RemindersDialog = function (element, reminders) {
     this.dialog = element
     this.dialog.getElementsByClassName("mdl-dialog__content")[0].innerHTML = ""
+    if(reminders != undefined)
     for(var reminder of reminders){
         this.addItem(reminder)
     }
@@ -17,7 +36,8 @@ RemindersDialog.prototype.addItem = function (reminder) {
     var time = document.createElement("span")
     time.classList.add("hour")
 
-    var d = new Date(reminder.time);
+    var d = new Date(RemindersUtils.translateTimeToLocalTime(reminder.time));
+
     time.innerHTML = d.toLocaleTimeString();
     reminderDiv.appendChild(time)
 
@@ -33,7 +53,13 @@ RemindersDialog.prototype.addItem = function (reminder) {
     else {
         var date = document.createElement("span")
         date.classList.add("date")
-        d = new Date(reminder.date);
+        d = new Date();
+        d.setFullYear(reminder.year)
+        d.setDate(reminder.dayOfMonth)
+        d.setMonth(reminder.month-1)
+        d.setHours(0)
+        d.setMinutes(0)
+        d.setSeconds(0)
         date.innerHTML = d.toLocaleDateString();
 
         var frequency = document.createElement("frequency")
@@ -44,7 +70,13 @@ RemindersDialog.prototype.addItem = function (reminder) {
 
     }
 
-    
+    var remindersManager = this;
+
+    reminderDiv.onclick = function(){
+        var reminderItemDialog = new ReminderItemDialog(document.getElementById("reminder-item"), reminder)
+        reminderItemDialog.dialog.showModal()
+        remindersManager.dialog.close()
+    }
     this.dialog.getElementsByClassName("mdl-dialog__content")[0].appendChild(reminderDiv)
 
 }
@@ -56,10 +88,22 @@ var ReminderItemDialog = function (element, reminder) {
     if(reminder == undefined){
         this.reminder = {}
         this.reminder.frequency = "once"
-        this.reminder.time = new Date().getTime()
+        this.reminder.dayOfMonth = new Date().getDate()
+        this.reminder.month = new Date().getMonth()+1
+        this.reminder.year = new Date().getFullYear()
         this.reminder.date = new Date().getTime()
+        this.reminder.time = new Date().getTime()
         this.reminder.id = Utils.generateUID();
 
+    } else if (this.reminder.frequency !== "days-of-week"){
+        var d = new Date()
+        d.setFullYear(this.reminder.year)
+        d.setDate(this.reminder.dayOfMonth)
+        d.setMonth(this.reminder.month-1)
+        d.setHours(0)
+        d.setMinutes(0)
+        d.setSeconds(0)
+        this.reminder.date = d.getTime()
     }
 
     var itemDialog = this
@@ -107,6 +151,8 @@ var ReminderItemDialog = function (element, reminder) {
             itemDialog.dialog.close()
             if(itemDialog.reminder != undefined){
                 var i = 0;
+                if(writer.note.metadata.reminders == undefined)
+                    writer.note.metadata.reminders = []
                 for(var reminder of writer.note.metadata.reminders){
                     if(itemDialog.reminder.id == reminder.id){
                         writer.note.metadata.reminders.splice(i, 1);
@@ -139,7 +185,8 @@ var ReminderItemDialog = function (element, reminder) {
 
         }
     }
-    this.setTime(this.reminder.time)
+   
+    this.setTime(emindersUtils.translateTimeToLocalTime(reminder.time))
     this.setDate(this.reminder.date)
     this.setFrequency(this.reminder.frequency)
 }
@@ -175,12 +222,12 @@ ReminderItemDialog.prototype.onFrequencyChanged = function () {
     }
 }
 
+
 ReminderItemDialog.prototype.setDate = function (date) {
     var d = new Date(date);
-    d.setHours(0)
-    d.setMinutes(0)
-    d.setSeconds(0)
-    d.setMilliseconds(0)
+    this.dayOfMonth = d.getDate()
+    this.month = d.getMonth()+1
+    this.year = d.getFullYear()
 
     this.date = d.getTime();
     document.getElementById("date").value = d.toLocaleDateString();
@@ -188,10 +235,9 @@ ReminderItemDialog.prototype.setDate = function (date) {
 
 ReminderItemDialog.prototype.setTime = function (time) {
     var d = new Date(time);
-    d.setYear(0)
-    d.setMonth(0)
-    d.setDate(0)
-    this.time = d.getTime();
+    
+    this.time = d.getHours()*60*60*1000 + d.getMinutes()*60*1000;
+    console.log("set time to "+this.time)
     document.getElementById("time").value = d.toLocaleTimeString();
 }
 

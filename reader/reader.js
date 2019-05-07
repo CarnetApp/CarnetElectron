@@ -753,7 +753,8 @@ Writer.prototype.init = function () {
     }
 
     document.getElementById("reminders-button").onclick = function () {
-        document.getElementById("reminders").showModal()
+        var remindersDialog = new RemindersDialog(document.getElementById("reminders"), writer.note.metadata.reminders)
+        remindersDialog.dialog.showModal()
         return false;
     }
 
