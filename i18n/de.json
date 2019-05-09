@@ -70,5 +70,12 @@
     "once-a-year": "Jährlich",
     "days-of-week": "Tage der Woche",
     "once": "Einmalig",
-    "frequency": "Häufigkeit"
+    "frequency": "Häufigkeit",
+    "monday": "Montag",
+    "tuesday": "Dienstag",
+    "wednesday": "Mittwoch",
+    "thursday": "Donnerstag",
+    "friday": "Freitag",
+    "saturday": "Samstag",
+    "sunday": "Sonntag"
 }
