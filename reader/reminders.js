@@ -1,4 +1,4 @@
-var RemindersUtils = function(){
+var RemindersUtils = function () {
 
 }
 
@@ -8,7 +8,7 @@ var RemindersUtils = function(){
     16:20 in UK will remain 16:20 in China
 */
 
-RemindersUtils.translateTimeToLocalTime = function(timestamp){
+RemindersUtils.translateTimeToLocalTime = function (timestamp) {
     var dUtc = new Date(timestamp);
     var d = new Date();
     d.setHours(dUtc.getUTCHours())
@@ -19,11 +19,11 @@ RemindersUtils.translateTimeToLocalTime = function(timestamp){
 var RemindersDialog = function (element, reminders) {
     this.dialog = element
     this.dialog.getElementsByClassName("mdl-dialog__content")[0].innerHTML = ""
-    if(reminders != undefined)
-    for(var reminder of reminders){
-        this.addItem(reminder)
-    }
-    this.dialog.getElementsByClassName("add")[0].onclick = function(){
+    if (reminders != undefined)
+        for (var reminder of reminders) {
+            this.addItem(reminder)
+        }
+    this.dialog.getElementsByClassName("add")[0].onclick = function () {
         element.close()
         var reminderItemDialog = new ReminderItemDialog(document.getElementById("reminder-item"))
         reminderItemDialog.dialog.showModal()
@@ -41,12 +41,12 @@ RemindersDialog.prototype.addItem = function (reminder) {
     time.innerHTML = d.toLocaleTimeString();
     reminderDiv.appendChild(time)
 
-    if(reminder.frequency== "days-of-week"){
+    if (reminder.frequency == "days-of-week") {
 
-        for(var day of reminder.days){
+        for (var day of reminder.days) {
             var dayDiv = document.createElement("span")
             dayDiv.classList.add("day")
-            dayDiv.innerHTML = $.i18n(day)+" ";
+            dayDiv.innerHTML = $.i18n(day) + " ";
             reminderDiv.appendChild(dayDiv)
         }
     }
@@ -56,7 +56,7 @@ RemindersDialog.prototype.addItem = function (reminder) {
         d = new Date();
         d.setFullYear(reminder.year)
         d.setDate(reminder.dayOfMonth)
-        d.setMonth(reminder.month-1)
+        d.setMonth(reminder.month - 1)
         d.setHours(0)
         d.setMinutes(0)
         d.setSeconds(0)
@@ -72,7 +72,7 @@ RemindersDialog.prototype.addItem = function (reminder) {
 
     var remindersManager = this;
 
-    reminderDiv.onclick = function(){
+    reminderDiv.onclick = function () {
         var reminderItemDialog = new ReminderItemDialog(document.getElementById("reminder-item"), reminder)
         reminderItemDialog.dialog.showModal()
         remindersManager.dialog.close()
@@ -85,21 +85,21 @@ RemindersDialog.prototype.addItem = function (reminder) {
 var ReminderItemDialog = function (element, reminder) {
     this.dialog = element;
     this.reminder = reminder;
-    if(reminder == undefined){
+    if (reminder == undefined) {
         this.reminder = {}
         this.reminder.frequency = "once"
         this.reminder.dayOfMonth = new Date().getDate()
-        this.reminder.month = new Date().getMonth()+1
+        this.reminder.month = new Date().getMonth() + 1
         this.reminder.year = new Date().getFullYear()
         this.reminder.date = new Date().getTime()
         this.reminder.time = new Date().getTime()
         this.reminder.id = Utils.generateUID();
 
-    } else if (this.reminder.frequency !== "days-of-week"){
+    } else if (this.reminder.frequency !== "days-of-week") {
         var d = new Date()
         d.setFullYear(this.reminder.year)
         d.setDate(this.reminder.dayOfMonth)
-        d.setMonth(this.reminder.month-1)
+        d.setMonth(this.reminder.month - 1)
         d.setHours(0)
         d.setMinutes(0)
         d.setSeconds(0)
@@ -147,23 +147,23 @@ var ReminderItemDialog = function (element, reminder) {
     }
     this.okButton = element.getElementsByClassName("ok")[0]
     this.okButton.onclick = function () {
-        if (itemDialog.getFrequency() != undefined && itemDialog.getFrequency().length > 0){
+        if (itemDialog.getFrequency() != undefined && itemDialog.getFrequency().length > 0) {
             itemDialog.dialog.close()
-            if(itemDialog.reminder != undefined){
+            if (itemDialog.reminder != undefined) {
                 var i = 0;
-                if(writer.note.metadata.reminders == undefined)
+                if (writer.note.metadata.reminders == undefined)
                     writer.note.metadata.reminders = []
-                for(var reminder of writer.note.metadata.reminders){
-                    if(itemDialog.reminder.id == reminder.id){
+                for (var reminder of writer.note.metadata.reminders) {
+                    if (itemDialog.reminder.id == reminder.id) {
                         writer.note.metadata.reminders.splice(i, 1);
                     }
                     i++;
                 }
             }
             itemDialog.reminder.frequency = itemDialog.getFrequency()
-            if(itemDialog.reminder.frequency == "days-of-week")
+            if (itemDialog.reminder.frequency == "days-of-week")
                 itemDialog.reminder.days = itemDialog.getDays();
-            else   
+            else
                 itemDialog.reminder.date = itemDialog.date;
             itemDialog.reminder.time = itemDialog.time
             if (writer.note.metadata.reminders == undefined)
@@ -181,26 +181,26 @@ var ReminderItemDialog = function (element, reminder) {
     for (var opt of this.frequencyContainer.getElementsByClassName('mdl-menu__item')) {
         opt.onclick = function (event) {
             itemDialog.setFrequency(event.target.getAttribute("data-val"))
-            
+
 
         }
     }
-   
-    this.setTime(emindersUtils.translateTimeToLocalTime(reminder.time))
+
+    this.setTime(RemindersUtils.translateTimeToLocalTime(this.reminder.time))
     this.setDate(this.reminder.date)
     this.setFrequency(this.reminder.frequency)
 }
-ReminderItemDialog.prototype.getDays = function(){
+ReminderItemDialog.prototype.getDays = function () {
     var days = []
-    for(var day of document.getElementsByName("days[]")){
-        console.log(day.value + " "+ day.checked)
-        if(day.checked)
+    for (var day of document.getElementsByName("days[]")) {
+        console.log(day.value + " " + day.checked)
+        if (day.checked)
             days.push(day.value)
     }
     return days
 
 }
-ReminderItemDialog.prototype.setFrequency = function (freq){
+ReminderItemDialog.prototype.setFrequency = function (freq) {
     this.frequencyValueInput.value = freq
     this.frequencyInput.value = $.i18n(freq)
     this.onFrequencyChanged();
@@ -226,7 +226,7 @@ ReminderItemDialog.prototype.onFrequencyChanged = function () {
 ReminderItemDialog.prototype.setDate = function (date) {
     var d = new Date(date);
     this.dayOfMonth = d.getDate()
-    this.month = d.getMonth()+1
+    this.month = d.getMonth() + 1
     this.year = d.getFullYear()
 
     this.date = d.getTime();
@@ -235,9 +235,9 @@ ReminderItemDialog.prototype.setDate = function (date) {
 
 ReminderItemDialog.prototype.setTime = function (time) {
     var d = new Date(time);
-    
-    this.time = d.getHours()*60*60*1000 + d.getMinutes()*60*1000;
-    console.log("set time to "+this.time)
+
+    this.time = d.getHours() * 60 * 60 * 1000 + d.getMinutes() * 60 * 1000;
+    console.log("set time to " + this.time)
     document.getElementById("time").value = d.toLocaleTimeString();
 }
 
