@@ -28,6 +28,9 @@ var RemindersDialog = function (element, reminders) {
         var reminderItemDialog = new ReminderItemDialog(document.getElementById("reminder-item"))
         reminderItemDialog.dialog.showModal()
     }
+    this.dialog.getElementsByClassName("close")[0].onclick = function () {
+        element.close()
+    }
 }
 
 RemindersDialog.prototype.addItem = function (reminder) {
