@@ -236,16 +236,3 @@ ReminderItemDialog.prototype.setTime = function (time) {
     var date = new Date(time)
     document.getElementById("reminder-time-picker").value = ("0" + date.getUTCHours()).slice(-2) + ":" + ("0" + date.getMinutes()).slice(-2);//cheat to have two digits
 }
-
-$(document).ready(
-    function () {
-        setTimeout(function () {
-            //var reminderItemDialog = new ReminderItemDialog(document.getElementById("reminder-item"))
-            //reminderItemDialog.dialog.showModal()
-
-            var remindersDialog = new RemindersDialog(document.getElementById("reminders"), writer.note.metadata.reminders)
-            remindersDialog.dialog.showModal()
-        }, 3000)
-
-    })
-
