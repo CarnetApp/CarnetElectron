@@ -304,21 +304,21 @@ Writer.prototype.extractNote = function () {
 
 var saveTextIfChanged = function (onSaved) {
     console.log("has text changed ? " + writer.hasTextChanged)
-    if (writer.hasTextChanged){
-        writer.seriesTaskExecutor.addTask(writer.saveNoteTask, function(){
-            console.log("exitOnSaved "+writer.exitOnSaved)
+    if (writer.hasTextChanged) {
+        writer.seriesTaskExecutor.addTask(writer.saveNoteTask, function () {
+            console.log("exitOnSaved " + writer.exitOnSaved)
             writer.note.is_not_created = false
-            if(writer.exitOnSaved){
+            if (writer.exitOnSaved) {
                 writer.exitOnSaved = false
                 writer.askToExit()
             }
-            if(onSaved!=undefined)
+            if (onSaved != undefined)
                 onSaved()
         })
     }
     else if (writer.exitOnSaved) {
-    /*    writer.exitOnSaved = false
-        writer.askToExit()*/
+        /*    writer.exitOnSaved = false
+            writer.askToExit()*/
     }
     else {
         writer.setNextSaveTask();
@@ -326,8 +326,8 @@ var saveTextIfChanged = function (onSaved) {
     writer.hasTextChanged = false;
 }
 
-Writer.prototype.setNextSaveTask = function(){
-    setTimeout(saveTextIfChanged, 4000);
+Writer.prototype.setNextSaveTask = function () {
+    this.lastSavedTimeout = setTimeout(saveTextIfChanged, 4000);
 }
 
 Writer.prototype.createEditableZone = function () {
@@ -414,7 +414,7 @@ Writer.prototype.fillWriter = function (extractedHTML) {
 
 
 
-    this.saveInterval = setTimeout(saveTextIfChanged, 4000);
+    this.lastSavedTimeout = setTimeout(saveTextIfChanged, 4000);
     this.sDefTxt = this.oDoc.innerHTML;
     /*simple initialization*/
     this.oDoc.focus();
@@ -533,13 +533,13 @@ Writer.prototype.init = function () {
     document.execCommand('styleWithCSS', false, true);
     document.getElementById("input_file").onchange = function () {
         var input = this;
-        if(writer.note.is_not_created){
+        if (writer.note.is_not_created) {
             writer.hasTextChanged = true
             //first we need to create it
-            saveTextIfChanged(function(){
+            saveTextIfChanged(function () {
                 writer.sendFiles(input.files);
             })
-        } else{
+        } else {
             writer.sendFiles(this.files);
         }
     }
@@ -829,12 +829,16 @@ Writer.prototype.askToExit = function () {
     console.log("exec? " + this.seriesTaskExecutor.isExecuting)
     if (this.seriesTaskExecutor.isExecuting || this.hasTextChanged) {
         this.exitOnSaved = true;
-        if(this.hasTextChanged){
+        if (this.hasTextChanged) {
             saveTextIfChanged()
         }
         return false;
     }
     else {
+        if (this.lastSavedTimeout != undefined) {
+            clearTimeout(this.lastSavedTimeout)
+            this.lastSavedTimeout = undefined
+        }
         this.closeFullscreenMediaToolbar()
         compatibility.exit();
     }
@@ -943,8 +947,6 @@ Writer.prototype.removeKeyword = function (word) {
 
 Writer.prototype.reset = function () {
     this.exitOnSaved = false
-    if (this.saveInterval !== undefined)
-        clearInterval(this.saveInterval)
     this.putDefaultHTML()
 
     var dias = document.getElementsByClassName("mdl-dialog")
@@ -1234,12 +1236,12 @@ SeriesTaskExecutor.prototype.execNext = function () {
     console.log("exec next ")
     if (this.task == undefined)
         this.task = []
-    
+
     var executor = this;
     var task = this.task.shift()
     task.run(function () {
         executor.isExecuting = executor.task.length > 0;
-        if( executor.callbacks[task] != undefined){
+        if (executor.callbacks[task] != undefined) {
             executor.callbacks[task]()
             delete executor.callbacks[task];
             console.log("on end")
