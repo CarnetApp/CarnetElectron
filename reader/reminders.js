@@ -180,14 +180,22 @@ var ReminderItemDialog = function (element, reminder) {
     for (var opt of this.frequencyContainer.getElementsByClassName('mdl-menu__item')) {
         opt.onclick = function (event) {
             itemDialog.setFrequency(event.target.getAttribute("data-val"))
-
-
         }
     }
-
+    itemDialog.time = this.reminder.time
     this.setTime(this.reminder.time)
     this.setDate(this.reminder.date)
     this.setFrequency(this.reminder.frequency)
+    if (this.reminder.frequency == "days-of-week") {
+
+        for (var day of this.reminder.days) {
+            for (var dayInput of document.getElementsByName("days[]")) {
+                if (dayInput.value == day)
+                    dayInput.checked = true
+            }
+        }
+    }
+
 }
 ReminderItemDialog.prototype.getDays = function () {
     var days = []
