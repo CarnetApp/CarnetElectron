@@ -762,6 +762,7 @@ Writer.prototype.init = function () {
     }
 
     document.getElementById("reminders-button").onclick = function () {
+        writer.toggleDrawer();
         writer.openRemindersDialog()
         return false;
     }
