@@ -513,6 +513,12 @@ Writer.prototype.displaySnack = function (data) {
     if (!(typeof snackbarContainer.MaterialSnackbar == undefined))
         snackbarContainer.MaterialSnackbar.showSnackbar(data);
 }
+
+Writer.prototype.openRemindersDialog = function () {
+    var remindersDialog = new RemindersDialog(document.getElementById("reminders"), writer.note.metadata.reminders)
+    remindersDialog.dialog.showModal()
+}
+
 Writer.prototype.init = function () {
     var writer = this;
     this.recorder = new CarnetRecorder();
@@ -756,8 +762,7 @@ Writer.prototype.init = function () {
     }
 
     document.getElementById("reminders-button").onclick = function () {
-        var remindersDialog = new RemindersDialog(document.getElementById("reminders"), writer.note.metadata.reminders)
-        remindersDialog.dialog.showModal()
+        writer.openRemindersDialog()
         return false;
     }
 

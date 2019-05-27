@@ -26,7 +26,7 @@ RemindersUtils.translateLocalTimeToTimestamp = function (time) {
 
 var RemindersDialog = function (element, reminders) {
     this.dialog = element
-    this.dialog.getElementsByClassName("mdl-dialog__content")[0].innerHTML = ""
+    this.dialog.getElementsByClassName("reminders-container")[0].innerHTML = ""
     if (reminders != undefined)
         for (var reminder of reminders) {
             this.addItem(reminder)
@@ -88,7 +88,7 @@ RemindersDialog.prototype.addItem = function (reminder) {
         reminderItemDialog.dialog.showModal()
         remindersManager.dialog.close()
     }
-    this.dialog.getElementsByClassName("mdl-dialog__content")[0].appendChild(reminderDiv)
+    this.dialog.getElementsByClassName("reminders-container")[0].appendChild(reminderDiv)
 
 }
 
@@ -170,7 +170,7 @@ var ReminderItemDialog = function (element, reminder) {
             writer.note.metadata.reminders.push(itemDialog.reminder)
             writer.hasTextChanged = true;
             saveTextIfChanged()
-
+            writer.openRemindersDialog()
         }
     }
     this.frequencyInput = document.getElementById("frequency")

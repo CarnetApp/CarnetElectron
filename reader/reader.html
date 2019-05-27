@@ -109,17 +109,21 @@
 	<dialog class="mdl-dialog" id="reminders">
 		<h4 class="mdl-dialog__title" data-i18n="reminders">Reminders</h4>
 		<div class="mdl-dialog__content">
-			<div class="reminder-item">
-				<span class="hour">18:19</span>
-				<span class="day">Monday</span> <span class="day">Tuesday</span> <span class="day">Wednesday</span>
-			</div>container
-			<div class="reminder-item">
-				<span class="hour">10:30</span>
-				<span class="frequency">Every day</span>
+			<div data-i18n="beta_warning_reminders">
 			</div>
-			<div class="reminder-item">
-				<span class="hour">11:30</span>
-				<span class="frequency">Once</span><span class="date">25/03/2019</span>
+			<div class="reminders-container">
+				<div class="reminder-item">
+					<span class="hour">18:19</span>
+					<span class="day">Monday</span> <span class="day">Tuesday</span> <span class="day">Wednesday</span>
+				</div>container
+				<div class="reminder-item">
+					<span class="hour">10:30</span>
+					<span class="frequency">Every day</span>
+				</div>
+				<div class="reminder-item">
+					<span class="hour">11:30</span>
+					<span class="frequency">Once</span><span class="date">25/03/2019</span>
+				</div>
 			</div>
 		</div>
 		<div class="mdl-dialog__actions">
@@ -142,8 +146,8 @@
 				<ul for="frequency" class="mdl-menu mdl-menu--bottom-left mdl-js-menu">
 					<li class="mdl-menu__item" data-val="once" data-i18n="once">Once</li>
 					<li class="mdl-menu__item" data-val="days-of-week" data-i18n="days-of-week">Days of week</li>
-					<li class="mdl-menu__item" data-val="once-a-month" data-i18n="once-a-month">Once a month</li>
-					<li class="mdl-menu__item" data-val="once-a-year" data-i18n="once-a-year">Once a year</li>
+					<!--<li class="mdl-menu__item" data-val="once-a-month" data-i18n="once-a-month">Once a month</li>
+					<li class="mdl-menu__item" data-val="once-a-year" data-i18n="once-a-year">Once a year</li>-->
 
 				</ul>
 			</div>
