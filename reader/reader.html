@@ -288,10 +288,7 @@ mdl-layout--fixed-header">
 		<div class="mdl-layout__drawer">
 			<nav class="mdl-navigation">
 				<span style="text-align:center; margin:10px;" data-i18n="file"> File</span>
-				<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" id="name-container">
-					<input class="mdl-textfield__input" type="text" name="name" id="name-input" value="Untitled">
-					<label class="mdl-textfield__label" for="name" data-i18n="note_name">Note name</label>
-				</div>
+
 				<a class="mdl-navigation__link" href="" id="date-button" data-i18n="date_time">Date and time</a>
 				<a class="mdl-navigation__link" href="" id="reminders-button" data-i18n="reminders">Reminders</a>
 				<a class="mdl-navigation__link" id="exit" data-i18n="exit">Exit</a>
@@ -465,7 +462,11 @@ mdl-layout--fixed-header">
 						<div style="clear:both"></div>
 
 					</div>
-					<div id="editor" style="height:100%;overflow-x: none;margin:0px;position: relative;">
+					<div id="name-container">
+						<input class="mdl-textfield__input" type="text" name="name" id="name-input" value=""
+							placeholder="Title" data-i18n="[placeholder]note_name">
+					</div>
+					<div id="editor" style="overflow-x: none;position: relative;">
 
 					</div>
 				</div>
