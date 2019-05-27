@@ -515,3 +515,8 @@ div#container-button::-webkit-scrollbar {
 .c-datepicker__header-date {
 	height: 30px !important;
 }
+
+#reminders{
+	max-height: calc(100% - 50px);
+	overflow-y:auto;
+}
