@@ -52,6 +52,7 @@ RemindersDialog.prototype.addItem = function (reminder) {
     reminderDiv.classList.add("reminder-item")
     var deleteButton = document.createElement("button")
     deleteButton.classList.add("delete-reminder")
+    deleteButton.classList.add("mdl-button")
     deleteButton.innerHTML = "<i class=\"material-icons\">delete</i>"
 
     reminderDiv.appendChild(deleteButton)
