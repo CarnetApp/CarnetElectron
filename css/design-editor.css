@@ -520,3 +520,8 @@ div#container-button::-webkit-scrollbar {
 	max-height: calc(100% - 50px);
 	overflow-y:auto;
 }
+.delete-reminder{
+	float:right;
+	padding: 0px;
+	margin-right: 10px;
+}
