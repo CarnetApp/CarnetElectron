@@ -75,5 +75,7 @@
     "thursday": "Jeudi",
     "friday": "Vendredi",
     "saturday": "Samedi",
-    "sunday": "Dimanche"
+    "sunday": "Dimanche",
+    "sort_reversed": "Ordre inversé",
+    "reminders": "Rappels"
 }
