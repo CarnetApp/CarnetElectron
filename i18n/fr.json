@@ -77,5 +77,8 @@
     "saturday": "Samedi",
     "sunday": "Dimanche",
     "sort_reversed": "Ordre inversé",
-    "reminders": "Rappels"
+    "reminders": "Rappels",
+    "time": "Heure",
+    "date": "Date",
+    "beta_warning_reminders": "Les \"Rappels\" sont toujours une fonctionnalité en test et ne fonctionneront que sur Android"
 }
