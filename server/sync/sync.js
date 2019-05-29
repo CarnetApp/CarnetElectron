@@ -99,6 +99,8 @@ var correctLocalPath = function (localRoot, path) {
 
 Sync.prototype.onDirOK = function () {
     var sync = this;
+    if (!this.fs.existsSync(this.settingsHelper.getNotePath()))
+        this.fs.mkdirSync(this.settingsHelper.getNotePath())
     this.visitRemote(this.nextcloudRoot, function () {
         var count = 0;
         for (var k in sync.remoteFiles) {

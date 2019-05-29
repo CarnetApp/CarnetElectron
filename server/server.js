@@ -211,6 +211,9 @@ var handle = function (method, path, data, callback) {
             else {
                 var result = []
                 fs.readdir(settingsHelper.getNotePath() + "/" + folder, (err, files) => {
+                    if (files == undefined) {
+                        files = []
+                    }
                     var arrayResult = []
                     var arrayH = new ArrayHandler(files, function (f) {
                         if (folder + f === "/quickdoc" || f.startsWith(".")) {
