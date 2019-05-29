@@ -1,3 +1,24 @@
+# Version 0.16.0
+
+New feature : Reminders
+
+Multilines todolists
+
+Sort options
+
+
+UI:
+
+Title bar directly in editor
+
+
+Languages:
+
+Esperanto (mallabori), Spanish (Rafael Yáñez), Arabic (Butterfly of fire)
+
+Russian (Alex Sev), Czech (Leschek), Dutch (Heimen Stoffels), Slovak (Ivan Pleva)
+
+
 # Version 0.14.0
 
 Make website links clickable in editor
