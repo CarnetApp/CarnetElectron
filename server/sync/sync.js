@@ -247,7 +247,7 @@ Sync.prototype.deleteLocalAndSave = function (local, callback) {
                 return
             }
             if (local.path.endsWith(".sqd"))
-                CacheManager.remove(local.path)
+                CacheManager.getInstance().remove(local.path)
             console.logDebug("err " + err)
             delete sync.db[local.path];
             sync.store.set("nextcloud_db", JSON.stringify(sync.db));
