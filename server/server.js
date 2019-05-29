@@ -105,6 +105,9 @@ var handle = function (method, path, data, callback) {
                     callback(err, data)
                 }, true);
                 return;
+            case "/settings/browser":
+                callback(false, settingsHelper.getBrowserSettings())
+                return
             case "/keywordsdb":
                 new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).getFullDB(function (err, data) {
 
@@ -294,6 +297,11 @@ var handle = function (method, path, data, callback) {
                     callback(err)
                 })
                 return;
+            case "/settings/browser":
+                settingsHelper.setBrowserSettings(data.jsonSettings)
+                callback(false, "")
+                return;
+
             case "/settings/app_theme":
                 var metadataFolder = data.url;
                 if (!metadataFolder.startsWith("/"))

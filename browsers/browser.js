@@ -811,24 +811,24 @@ RequestBuilder.sRequestBuilder.get("/settings/browser_css", function (error, dat
 
     } else $("#carnet-icon-view").fadeOut('slow');
 })
-var isDebug = false
+var isDebug = true
 console.oldlog = console.log;
-console.log = function (m) {
+/*console.log = function (m) {
     if (isDebug)
         console.oldlog(m)
-}
+}*/
 
 
 var uiSettings = {}
 
-function setDefaultSettings(key, value){
-    if(uiSettings[key] == undefined)
+function setDefaultSettings(key, value) {
+    if (uiSettings[key] == undefined)
         uiSettings[key] = value
 }
 compatibility.loadLang(function () {
     $('body').i18n();
     RequestBuilder.sRequestBuilder.get("/settings/browser", function (error, data) {
-        if(data!=undefined && data != ""){
+        if (data != undefined && data != "") {
             data = JSON.parse(data)
             uiSettings = data;
             //set default settings
@@ -836,10 +836,10 @@ compatibility.loadLang(function () {
         }
         setDefaultSettings('sort_by', 'default')
         setDefaultSettings('reversed', false)
-        $("input[name='sort-by'][value='"+uiSettings['sort_by']+"']").parent().addClass("is-checked")
-        $("input[name='sort-by'][value='"+uiSettings['sort_by']+"']").attr('checked', 'checked')
-        document.getElementById("reversed-order").checked = uiSettings['reversed'] 
-        if(uiSettings['reversed']){
+        $("input[name='sort-by'][value='" + uiSettings['sort_by'] + "']").parent().addClass("is-checked")
+        $("input[name='sort-by'][value='" + uiSettings['sort_by'] + "']").attr('checked', 'checked')
+        document.getElementById("reversed-order").checked = uiSettings['reversed']
+        if (uiSettings['reversed']) {
             document.getElementById("reversed-order").parentNode.classList.add("is-checked")
         }
         list(initPath)
@@ -858,7 +858,7 @@ $(".sort-item").click(function () {
         uiSettings['reversed'] = document.getElementById("reversed-order").checked
         sortBy(radioValue, document.getElementById("reversed-order").checked)
 
-        RequestBuilder.sRequestBuilder.post("/settings/browser",{jsonSettings:JSON.stringify(uiSettings)}, function (error, data) {
+        RequestBuilder.sRequestBuilder.post("/settings/browser", { jsonSettings: JSON.stringify(uiSettings) }, function (error, data) {
         })
     }
 
