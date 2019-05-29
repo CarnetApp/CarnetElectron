@@ -83,7 +83,9 @@ var handle = function (method, path, data, callback) {
                 })
                 return;
             case "/notes/getSearchCache":
-                callback(false, currentSearch.result)
+                var toConvert = {}
+                toConvert.files = currentSearch.result
+                callback(false, toConvert)
                 return;
             case "/settings/isfirstrun":
                 callback(false, settingsHelper.isFirstRun())
@@ -223,7 +225,9 @@ var handle = function (method, path, data, callback) {
                         }
                         )
                     }, function (result) {
-                        callback(false, JSON.stringify(arrayResult))
+                        var toConvert = {}
+                        toConvert.files = arrayResult
+                        callback(false, JSON.stringify(toConvert))
                     })
                     arrayH.next()
 
