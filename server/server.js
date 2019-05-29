@@ -525,6 +525,8 @@ var openNote = function (path, callback) {
             currentcache = CacheManager.getInstance().get(cleanPath(path))
             if (currentcache == undefined)
                 currentcache = {}
+            if (expreviews == undefined)
+                expreviews = {}
             previews = expreviews
             console.logDebug("done " + noSuchFile)
             if (!noSuchFile) {
