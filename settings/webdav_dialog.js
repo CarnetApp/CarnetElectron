@@ -58,7 +58,7 @@ function connect() {
         ).getDirectoryContents("/")
             .then(function (contents) {
                 document.getElementById("loading-view").style.display = "none"
-                var SettingsHelper = require("./settings_helper").SettingsHelper;
+                var SettingsHelper = require("../server/settings_helper").SettingsHelper;
                 var settingsHelper = new SettingsHelper();
                 settingsHelper.setRemoteWebdavAddr(getWebdavAddress())
                 settingsHelper.setRemoteWebdavUsername(document.getElementById("username").value)
