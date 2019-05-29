@@ -68,7 +68,11 @@ function createWindow() {
         width: 1030,
         height: 600,
         frame: settingsHelper.displayFrame(),
-        icon: path.join(__dirname, 'img/512x512.png')
+        icon: path.join(__dirname, 'img/512x512.png'),
+        webPreferences: {
+            nodeIntegration: true,
+            webviewTag: true
+        }
     })
     win.setMenuBarVisibility(false)
     win.setMenu(null)
