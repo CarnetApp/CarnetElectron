@@ -827,17 +827,23 @@ function setDefaultSettings(key, value) {
 }
 compatibility.loadLang(function () {
     $('body').i18n();
+    console.log("lang loaded")
     RequestBuilder.sRequestBuilder.get("/settings/browser", function (error, data) {
         if (data != undefined && data != "") {
-            data = JSON.parse(data)
+            try {
+                data = JSON.parse(data)
+            } catch (e) {
+            }
             uiSettings = data;
             //set default settings
 
         }
         setDefaultSettings('sort_by', 'default')
         setDefaultSettings('reversed', false)
+
         $("input[name='sort-by'][value='" + uiSettings['sort_by'] + "']").parent().addClass("is-checked")
         $("input[name='sort-by'][value='" + uiSettings['sort_by'] + "']").attr('checked', 'checked')
+
         document.getElementById("reversed-order").checked = uiSettings['reversed']
         if (uiSettings['reversed']) {
             document.getElementById("reversed-order").parentNode.classList.add("is-checked")
