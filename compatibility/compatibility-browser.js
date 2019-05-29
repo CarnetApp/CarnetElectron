@@ -65,6 +65,10 @@ class BrowserCompatibility extends Compatibility {
                             width: 500,
                             height: 500,
                             frame: true,
+                            webPreferences: {
+                                nodeIntegration: true,
+                                webviewTag: true
+                            }
                         });
                         const url = require('url')
                         const path = require('path')
