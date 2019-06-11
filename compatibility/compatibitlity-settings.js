@@ -53,7 +53,7 @@ class SettingsCompatibility extends Compatibility {
 
                 }
             } else {
-                document.getElementById("window-frame-switch").parentElement.style.display = "none";
+                document.getElementById("window-frame").parentElement.style.display = "none";
                 document.getElementById("connect").parentElement.style.display = "none";
                 document.getElementById("disconnect").parentElement.style.display = "none";
             }
