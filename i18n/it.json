@@ -13,8 +13,8 @@
     "next": "Successivo",
     "cancel": "Cancella",
     "note_list_empty": "Nessuna nota da mostrare, per favore comincia col crearne una nuova !",
-    "archive": "Archivio",
-    "unarchive": "Non in Archivio",
+    "archive": "Archivia",
+    "unarchive": "Annulla archiviazione",
     "delete": "Elimina",
     "ok": "OK",
     "rename": "Rinomina",
@@ -69,5 +69,16 @@
     "once-a-year": "Una volta all'anno",
     "days-of-week": "Giorni della settimana",
     "once": "Una volta",
-    "frequency": "Frequenza"
+    "frequency": "Frequenza",
+    "pin": "Appunta",
+    "monday": "Lunedì",
+    "tuesday": "Martedì",
+    "wednesday": "Mercoledì",
+    "thursday": "Giovedì",
+    "friday": "Venerdì",
+    "saturday": "Sabato",
+    "sunday": "Domenica",
+    "time": "Ora",
+    "date": "Data",
+    "beta_warning_reminders": "I \"Promemoria\" sono ancora in beta e funzionano solo su Android"
 }
