@@ -599,7 +599,7 @@ Writer.prototype.init = function () {
     });
 
     ;
-    this.toolbarManager = new ToolbarManager()
+    /*this.toolbarManager = new ToolbarManager()
     var toolbarManager = this.toolbarManager
     var toolbars = document.getElementsByClassName("toolbar")
     for (var i = 0; i < toolbars.length; i++) {
@@ -614,7 +614,7 @@ Writer.prototype.init = function () {
             console.log("display " + event.target.getAttribute("for"))
             toolbarManager.toggleToolbar(document.getElementById(event.target.getAttribute("for")))
         });
-    };
+    };*/
     this.searchInput = document.getElementById("search-input");
     this.searchInput.onfocus = function () {
         var el = document.getElementById('container-button');
@@ -692,6 +692,13 @@ Writer.prototype.init = function () {
                         writer.onEditableClick(event);
                     }
                     break;
+                case "open-second-toolbar":
+                    document.getElementById("main-toolbar").style.display = "none"
+                    document.getElementById("secondary-toolbar").style.display = "unset"
+                    break;
+                case "close-second-toolbar":
+                    document.getElementById("main-toolbar").style.display = "unset"
+                    document.getElementById("secondary-toolbar").style.display = "none"
                 case "copy-button":
                     writer.copy();
                     break;
