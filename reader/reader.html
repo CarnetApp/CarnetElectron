@@ -83,6 +83,38 @@
 
 	<!-- dialogs declaration -->
 
+
+	<!-- <more options> -->
+	<dialog class="mdl-dialog" id="options-dialog">
+		<div class="mdl-dialog__content">
+
+			<div class="stars">
+				<form action="">
+					<input class="star star-5" id="star-5" type="radio" name="star" value="5" />
+					<label class="star star-5" for="star-5"></label>
+					<input class="star star-4" id="star-4" type="radio" name="star" value="4" //> <label
+						class="star star-4" for="star-4"></label>
+					<input class="star star-3" id="star-3" type="radio" name="star" value="3" //> <label
+						class="star star-3" for="star-3"></label>
+					<input class="star star-2" id="star-2" type="radio" name="star" value="2" //> <label
+						class="star star-2" for="star-2"></label>
+					<input class="star star-1" id="star-1" type="radio" name="star" value="1" //> <label
+						class="star star-1" for="star-1"></label>
+				</form>
+			</div>
+			<button type="button" class="mdl-button option-button" data-i18n="date_time" id="date-button">Date and
+				Time</button>
+			<button type="button" class="mdl-button option-button" data-i18n="print" id="print-button">Print</button>
+			<button type="button" class="mdl-button option-button" data-i18n="statistics"
+				id="statistics-button">Statistics</button>
+
+
+		</div>
+		<div class="mdl-dialog__actions">
+			<button type="button" class="mdl-button ok option-button" data-i18n="ok">OK</button>
+		</div>
+	</dialog>
+
 	<!-- <statistics> -->
 	<dialog class="mdl-dialog" id="statsdialog">
 		<h4 class="mdl-dialog__title" data-i18n="statistics">Statistics</h4>
@@ -339,16 +371,6 @@ mdl-layout--fixed-header">
 						data-i18n="select_all">
 						Select All
 					</button>
-					<button id="statistics-button"
-						class="mdl-button mdl-js-button headerbar-button in-toolbar-button third"
-						data-i18n="statistics">
-						Statistics
-					</button>
-
-					<button id="print-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button third"
-						data-i18n="print">
-						Print
-					</button>
 
 					<div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
 				mdl-textfield--floating-label mdl-textfield--align-right third">
@@ -368,25 +390,12 @@ mdl-layout--fixed-header">
 		</header>
 		<div class="mdl-layout__drawer">
 			<nav class="mdl-navigation">
-				<span style="text-align:center; margin:10px;" data-i18n="file"> File</span>
 
-				<a class="mdl-navigation__link" href="" id="date-button" data-i18n="date_time">Date and time</a>
 				<a class="mdl-navigation__link" href="" id="reminders-button" data-i18n="reminders">Reminders</a>
+				<a class="mdl-navigation__link" href="" id="options-button" data-i18n="more-options">More options</a>
+
 				<a class="mdl-navigation__link" id="exit" data-i18n="exit">Exit</a>
-				<div class="stars">
-					<form action="">
-						<input class="star star-5" id="star-5" type="radio" name="star" value="5" />
-						<label class="star star-5" for="star-5"></label>
-						<input class="star star-4" id="star-4" type="radio" name="star" value="4" //> <label
-							class="star star-4" for="star-4"></label>
-						<input class="star star-3" id="star-3" type="radio" name="star" value="3" //> <label
-							class="star star-3" for="star-3"></label>
-						<input class="star star-2" id="star-2" type="radio" name="star" value="2" //> <label
-							class="star star-2" for="star-2"></label>
-						<input class="star star-1" id="star-1" type="radio" name="star" value="1" //> <label
-							class="star star-1" for="star-1"></label>
-					</form>
-				</div>
+
 				<div id="note-color">
 					<input type="radio" name="color" id="none" />
 					<label for="none"><span class="none"></span></label>

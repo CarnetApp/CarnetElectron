@@ -282,6 +282,7 @@ body {
 div.stars {
 	width: 200px;
 	display: inline-block;
+	margin-bottom: 20px;
 }
 
 input.star {
@@ -561,4 +562,9 @@ div#container-button::-webkit-scrollbar {
 	float:right;
 	padding: 0px;
 	margin-right: 10px;
+}
+
+.option-button:not(.ok){
+	width:100%;
+	text-align: left;
 }

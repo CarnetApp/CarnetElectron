@@ -651,11 +651,52 @@ Writer.prototype.init = function () {
         writer.newKeywordDialog.showModal();
         return false;
     }
+    document.getElementById("options-button").onclick = function () {
+        writer.toggleDrawer();
+        document.getElementById("options-dialog").showModal()
+        return false;
+    }
     document.getElementById("button-add-keyword-ok").onclick = function () {
         writer.addKeyword(document.getElementById('keyword-input').value);
         writer.newKeywordDialog.close();
     }
     this.mediaToolbar = document.getElementById("media-toolbar");
+    var optionButtons = document.getElementsByClassName("option-button");
+
+    for (var i = 0; i < optionButtons.length; i++) {
+        var button = optionButtons[i];
+
+        button.onclick = function (ev) {
+            console.log("on click " + this.id);
+            document.getElementById("options-dialog").close()
+            switch (this.id) {
+                case "print-button":
+                    writer.openPrintDialog();
+                    break;
+                case "statistics-button":
+                    writer.displayCountDialog();
+                    break;
+                case "date-button":
+                    writer.toggleDrawer();
+                    var date = writer.note.metadata.custom_date;
+                    if (date == undefined)
+                        date = writer.note.metadata.last_modification_date;
+                    if (date == undefined)
+                        date = writer.note.metadata.creation_date;
+                    if (date == undefined)
+                        date = new Date().now()
+                    const picker = new MaterialDatetimePicker({ default: moment(date) })
+                        .on('submit', (val) => {
+                            writer.note.metadata.custom_date = val.unix() * 1000;
+                            writer.hasTextChanged = true
+                        });
+                    picker.open();
+                    break
+
+            }
+        }
+    }
+
     var inToolbarButtons = document.getElementsByClassName("in-toolbar-button");
 
     for (var i = 0; i < inToolbarButtons.length; i++) {
@@ -684,9 +725,6 @@ Writer.prototype.init = function () {
                 case "size-plus":
                     writer.increaseFontSize();
                     break;
-                case "statistics-button":
-                    writer.displayCountDialog();
-                    break;
                 case "todolist-button":
                     writer.manager.createTodolist().createItem("")
                     writer.createEditableZone().onclick = function (event) {
@@ -707,9 +745,6 @@ Writer.prototype.init = function () {
                     break;
                 case "select-all-button":
                     document.execCommand("selectAll");
-                    break;
-                case "print-button":
-                    writer.openPrintDialog();
                     break;
                 case "fullscreen-media-button":
                     writer.mediaToolbar.classList.add("fullscreen-media-toolbar")
@@ -781,23 +816,7 @@ Writer.prototype.init = function () {
         writer.recorder.new()
         writer.recorderDialog.showModal()
     }
-    document.getElementById("date-button").onclick = function () {
-        writer.toggleDrawer();
-        var date = writer.note.metadata.custom_date;
-        if (date == undefined)
-            date = writer.note.metadata.last_modification_date;
-        if (date == undefined)
-            date = writer.note.metadata.creation_date;
-        if (date == undefined)
-            date = new Date().now()
-        const picker = new MaterialDatetimePicker({ default: moment(date) })
-            .on('submit', (val) => {
-                writer.note.metadata.custom_date = val.unix() * 1000;
-                writer.hasTextChanged = true
-            });
-        picker.open();
-        return false;
-    }
+
     writer.nameTimout = undefined
     document.getElementById("name-input").addEventListener("input", function () {
         if (writer.nameTimout != undefined)
