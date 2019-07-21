@@ -80,5 +80,6 @@
     "reminders": "Rappels",
     "time": "Heure",
     "date": "Date",
-    "beta_warning_reminders": "Les \"Rappels\" sont toujours une fonctionnalité en test et ne fonctionneront que sur Android"
+    "beta_warning_reminders": "Les \"Rappels\" sont toujours une fonctionnalité en test et ne fonctionneront que sur Android",
+    "more-options": "Options supplémentaires"
 }
