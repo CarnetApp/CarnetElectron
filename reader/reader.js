@@ -426,6 +426,10 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     resetScreenHeight();
     this.refreshKeywords();
     compatibility.onNoteLoaded();
+    $("#toolbar").scrollLeft(500)
+    $("#toolbar").animate({ scrollLeft: '0' }, 2000);
+
+
 
 }
 //var KeywordsDBManager = require(rootpath + "keywords/keywords_db_manager").KeywordsDBManager;
@@ -733,10 +737,12 @@ Writer.prototype.init = function () {
                     break;
                 case "open-second-toolbar":
                     document.getElementById("toolbar").classList.add("more")
-
+                    $("#toolbar").scrollLeft(0)
                     break;
                 case "close-second-toolbar":
                     document.getElementById("toolbar").classList.remove("more")
+                    $("#toolbar").scrollLeft(0)
+                    break
                 case "copy-button":
                     writer.copy();
                     break;
@@ -983,7 +989,7 @@ Writer.prototype.removeKeyword = function (word) {
 Writer.prototype.reset = function () {
     this.exitOnSaved = false
     this.putDefaultHTML()
-
+    document.getElementById("toolbar").classList.remove("more")
     var dias = document.getElementsByClassName("mdl-dialog")
     for (var i = 0; i < dias.length; i++) {
         if (dias[i].open)
