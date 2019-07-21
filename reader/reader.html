@@ -262,80 +262,96 @@ mdl-layout--fixed-header">
 		<header id="header-carnet" class="mdl-layout__header">
 			<div class="mdl-layout__header-row" id="container-button"
 				style="overflow-x: auto;overflow-y: hidden; margin-left:52px; padding-left:0px;">
-				<div id="main-toolbar" class="toolbar">
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="bold">
+				<div id="toolbar" class="toolbar">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button first"
+						id="add-media-button">
+						<i class=" material-icons">image</i> <b>/</b> <i class="material-icons">mic</i>
+					</button>
+					<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" id="add-media-menu"
+						for="add-media-button">
+						<li class="mdl-menu__item" id="add-file-button" data-i18n="file_photo">File/Photo</li>
+						<li class="mdl-menu__item" id="add-recording-button" data-i18n="recording">Recording
+						</li>
+					</ul>
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button first" id="bold">
 						<i class="material-icons">format_bold</i>
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="italic">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button first" id="italic">
 						<i class="material-icons">format_italic</i>
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="underline">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button first" id="underline">
 						<i class="material-icons">format_underline</i>
 					</button>
 
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="text-color">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button first" id="text-color">
 						<i class="material-icons">format_color_text</i>
 					</button>
 
-					<button id="todolist-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button">
+					<button id="todolist-button"
+						class="mdl-button mdl-js-button headerbar-button in-toolbar-button first">
 						<i class="material-icons">check_circle_outline</i>
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button more-button first"
 						id="open-second-toolbar">
 						<i class="material-icons">more_horiz</i>
 					</button>
-
-				</div>
-				<div id="secondary-toolbar" style="display: none">
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button third"
 						id="close-second-toolbar">
 						<i class="material-icons">close</i>
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="fill-color">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button second" id="fill-color">
 						<i class="material-icons">format_color_fill</i>
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="size-minus">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button second" id="size-minus">
 						<i class="material-icons">format_size</i>-
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="size-plus">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button second" id="size-plus">
 						<i class="material-icons">format_size</i>+
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="justifyleft">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button second" id="justifyleft">
 						<i class="material-icons">format_align_left</i>
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="justifycenter">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button second"
+						id="justifycenter">
 						<i class="material-icons">format_align_center</i>
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="justifyright">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button second"
+						id="justifyright">
 						<i class="material-icons">format_align_right</i>
 					</button>
-					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button" id="justify">
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button second" id="justify">
 						<i class="material-icons">format_align_justify</i>
 					</button>
-					<button id="copy-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+					<button class="mdl-button mdl-js-button headerbar-button in-toolbar-button more-button second"
+						id="open-second-toolbar">
+						<i class="material-icons">more_horiz</i>
+					</button>
+					<button id="copy-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button third"
 						data-i18n="copy">
 						copy
 					</button>
-					<button id="paste-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+					<button id="paste-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button third"
 						data-i18n="paste">
 						paste
 					</button>
-					<button id="select-all-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+					<button id="select-all-button"
+						class="mdl-button mdl-js-button headerbar-button in-toolbar-button third"
 						data-i18n="select_all">
 						Select All
 					</button>
-					<button id="statistics-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+					<button id="statistics-button"
+						class="mdl-button mdl-js-button headerbar-button in-toolbar-button third"
 						data-i18n="statistics">
 						Statistics
 					</button>
 
-					<button id="print-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button"
+					<button id="print-button" class="mdl-button mdl-js-button headerbar-button in-toolbar-button third"
 						data-i18n="print">
 						Print
 					</button>
 
 					<div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable
-					mdl-textfield--floating-label mdl-textfield--align-right">
+				mdl-textfield--floating-label mdl-textfield--align-right third">
 						<label class="mdl-button mdl-js-button mdl-button--icon" for="search-input">
 							<i class="material-icons">search</i>
 						</label>
@@ -343,8 +359,8 @@ mdl-layout--fixed-header">
 							<input class="mdl-textfield__input" type="text" name="sample" id="search-input">
 						</div>
 					</div>
-
 				</div>
+
 
 
 
@@ -441,18 +457,8 @@ mdl-layout--fixed-header">
 								<i class="material-icons">aspect_ratio</i>
 								<span class="mdl-button__ripple-container"><span
 										class="mdl-ripple"></span></span></button>
-							<button id="add-media-button"
-								class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button"
-								data-upgraded=",MaterialButton">
-								<i class="material-icons">add</i>
-								<span class="mdl-button__ripple-container"><span
-										class="mdl-ripple"></span></span></button>
-							<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-								id="add-media-menu" for="add-media-button">
-								<li class="mdl-menu__item" id="add-file-button" data-i18n="file_photo">File/Photo</li>
-								<li class="mdl-menu__item" id="add-recording-button" data-i18n="recording">Recording
-								</li>
-							</ul>
+
+
 						</div>
 						<div style="clear:both"></div>
 

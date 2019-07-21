@@ -153,6 +153,7 @@ Writer.prototype.setMediaList = function (list) {
 
     if (list.length > 0) {
         document.getElementById("fullscreen-media-button").style.display = "block"
+        writer.mediaList.style.display = "block"
 
         this.addMediaMenu.parentNode.style.left = "unset"
         if (this.oDoc.innerText.trim() == "") {
@@ -162,7 +163,7 @@ Writer.prototype.setMediaList = function (list) {
         }
     } else {
         //this.addMediaMenu.parentNode.style.left = "0px"
-        writer.mediaList.innerHTML = "<span id='media-empty-view'>" + $.i18n("media_empty_text") + "</span>";
+        writer.mediaList.style.display = "none"
         document.getElementById("fullscreen-media-button").style.display = "none"
 
     }
@@ -693,12 +694,11 @@ Writer.prototype.init = function () {
                     }
                     break;
                 case "open-second-toolbar":
-                    document.getElementById("main-toolbar").style.display = "none"
-                    document.getElementById("secondary-toolbar").style.display = "unset"
+                    document.getElementById("toolbar").classList.add("more")
+
                     break;
                 case "close-second-toolbar":
-                    document.getElementById("main-toolbar").style.display = "unset"
-                    document.getElementById("secondary-toolbar").style.display = "none"
+                    document.getElementById("toolbar").classList.remove("more")
                 case "copy-button":
                     writer.copy();
                     break;

@@ -29,6 +29,38 @@ html {
 	background-color: rgba(199, 196, 196, 0.452);
 }
 
+#header-carnet .mdl-button{
+	padding: 0 6px;
+}
+.more .first{
+	display:none;
+}
+.second, .third{
+	display:none;
+}
+.more .second, .more .third{
+	display: inline;
+}
+.more-button.second{
+	display: none;
+}
+@media screen and (min-width: 1280px) {
+	.second{
+		display:inline;
+	}
+	.more-button.second{
+		display: inline;
+	}
+	.more .second{
+		display: none;
+	}
+	.more-button.first{
+		display: none;
+	}
+
+	
+	
+}
 
 #loading {
 	display: none;
@@ -139,6 +171,12 @@ html {
 	color:black;
 	overflow-x: auto;
 	white-space: nowrap;
+	width:100%;
+}
+
+.toolbar .mdl-textfield {
+	padding:15px 0;
+	top: -8px;
 }
 
 .quicknote-img {
