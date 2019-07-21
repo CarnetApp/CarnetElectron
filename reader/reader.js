@@ -681,7 +681,6 @@ Writer.prototype.init = function () {
                     writer.displayCountDialog();
                     break;
                 case "date-button":
-                    writer.toggleDrawer();
                     var date = writer.note.metadata.custom_date;
                     if (date == undefined)
                         date = writer.note.metadata.last_modification_date;
