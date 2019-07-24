@@ -454,6 +454,9 @@ div#container-button::-webkit-scrollbar {
 		width: 100%;
 		background: rgba(0, 0, 0, 0.479);
 	}
+	.fullscreen-media-toolbar	#media-header .mdl-button{
+		color: white;
+	}
 	.fullscreen-media-toolbar {
 		position: fixed !important;
 		height: 100%;

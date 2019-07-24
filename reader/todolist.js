@@ -41,7 +41,8 @@ TodoListManager.prototype.createTodolist = function (data) {
     todolistContent.classList.add("todo-list-content")
     var deleteElem = document.createElement("a");
     deleteElem.classList.add("remove-todo-list");
-    deleteElem.innerHTML = "x"
+    deleteElem.classList.add("mdl-button");
+    deleteElem.innerHTML = "Remove Todo-List"
 
     var todoTitle = document.createElement("h3");
     todoTitle.innerHTML = "To do"
@@ -51,8 +52,9 @@ TodoListManager.prototype.createTodolist = function (data) {
     todo.classList.add("todo")
     todo.id = "todooo" + generateUID();
     var addItem = document.createElement("a");
-    addItem.innerHTML = "Add item";
+    addItem.innerHTML = "+ Add item";
     addItem.classList.add("add-item");
+    addItem.classList.add("mdl-button");
     addItem.href = "#"
 
     var done = document.createElement("div");
@@ -279,6 +281,8 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
     var remove = document.createElement("span")
     remove.innerHTML = "X";
     remove.classList.add("remove-item")
+    remove.classList.add("mdl-button")
+
     remove.onclick = function () {
         todolist.removeItem(div);
     }
@@ -325,5 +329,9 @@ TodoList.prototype.uncheck = function (item, after) {
 
 function resizeTextArea(textarea) {
     textarea.style.height = "";
-    textarea.style.height = (textarea.scrollHeight) + "px";
+    //hack
+    if (textarea.scrollHeight == 46)
+        textarea.style.height = 26 + "px";
+    else
+        textarea.style.height = textarea.scrollHeight + "px";
 }
