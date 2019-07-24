@@ -495,7 +495,7 @@ Writer.prototype.displayColorPicker = function (callback) {
     }
     this.colorPickerDialog.querySelector('.ok').addEventListener('click', call);
     this.colorPickerDialog.showModal()
-    var picker = new jscolor(document.getElementById('color-picker-div'), { padding: 0, border:0, backgroundColor:'unset', valueElement: 'chosen-value', container: document.getElementById('color-picker-div'), onFineChange: function(){writer.setPickerColor(this)}, shadow: false });
+    var picker = new jscolor(document.getElementById('color-picker-div'), {width:210, padding: 0, border:0, backgroundColor:'unset', valueElement: 'chosen-value', container: document.getElementById('color-picker-div'), onFineChange: function(){writer.setPickerColor(this)}, shadow: false });
     document.getElementById('color-picker-div').show();
 }
 
