@@ -486,17 +486,49 @@ Writer.prototype.setPickerColor = function (picker) {
     currentColor = "#" + picker.toString();
 }
 Writer.prototype.displayColorPicker = function (callback) {
-    var call = function () {
-        writer.colorPickerDialog.querySelector('.ok').removeEventListener('click', call)
+ //   var call = 
+    this.colorPickerDialog.querySelector('.ok').onclick = function () {
         writer.colorPickerDialog.close();
         callback(currentColor);
 
 
     }
-    this.colorPickerDialog.querySelector('.ok').addEventListener('click', call);
     this.colorPickerDialog.showModal()
-    var picker = new jscolor(document.getElementById('color-picker-div'), {width:210, padding: 0, border:0, backgroundColor:'unset', valueElement: 'chosen-value', container: document.getElementById('color-picker-div'), onFineChange: function(){writer.setPickerColor(this)}, shadow: false });
+    var picker = new jscolor(document.getElementById('color-picker-div'), {width:200, padding: 0, border:0, backgroundColor:'unset', valueElement: 'chosen-value', container: document.getElementById('color-picker-div'), onFineChange: function(){writer.setPickerColor(this)}, shadow: false });
     document.getElementById('color-picker-div').show();
+    var colorItemsContainer =  this.colorPickerDialog.querySelector('#color-items-container');
+	colorItemsContainer.innerHTML = ""
+    var frontcolors = ['var(--main-text-color)','var(--red-text-color)','var(--green-text-color)','var(--blue-text-color)','var(--yellow-text-color)','var(--violet-text-color)'];
+    for(var color of frontcolors){
+		var item = document.createElement("button");
+		item.classList.add("color-item");
+		item.onclick = function(e){
+			e.preventDefault()
+			writer.colorPickerDialog.close();
+			console.log("selecting" + this.color);
+			callback(this.color);
+			return false
+		}
+		item.color = color;
+		item.style.background=color;
+		colorItemsContainer.appendChild(item);
+	}
+	var backcolors = ['var(--main-back-color)','var(--red-back-color)','var(--green-back-color)','var(--blue-back-color)','var(--yellow-back-color)','var(--violet-back-color)'];
+    for(var color of backcolors){
+		var item = document.createElement("button");
+		item.classList.add("color-item");
+		item.onclick = function(e){
+			e.preventDefault()
+			writer.colorPickerDialog.close();
+			console.log("selecting" + this.color);
+			callback(this.color);
+			return false
+		}
+		item.color = color;
+		item.style.background=color;
+		colorItemsContainer.appendChild(item);
+	}
+    
 }
 
 Writer.prototype.displayStyleDialog = function () {
