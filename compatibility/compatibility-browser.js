@@ -39,6 +39,18 @@ class BrowserCompatibility extends Compatibility {
                     remote,
                     ipcRenderer
                 } = require('electron');
+                $('head').append("<style>\
+                @media screen and (min-width: 1400px) {\
+				#loading-view {\
+					top: 20px;\
+					height: calc(100% - 40px);\
+				}\
+				#editor-container{\
+					height:calc(100% - 40px);\
+					padding-top:20px;\
+					padding-bottom:20px;\
+				}\
+			}</style>");
                 var syncButton = document.getElementById("sync-button");
                 syncButton.style.display = "inline"
                 ipcRenderer.on('sync-start', (event, arg) => {
