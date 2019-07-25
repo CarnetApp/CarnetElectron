@@ -77,10 +77,11 @@ function openNote(notePath) {
                 window.open("writer?path=" + encodeURIComponent(notePath), "_blank");
             }
             else {
-
+                $("#editor-container").show()
                 $(loadingView).fadeIn(function () {
                     writerFrame.src = data + "?path=" + encodeURIComponent(notePath);
                     writerFrame.style.display = "inline-flex"
+                    
                 })
             }
             /*setTimeout(function () {
@@ -89,13 +90,14 @@ function openNote(notePath) {
         }
         else {
             console.log("reuse old iframe");
-
+            $("#editor-container").show()
             $(loadingView).fadeIn(function () {
                 if (compatibility.isElectron)
                     writerFrame.send('loadnote', notePath);
                 else
                     writerFrame.contentWindow.loadPath(notePath);
                 writerFrame.style.display = "inline-flex"
+                
             })
         }
     })
@@ -704,6 +706,7 @@ function registerWriterEvent(event, callback) {
 
 registerWriterEvent("exit", function () {
     $(writerFrame).fadeOut();
+    $("#editor-container").hide()
     $("#no-drag-bar").hide()
     if (!wasNewNote) {
         if (currentTask != undefined) {
@@ -736,6 +739,7 @@ function cancelLoad() {
     isLoadCanceled = true;
     $(loadingView).fadeOut()
     $(writerFrame).fadeOut();
+    $("#editor-container").hide()
     $("#no-drag-bar").hide()
 }
 
