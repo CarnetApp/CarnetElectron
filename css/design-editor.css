@@ -608,6 +608,8 @@ div#container-button::-webkit-scrollbar {
 #color-items-container{
 	margin:auto;
 	margin-top:10px;
+	position:absolute;/*android hack, buttons didn't work*/
+	width:250px;/*android hack*/
 }
 #color-picker-div{
 	padding:10px 35px 10px 35px;
@@ -615,5 +617,8 @@ div#container-button::-webkit-scrollbar {
 	margin-left: -37px;
 	margin-right: -37px;
 
+}
 
+#color-picker-dialog  .mdl-dialog__actions{
+	margin-top: 50px; /*android hack*/
 }

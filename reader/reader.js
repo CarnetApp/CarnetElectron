@@ -485,6 +485,11 @@ var currentColor = undefined;
 Writer.prototype.setPickerColor = function (picker) {
     currentColor = "#" + picker.toString();
 }
+
+var getCssVar = function(v){
+	return getComputedStyle(document.documentElement)
+    .getPropertyValue(v);
+}
 Writer.prototype.displayColorPicker = function (callback) {
  //   var call = 
     this.colorPickerDialog.querySelector('.ok').onclick = function () {
@@ -498,7 +503,8 @@ Writer.prototype.displayColorPicker = function (callback) {
     document.getElementById('color-picker-div').show();
     var colorItemsContainer =  this.colorPickerDialog.querySelector('#color-items-container');
 	colorItemsContainer.innerHTML = ""
-    var frontcolors = ['var(--main-text-color)','var(--red-text-color)','var(--green-text-color)','var(--blue-text-color)','var(--yellow-text-color)','var(--violet-text-color)'];
+	console.log("color "+ getCssVar('--main-text-color'))
+    var frontcolors = [getCssVar('--main-text-color'),getCssVar('--red-text-color'),getCssVar('--green-text-color'),getCssVar('--blue-text-color'),getCssVar('--yellow-text-color'),getCssVar('--violet-text-color')];
     for(var color of frontcolors){
 		var item = document.createElement("button");
 		item.classList.add("color-item");
@@ -513,7 +519,7 @@ Writer.prototype.displayColorPicker = function (callback) {
 		item.style.background=color;
 		colorItemsContainer.appendChild(item);
 	}
-	var backcolors = ['var(--main-back-color)','var(--red-back-color)','var(--green-back-color)','var(--blue-back-color)','var(--yellow-back-color)','var(--violet-back-color)'];
+	var backcolors = [getCssVar('--main-back-color'),getCssVar('--red-back-color'),getCssVar('--green-back-color'),getCssVar('--blue-back-color'),getCssVar('--yellow-back-color'),getCssVar('--violet-back-color')];
     for(var color of backcolors){
 		var item = document.createElement("button");
 		item.classList.add("color-item");
