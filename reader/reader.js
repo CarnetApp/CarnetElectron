@@ -179,6 +179,7 @@ Writer.prototype.setMediaList = function (list) {
                 var img = document.createElement("img")
                 img.src = filePath
                 el.appendChild(img)
+                el.classList.add("image-media")
                 writer.fullscreenableMedia.push(filePath)
 
                 img.mediaIndex = mediaCount;

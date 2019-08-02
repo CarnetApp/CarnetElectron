@@ -486,6 +486,10 @@ div#container-button::-webkit-scrollbar {
     -webkit-transform: translateX(-250);
     transform: translateX(-250);
 }
+
+.fullscreen-media-toolbar .media-file:not(.media-image){
+	display:none;
+}
 	.mdl-layout__drawer-button{
 		background: unset !important;
 	}
