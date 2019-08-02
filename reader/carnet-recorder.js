@@ -23,6 +23,7 @@ CarnetRecorder.prototype.init = function () {
     this.startIcon = document.getElementById("startIcon");
     var currentTime = document.getElementById("current-time");
     var totalTime = document.getElementById("total-time")
+    var progressBar = document.getElementById("audio-progress");
     var stopButton = document.getElementById("stopButton")
     var start = document.getElementById("start")
     this.saveButton = document.getElementById("save-button")
@@ -31,7 +32,7 @@ CarnetRecorder.prototype.init = function () {
     var canvasWidth;
     var canvasHeight;
     var analyserContext;
-
+   
     this.deleteButton.onclick = function () {
       if (carnetRecorder.hasRecorded) {
         console.log("url " + carnetRecorder.currentUrl)
@@ -49,9 +50,16 @@ CarnetRecorder.prototype.init = function () {
     var wavesurfer = WaveSurfer.create({
       container: '#waveform'
     });
+    this.audioplayer = document.getElementById("audio-player")
     this.wavesurfer = wavesurfer;
     this.hasRecorded = false;
-
+    progressBar.oninput = function(){
+      progressBar.isSeeking = true
+    }
+    progressBar.onchange = function(){
+      progressBar.isSeeking = false
+      carnetRecorder.audioplayer.currentTime = progressBar.value/1000
+    }
     wavesurfer.on("finish", function () { carnetRecorder.refreshButtons(); });
 
     var options = {
@@ -64,7 +72,11 @@ CarnetRecorder.prototype.init = function () {
     };
     var recordingDuration = 0;
 
+    this.audioplayer.onloadedmetadata = function() {
+      progressBar.max = carnetRecorder.audioplayer.duration*1000
+    }; 
 
+    
     var recorder = new Recorder(options);
     this.recorder = recorder
     stopButton.onclick = function () { recorder.stop(); };
@@ -75,10 +87,17 @@ CarnetRecorder.prototype.init = function () {
         recorder.resume();
       } else if (!carnetRecorder.hasRecorded) {
         recorder.start();
-      } else if (!wavesurfer.isPlaying()) {
-        wavesurfer.play();
-      } else
-        wavesurfer.pause();
+      } else if (carnetRecorder.displayWaves){
+        if(!wavesurfer.isPlaying()) {
+          wavesurfer.play();
+        } else
+          wavesurfer.pause();
+     } else {
+       if(carnetRecorder.audioplayer.paused)
+       carnetRecorder.audioplayer.play()
+       else
+       carnetRecorder.audioplayer.pause()
+     }
       carnetRecorder.refreshButtons();
 
     }
@@ -99,10 +118,18 @@ CarnetRecorder.prototype.init = function () {
       if (!carnetRecorder.hasRecorded) {
         totalTime.innerHTML = currentTime.innerHTML = getFormatedTime(recordingDuration)
       } else {
-        totalTime.innerHTML = getFormatedTime(wavesurfer.getDuration() * 1000)
-        currentTime.innerHTML = getFormatedTime(wavesurfer.getCurrentTime() * 1000)
+        totalTime.innerHTML = getFormatedTime(carnetRecorder.displayWaves ? wavesurfer.getDuration() * 1000 : carnetRecorder.audioplayer.duration * 1000)
+        currentTime.innerHTML = getFormatedTime(carnetRecorder.displayWaves ? wavesurfer.getCurrentTime() * 1000 : carnetRecorder.audioplayer.currentTime * 1000)
+        if (!progressBar.isSeeking){
+          progressBar.material.change(carnetRecorder.audioplayer.currentTime*1000)
+        }
+
+        
       }
     }
+    this.audioplayer.onended = function() {
+      carnetRecorder.refreshButtons()
+    }; 
     var updateAnalysers = function (time) {
       canvasWidth = carnetRecorder.canvas.width;
       canvasHeight = carnetRecorder.canvas.height;
@@ -212,14 +239,25 @@ CarnetRecorder.prototype.setAudioUrl = function (url, name) {
   this.name = name
   this.currentUrl = url
   this.hasRecorded = true;
-  document.getElementById("waveform").style.display = "block"
   document.getElementById("analyser").style.display = "none"
-  this.wavesurfer.load(url)
+
+  if(this.displayWaves){
+    document.getElementById("waveform").style.display = "block"
+    document.getElementById("audio-progress").style.display = "none"
+    this.wavesurfer.load(url)
+
+  }
+  else{
+    document.getElementById("audio-progress").style.display = "block"
+    document.getElementById("waveform").style.display = "none"
+    this.audioplayer.src = url
+  }
   this.refreshButtons();
 }
 
 CarnetRecorder.prototype.new = function () {
   document.getElementById("waveform").style.display = "none"
+  document.getElementById("audio-progress").style.display = "none"
   document.getElementById("analyser").style.display = "block"
   this.reset();
 
@@ -231,10 +269,18 @@ CarnetRecorder.prototype.refreshButtons = function () {
     this.startIcon.innerHTML = "pause"
   } else if (this.recorder.state === "paused" || !this.hasRecorded) {
     this.startIcon.innerHTML = "mic"
-  } else if (this.wavesurfer.isPlaying()) {
-    this.startIcon.innerHTML = "pause"
+  } else if(this.displayWaves){
+    if (this.wavesurfer.isPlaying()) {
+      this.startIcon.innerHTML = "pause"
+    } else {
+      this.startIcon.innerHTML = "play_arrow"
+    }
   } else {
-    this.startIcon.innerHTML = "play_arrow"
+    if (!this.audioplayer.paused) {
+      this.startIcon.innerHTML = "pause"
+    } else {
+      this.startIcon.innerHTML = "play_arrow"
+    }
   }
 
 }

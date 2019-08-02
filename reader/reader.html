@@ -494,16 +494,18 @@ mdl-layout--fixed-header">
 	<div id="fullscreen-viewer"></div>
 	<dialog class="mdl-dialog" id="recorder-container">
 		<div id="recorder-file-buttons">
+
 			<button id="delete-button" class="mdl-button mdl-js-button"><i class="material-icons">
 					delete
 				</i></button>
-			<button id="save-button" class="mdl-button mdl-js-button"><i class="material-icons">
-					save
-				</i></button>
+			<button id="save-button" class="mdl-button mdl-js-button">OK</button>
 		</div>
 		<div style="clear: right;"></div>
 		<canvas id="analyser"></canvas>
-		<div id="waveform"></div>
+		<div id="waveform" style="display:none"></div>
+		<input class="mdl-slider mdl-js-slider" id="audio-progress" type="range"
+  		min="0" max="100" value="0" tabindex="0">
+		<audio id="audio-player"></audio>
 		<div id="controller">
 			<span id="current-time">0:00</span>
 
