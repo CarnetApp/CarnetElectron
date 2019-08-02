@@ -189,19 +189,26 @@ Writer.prototype.setMediaList = function (list) {
                 }
                 mediaCount++;
             }
-        } else {
-            var img = document.createElement("img")
-            img.src = rootpath + "/img/file.svg"
-            el.appendChild(img)
-            el.innerHTML += "<br /> " + name.substr(0, 15)
+        }
+       
+         else {
+            var img = document.createElement("i")
+            img.classList.add("material-icons")
             el.classList.add("media-file")
             el.filePath = filePath
-            if (filePath.endsWith("opus")) {
+            if (FileUtils.isFileAudio(filePath)) {
+                img.innerHTML = "audiotrack"
                 el.onclick = function () {
                     writer.recorder.setAudioUrl(filePath, name)
                     writer.recorderDialog.showModal()
                 }
             }
+            else
+                img.innerHTML = "insert_drive_file"
+            el.appendChild(img)
+            el.innerHTML += "<br /> " + name.substr(0, 15)
+
+
 
         }
         writer.mediaList.appendChild(el)

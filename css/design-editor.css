@@ -139,7 +139,7 @@ html {
 
 .media-file {
 	text-align: center;
-	color: white;
+	color: var(--header-text-color);
 	width: 100px;
 	word-wrap: break-word;
 }
