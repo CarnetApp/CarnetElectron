@@ -16,6 +16,11 @@
     --fab-color: black;
 }   
 
+.mdl-checkbox__box-outline {
+    border: 2px solid var(--note-text-color);
+}
+
+
 #drag-bar{
     background: var(--drag-bar-bg);
     width:100%;
