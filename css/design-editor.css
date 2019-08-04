@@ -38,6 +38,10 @@ html {
 	}
 }
 
+.mdl-checkbox__box-outline {
+    border: 2px solid var(--main-text-color);
+}
+
 .selectedButton {
 	background-color: rgba(199, 196, 196, 0.452);
 }
@@ -157,7 +161,6 @@ html {
 
 #editor {
 	font-size: 20px;
-	padding: 20px;
 	margin: 0px;
 }
 
@@ -432,6 +435,7 @@ div#container-button::-webkit-scrollbar {
 
   .edit-zone{
 	  width:100%;
+	  padding: 20px;
   }
 
   .edit-zone:focus {
@@ -601,7 +605,7 @@ div#container-button::-webkit-scrollbar {
 	height:30px;
 	border: 0px;
 	display:inline-block;
-	padding-right:10px:
+	padding-right:10px;
 }
 
 .color-item:hover, .color-item:active {

@@ -1,17 +1,15 @@
 :root{
     --main-text-color:white;
+    --header-bg: #171a20;
 }
+.mdl-layout__drawer,
 .toolbar {
-    background: #22252f;
+    background-color: #171a20 !important;
 }
 
-
-.mdl-layout__drawer {
-    background: #1e222b;
-}
-
-#center {
-    background: #393c44;
+#center,
+.mdl-layout__content {
+    background-color: #1e222b !important;
 }
 
 .headerbar-button {
