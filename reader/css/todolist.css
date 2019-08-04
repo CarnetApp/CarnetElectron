@@ -77,7 +77,7 @@
     padding-top: 12px;
     padding-bottom: 6px;
     padding-left: 10px;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: var(--background-todolist-item);
 }
 
 @media screen and (min-width: 620px) {
@@ -95,7 +95,7 @@
 
 .todo-item textarea {
     background-color: transparent;
-    color: #fff;
+    color: var(--main-text-color);
     font-family: inherit;
 }
 .todo-list input{

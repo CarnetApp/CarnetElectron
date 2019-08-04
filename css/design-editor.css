@@ -13,7 +13,7 @@
     --blue-back-color:#BEBEFF;
     --yellow-back-color:#FBFCBC;
     --violet-back-color:#FFDBFF;
-
+	--background-todolist-item: rgba(0, 0, 0, 0.05);
 }
 
 body {
