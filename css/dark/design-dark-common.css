@@ -29,7 +29,7 @@ html {
   ::-webkit-resizer { background-color: #666;}
 
 .mdl-layout__drawer {
-    border-right-color:grey;
+    border-right: 0px;
 }
 
 
