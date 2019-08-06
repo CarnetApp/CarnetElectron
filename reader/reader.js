@@ -1077,7 +1077,12 @@ Writer.prototype.fillColor = function (color) {
 }
 
 Writer.prototype.saveRating = function (rating) {
-    this.note.metadata.rating = rating;
+    if(rating == undefined)
+        return;
+    if(this.note.metadata.rating != rating)
+        this.note.metadata.rating = rating;
+    else
+        this.note.metadata.rating = -1;
     console.log("new rating " + this.note.metadata.rating)
     writer.hasTextChanged = true;
 }
