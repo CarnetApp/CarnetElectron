@@ -131,21 +131,12 @@ var TodoList = function (element) {
         this.addItem.onclick = function () {
             todolist.createItem("", false)
         }
-    $(this.todo).sortable({ handle: ".move-item" });
+    $(this.todo).sortable({ handle: ".move-item", stop: function(){
+        writer.hasTextChanged = true
+    }});
     $(this.todo).disableSelection();
 
 
-}
-TodoList.prototype.startMoving = function (item) {
-    $(item).draggable();
-}
-
-
-TodoList.prototype.registerToMove = function (hand, item) {
-    var todolist = this;
-    hand.onclick = function () {
-        todolist.startMoving(item);
-    }
 }
 
 TodoList.prototype.toData = function () {
@@ -211,7 +202,6 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
     move.addEventListener('mouseup', function () {
         move.classList.remove("grabbing");
     }, false);
-    //this.registerToMove(move, div)
 
     div.appendChild(move)
 
