@@ -94,7 +94,11 @@
             </dialog>
             <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp settings-box"
                 style="">
-
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric carnet-settings-button" id="account">
+                        My account
+                    </td>
+                </tr>
                 <tr>
                     <td class="mdl-data-table__cell--non-numeric carnet-settings-button" id="select_note_path_button">
                         Select note path
@@ -156,13 +160,19 @@
                         Sources
                     </td>
                 </tr>
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric carnet-settings-button" id="logout">
+                        Logout
+                    </td>
+                </tr>
             </table>
 
 
         </main>
         <script src="settings/settings.js"></script>
     </div>
-    <div id="restarting" style="display:none;position: absolute; z-index:3;width:100%; height:100%; background: rgba(92, 120, 165,.9); ">
+    <div id="restarting"
+        style="display:none;position: absolute; z-index:3;width:100%; height:100%; background: rgba(92, 120, 165,.9); ">
         <div style="position: relative;top:50%;text-align:center;font-size:30px; color:white;">QuickDoc will now
             restart</div>
     </div>

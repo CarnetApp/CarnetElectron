@@ -56,6 +56,12 @@ class SettingsCompatibility extends Compatibility {
                 document.getElementById("window-frame").parentElement.style.display = "none";
                 document.getElementById("connect").parentElement.style.display = "none";
                 document.getElementById("disconnect").parentElement.style.display = "none";
+                document.getElementById("account").onclick = function () {
+                    compatibility.openUrl("../../settings/user")
+                }
+                document.getElementById("logout").onclick = function () {
+                    compatibility.openUrl("../../logout?requesttoken=" + document.getElementById("logout-token").innerHTML)
+                }
             }
         })
 
