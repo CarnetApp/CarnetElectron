@@ -4,6 +4,26 @@ if [ "$#" -ne 2 ]; then
     echo "Usage : compile.sh android|electron path"
 fi
 
+cd i18n
+rm tot.json; 
+first=true;
+echo "{">> tot; 
+find . -iname "*.json" |  while read fullfile; 
+do 
+file=$(cat "$fullfile");
+filename=$(basename -- "$fullfile");
+$first;
+if [ "$first" == "false" ]; 
+then 
+echo "," >> tot; 
+
+fi;  
+first="false"; 
+echo "\""${filename%.*}"\":" >> tot; 
+echo $file >> tot; 
+done
+echo "}">> tot; 
+mv tot tot.json
 if [ "$1" == "android" ]; then
     echo "compiling for android"
     rm -R dist/build/
