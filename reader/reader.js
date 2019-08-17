@@ -1035,6 +1035,7 @@ Writer.prototype.removeKeyword = function (word) {
 Writer.prototype.reset = function () {
     this.exitOnSaved = false
     this.putDefaultHTML()
+    this.setMediaList([])
     document.getElementById("toolbar").classList.remove("more")
     var dias = document.getElementsByClassName("mdl-dialog")
     for (var i = 0; i < dias.length; i++) {
