@@ -24,6 +24,7 @@ echo $file >> tot;
 done
 echo "}">> tot; 
 mv tot tot.json
+cd ..
 if [ "$1" == "android" ]; then
     echo "compiling for android"
     rm -R dist/build/
