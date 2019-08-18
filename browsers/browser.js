@@ -15,6 +15,11 @@ var noteCacheStr = String(store.get("note_cache"))
 if (noteCacheStr == "undefined")
     noteCacheStr = "{}"
 var cachedMetadata = JSON.parse(noteCacheStr);
+var recentCacheStr = String(store.get("recent_cache"))
+var cachedRecentDB = undefined
+if (recentCacheStr != "undefined")
+    cachedRecentDB = JSON.parse(recentCacheStr);
+
 var TextGetterTask = function (list) {
     this.list = list;
     this.current = 0;
@@ -81,7 +86,7 @@ function openNote(notePath) {
                 $(loadingView).fadeIn(function () {
                     writerFrame.src = data + "?path=" + encodeURIComponent(notePath);
                     writerFrame.style.display = "inline-flex"
-                    
+
                 })
             }
             /*setTimeout(function () {
@@ -97,7 +102,7 @@ function openNote(notePath) {
                 else
                     writerFrame.contentWindow.loadPath(notePath);
                 writerFrame.style.display = "inline-flex"
-                
+
             })
         }
     })
@@ -344,9 +349,8 @@ var mNewFolderDialog = new NewFolderDialog()
 
 var refreshTimeout = undefined;
 
-function sortBy(sortBy, reversed) {
-    console.oldlog("sort " + sortBy + "reversed " + reversed)
-    notePath = []
+function sortBy(sortBy, reversed, discret) {
+* notePath =[]
     var sorter = Utils.sortByDefault
     switch (sortBy) {
         case "creation":
@@ -359,7 +363,7 @@ function sortBy(sortBy, reversed) {
             sorter = Utils.sortByCustomDate
             break;
     }
-    resetGrid(false);
+    resetGrid(discret);
     notes.sort(reversed ? function (a, b) {
         return -sorter(a, b);
     } : sorter)
@@ -373,6 +377,106 @@ function sortBy(sortBy, reversed) {
     currentTask.startList();
 
 }
+
+function onListEnd(pathToList, files, metadatas, discret) {
+    if (!_.isEqual(files, oldFiles)) {
+        var scroll = resetGrid(discret);
+        oldFiles = files;
+        var noteCardViewGrid = this.noteCardViewGrid
+        notes = [];
+        notePath = [];
+        if (currentTask != undefined)
+            currentTask.continue = false
+
+        var i = 0
+        for (let file of files) {
+            var filename = getFilenameFromPath(file.path);
+            if (file.isFile && filename.endsWith(".sqd")) {
+                let metadata = metadatas != undefined ? metadatas[file.path] : undefined;
+                var noteTestTxt = new Note(stripExtensionFromName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined);
+                noteTestTxt.isPinned = file.isPinned
+                noteTestTxt.originalIndex = i;
+                notes.push(noteTestTxt)
+                if (metadata != undefined)
+                    cachedMetadata[file.path] = metadata
+            } else if (!file.isFile) {
+                file.originalIndex = i;
+                notes.push(file)
+            }
+            i++
+        }
+
+        if (files.length == 0 && pathToList === "recentdb://") {
+            $("#emty-view").fadeOut("fast");
+            var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_1"), "untitleddonotedit.sqd", {
+                creation_date: new Date().getTime(),
+                last_modification_date: new Date().getTime(),
+                keywords: [],
+                rating: 5,
+                color: "none"
+            }, undefined);
+            notes.push(noteTestTxt)
+
+            var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_5"), "untitleddonotedit.sqd", {
+                creation_date: new Date().getTime(),
+                last_modification_date: new Date().getTime(),
+                keywords: [],
+                rating: -1,
+                color: "red"
+            }, undefined);
+            noteTestTxt.previews = []
+            noteTestTxt.previews.push(root_url + "img/bike.png");
+            notes.push(noteTestTxt)
+
+            var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_2"), "untitleddonotedit.sqd", {
+                creation_date: new Date().getTime(),
+                last_modification_date: new Date().getTime(),
+                keywords: ["keyword"],
+                rating: -1,
+                color: "orange"
+            }, undefined);
+            notes.push(noteTestTxt)
+            var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_3"), "untitleddonotedit.sqd", {
+                creation_date: new Date().getTime(),
+                last_modification_date: new Date().getTime(),
+                keywords: [],
+                rating: 3,
+                color: "none"
+            }, undefined);
+            notes.push(noteTestTxt)
+            var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_4"), "untitleddonotedit.sqd", {
+                creation_date: new Date().getTime(),
+                last_modification_date: new Date().getTime(),
+                keywords: [],
+                rating: -1,
+                color: "green"
+            }, undefined);
+            notes.push(noteTestTxt)
+
+
+            var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_6"), "untitleddonotedit.sqd", {
+                creation_date: new Date().getTime(),
+                last_modification_date: new Date().getTime(),
+                keywords: [],
+                rating: -1,
+                urls: { "https://carnet.live": {} },
+                todolists: [{ todo: [$.i18n("fake_note_todo_item_1"), $.i18n("fake_note_todo_item_2")] }],
+                color: "none"
+            }, undefined);
+
+            notes.push(noteTestTxt)
+
+        }
+* sortBy(uiSettings['sort_by'], uiSettings['reversed'], discret);
+        if (discret) {
+            document.getElementById("grid-container").scrollTop = scroll;
+            console.log("scroll : " + scroll)
+
+        }
+
+    }
+}
+
 var notes = [];
 function list(pathToList, discret) {
     if (refreshTimeout !== undefined)
@@ -407,104 +511,18 @@ function list(pathToList, discret) {
             document.getElementById("page-content").style.display = "block";
             document.getElementById("note-loading-view").style.display = "none";
         }
-        if (!_.isEqual(files, oldFiles)) {
-            var scroll = resetGrid(discret);
-            oldFiles = files;
-            var noteCardViewGrid = this.noteCardViewGrid
-            notes = [];
-            notePath = [];
-            if (currentTask != undefined)
-                currentTask.continue = false
-            if (files.length > 0) {
-                $("#emty-view").fadeOut("fast");
-            } else if (endOfSearch)
-                $("#emty-view").fadeIn("fast");
-            var i = 0
-            for (let file of files) {
-                var filename = getFilenameFromPath(file.path);
-                if (file.isFile && filename.endsWith(".sqd")) {
-                    let metadata = metadatas != undefined ? metadatas[file.path] : undefined;
-                    console.oldlog("jfkjkfjk is " + (metadata != undefined))
-                    var noteTestTxt = new Note(stripExtensionFromName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined);
-                    noteTestTxt.isPinned = file.isPinned
-                    noteTestTxt.originalIndex = i;
-                    notes.push(noteTestTxt)
-                } else if (!file.isFile) {
-                    file.originalIndex = i;
-                    notes.push(file)
-                }
-                i++
-            }
-
-            if (files.length == 0 && pathToList === "recentdb://") {
-                $("#emty-view").fadeOut("fast");
-                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_1"), "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: [],
-                    rating: 5,
-                    color: "none"
-                }, undefined);
-                notes.push(noteTestTxt)
-
-                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_5"), "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: [],
-                    rating: -1,
-                    color: "red"
-                }, undefined);
-                noteTestTxt.previews = []
-                noteTestTxt.previews.push(root_url + "img/bike.png");
-                notes.push(noteTestTxt)
-
-                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_2"), "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: ["keyword"],
-                    rating: -1,
-                    color: "orange"
-                }, undefined);
-                notes.push(noteTestTxt)
-                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_3"), "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: [],
-                    rating: 3,
-                    color: "none"
-                }, undefined);
-                notes.push(noteTestTxt)
-                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_4"), "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: [],
-                    rating: -1,
-                    color: "green"
-                }, undefined);
-                notes.push(noteTestTxt)
-
-
-                var noteTestTxt = new Note("untitleddonotedit.sqd", $.i18n("fake_note_6"), "untitleddonotedit.sqd", {
-                    creation_date: new Date().getTime(),
-                    last_modification_date: new Date().getTime(),
-                    keywords: [],
-                    rating: -1,
-                    urls: { "https://carnet.live": {} },
-                    todolists: [{ todo: [$.i18n("fake_note_todo_item_1"), $.i18n("fake_note_todo_item_2")] }],
-                    color: "none"
-                }, undefined);
-
-                notes.push(noteTestTxt)
-
-            }
-            sortBy(uiSettings['sort_by'], uiSettings['reversed']);
-            if (discret) {
-                document.getElementById("grid-container").scrollTop = scroll;
-                console.log("scroll : " + scroll)
-
-            }
-
+        if (files != null && pathToList === "recentdb://" && files.length > 0) {
+            //save to cache
+            store.set("recent_cache", JSON.stringify(files))
         }
+
+        if (files.length > 0) {
+            $("#emty-view").fadeOut("fast");
+        } else if (endOfSearch)
+            $("#emty-view").fadeIn("fast");
+
+        onListEnd(pathToList, files, metadatas, discret)
+
         if (!endOfSearch) {
             refreshTimeout = setTimeout(function () {
                 list(pathToList, files.length > 0);
@@ -852,11 +870,19 @@ compatibility.loadLang(function () {
         if (uiSettings['reversed']) {
             document.getElementById("reversed-order").parentNode.classList.add("is-checked")
         }
-        list(initPath)
+
+        list(initPath, cachedRecentDB != undefined ? true : false)
 
     })
 })
 
+function loadCachedRecentDB() {
+    if (cachedRecentDB != undefined)
+        onListEnd("recentdb://", cachedRecentDB, cachedMetadata)
+
+}
+
+loadCachedRecentDB();
 
 
 $.i18n().locale = navigator.language;
