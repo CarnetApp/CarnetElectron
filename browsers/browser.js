@@ -350,7 +350,7 @@ var mNewFolderDialog = new NewFolderDialog()
 var refreshTimeout = undefined;
 
 function sortBy(sortBy, reversed, discret) {
-* notePath =[]
+    notePath = []
     var sorter = Utils.sortByDefault
     switch (sortBy) {
         case "creation":
