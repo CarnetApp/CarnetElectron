@@ -467,7 +467,7 @@ function onListEnd(pathToList, files, metadatas, discret) {
             notes.push(noteTestTxt)
 
         }
-* sortBy(uiSettings['sort_by'], uiSettings['reversed'], discret);
+ sortBy(uiSettings['sort_by'], uiSettings['reversed'], discret);
         if (discret) {
             document.getElementById("grid-container").scrollTop = scroll;
             console.log("scroll : " + scroll)
