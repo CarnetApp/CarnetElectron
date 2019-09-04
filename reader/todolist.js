@@ -131,9 +131,11 @@ var TodoList = function (element) {
         this.addItem.onclick = function () {
             todolist.createItem("", false)
         }
-    $(this.todo).sortable({ handle: ".move-item", stop: function(){
-        writer.hasTextChanged = true
-    }});
+    $(this.todo).sortable({
+        handle: ".move-item", stop: function () {
+            writer.hasTextChanged = true
+        }
+    });
     $(this.todo).disableSelection();
 
 

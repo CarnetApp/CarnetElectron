@@ -130,6 +130,11 @@ html {
 	text-decoration: none;
 }
 
+#scroll-bottom{
+	float:right;
+	margin-top:10px;
+}
+
 #media-list {
 	display: inline;
 }
@@ -345,6 +350,7 @@ div#container-button::-webkit-scrollbar {
 }
 #name-container{
 	margin-top:5px;
+	margin-right:69px;
 }
 #name-container label{
 	padding-left: 40px;

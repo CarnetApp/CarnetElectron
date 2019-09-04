@@ -311,12 +311,32 @@ Writer.prototype.extractNote = function () {
         writer.updateRating(writer.note.metadata.rating)
         writer.updateNoteColor(writer.note.metadata.color != undefined ? writer.note.metadata.color : "none");
         writer.setDoNotEdit(false)
+        setTimeout(function () {
+            if (!writer.isBigNote()) {
+                var elements = writer.oDoc.getElementsByClassName("edit-zone");
+                writer.placeCaretAtEnd(elements[elements.length - 1]);
+                writer.oFloating = document.getElementById("floating");
+                writer.scrollBottom.style.display = "none"
+            } else {
+                $(writer.oCenter).scrollTop(0)
+                writer.scrollBottom.style.display = "block"
+            }
+        }, 200)
     });
 }
 
 var saveTextIfChanged = function (onSaved) {
     console.log("has text changed ? " + writer.hasTextChanged)
     if (writer.hasTextChanged) {
+        if (writer.isBigNote()) {
+            if (writer.scrollBottom.style.display == "none") {
+                writer.scrollBottom.style.display = "block"
+            }
+        } else {
+            if (writer.scrollBottom.style.display == "block") {
+                writer.scrollBottom.style.display = "none"
+            }
+        }
         writer.seriesTaskExecutor.addTask(writer.saveNoteTask, function () {
             console.log("exitOnSaved " + writer.exitOnSaved)
             writer.note.is_not_created = false
@@ -383,8 +403,12 @@ Writer.prototype.placeCaretAtEnd = function (el) {
         textRange.select();
     }
 }
+
+Writer.prototype.isBigNote = function () {
+    return this.oCenter.scrollHeight > this.oCenter.clientHeight + 200
+}
+
 Writer.prototype.fillWriter = function (extractedHTML) {
-    console.log("fill " + extractedHTML)
     var writer = this;
     if (extractedHTML != undefined && extractedHTML != "")
         this.oEditor.innerHTML = extractedHTML;
@@ -393,7 +417,6 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     document.getElementById("name-input").value = name.startsWith("untitled") ? "" : name
     this.oCenter.onscroll = function () {
         lastscroll = $(writer.oCenter).scrollTop()
-        console.log("onscroll")
     }
     this.oDoc = document.getElementById("text");
     this.oDoc.contentEditable = false
@@ -415,14 +438,12 @@ Writer.prototype.fillWriter = function (extractedHTML) {
             writer.placeCaretAtEnd(elements[elements.length - 1]);
         }
     }
-    //focus on last editable element
-    var elements = this.oDoc.getElementsByClassName("edit-zone");
-    writer.placeCaretAtEnd(elements[elements.length - 1]);
-    this.oFloating = document.getElementById("floating");
-    var writer = this
     this.oDoc.addEventListener("input", function () {
         writer.hasTextChanged = true;
     }, false);
+    //focus on last editable element
+
+
 
 
 
@@ -494,12 +515,12 @@ Writer.prototype.setPickerColor = function (picker) {
     currentColor = "#" + picker.toString();
 }
 
-var getCssVar = function(v){
-	return getComputedStyle(document.documentElement)
-    .getPropertyValue(v);
+var getCssVar = function (v) {
+    return getComputedStyle(document.documentElement)
+        .getPropertyValue(v);
 }
 Writer.prototype.displayColorPicker = function (callback) {
- //   var call = 
+    //   var call = 
     this.colorPickerDialog.querySelector('.ok').onclick = function () {
         writer.colorPickerDialog.close();
         callback(currentColor);
@@ -507,42 +528,42 @@ Writer.prototype.displayColorPicker = function (callback) {
 
     }
     this.colorPickerDialog.showModal()
-    var picker = new jscolor(document.getElementById('color-picker-div'), {width:200, padding: 0, border:0, backgroundColor:'unset', valueElement: 'chosen-value', container: document.getElementById('color-picker-div'), onFineChange: function(){writer.setPickerColor(this)}, shadow: false });
+    var picker = new jscolor(document.getElementById('color-picker-div'), { width: 200, padding: 0, border: 0, backgroundColor: 'unset', valueElement: 'chosen-value', container: document.getElementById('color-picker-div'), onFineChange: function () { writer.setPickerColor(this) }, shadow: false });
     document.getElementById('color-picker-div').show();
-    var colorItemsContainer =  this.colorPickerDialog.querySelector('#color-items-container');
-	colorItemsContainer.innerHTML = ""
-	console.log("color "+ getCssVar('--main-text-color'))
-    var frontcolors = [getCssVar('--main-text-color'),getCssVar('--red-text-color'),getCssVar('--green-text-color'),getCssVar('--blue-text-color'),getCssVar('--yellow-text-color'),getCssVar('--violet-text-color')];
-    for(var color of frontcolors){
-		var item = document.createElement("button");
-		item.classList.add("color-item");
-		item.onclick = function(e){
-			e.preventDefault()
-			writer.colorPickerDialog.close();
-			console.log("selecting" + this.color);
-			callback(this.color);
-			return false
-		}
-		item.color = color;
-		item.style.background=color;
-		colorItemsContainer.appendChild(item);
-	}
-	var backcolors = [getCssVar('--main-back-color'),getCssVar('--red-back-color'),getCssVar('--green-back-color'),getCssVar('--blue-back-color'),getCssVar('--yellow-back-color'),getCssVar('--violet-back-color')];
-    for(var color of backcolors){
-		var item = document.createElement("button");
-		item.classList.add("color-item");
-		item.onclick = function(e){
-			e.preventDefault()
-			writer.colorPickerDialog.close();
-			console.log("selecting" + this.color);
-			callback(this.color);
-			return false
-		}
-		item.color = color;
-		item.style.background=color;
-		colorItemsContainer.appendChild(item);
-	}
-    
+    var colorItemsContainer = this.colorPickerDialog.querySelector('#color-items-container');
+    colorItemsContainer.innerHTML = ""
+    console.log("color " + getCssVar('--main-text-color'))
+    var frontcolors = [getCssVar('--main-text-color'), getCssVar('--red-text-color'), getCssVar('--green-text-color'), getCssVar('--blue-text-color'), getCssVar('--yellow-text-color'), getCssVar('--violet-text-color')];
+    for (var color of frontcolors) {
+        var item = document.createElement("button");
+        item.classList.add("color-item");
+        item.onclick = function (e) {
+            e.preventDefault()
+            writer.colorPickerDialog.close();
+            console.log("selecting" + this.color);
+            callback(this.color);
+            return false
+        }
+        item.color = color;
+        item.style.background = color;
+        colorItemsContainer.appendChild(item);
+    }
+    var backcolors = [getCssVar('--main-back-color'), getCssVar('--red-back-color'), getCssVar('--green-back-color'), getCssVar('--blue-back-color'), getCssVar('--yellow-back-color'), getCssVar('--violet-back-color')];
+    for (var color of backcolors) {
+        var item = document.createElement("button");
+        item.classList.add("color-item");
+        item.onclick = function (e) {
+            e.preventDefault()
+            writer.colorPickerDialog.close();
+            console.log("selecting" + this.color);
+            callback(this.color);
+            return false
+        }
+        item.color = color;
+        item.style.background = color;
+        colorItemsContainer.appendChild(item);
+    }
+
 }
 
 Writer.prototype.displayStyleDialog = function () {
@@ -630,7 +651,10 @@ Writer.prototype.init = function () {
     this.oEditor = document.getElementById("editor");
 
     this.oCenter = document.getElementById("center");
-
+    this.scrollBottom = document.getElementById("scroll-bottom")
+    this.scrollBottom.onclick = function () {
+        $(writer.oCenter).animate({ scrollTop: $(writer.oCenter).prop("scrollHeight") });
+    }
     this.mediaList = document.getElementById("media-list");
     this.fullscreenViewer = document.getElementById("fullscreen-viewer");
     $(document).bind('keydown', function (event) {
@@ -1078,9 +1102,9 @@ Writer.prototype.fillColor = function (color) {
 }
 
 Writer.prototype.saveRating = function (rating) {
-    if(rating == undefined)
+    if (rating == undefined)
         return;
-    if(this.note.metadata.rating != rating)
+    if (this.note.metadata.rating != rating)
         this.note.metadata.rating = rating;
     else
         this.note.metadata.rating = -1;
