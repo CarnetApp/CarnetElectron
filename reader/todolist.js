@@ -286,7 +286,6 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
     else
         this.uncheck(div, after)
     span.onfocus = function () {
-
     }
     span.focus()
     resizeTextArea(span)

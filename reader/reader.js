@@ -191,8 +191,8 @@ Writer.prototype.setMediaList = function (list) {
                 mediaCount++;
             }
         }
-       
-         else {
+
+        else {
             var img = document.createElement("i")
             img.classList.add("material-icons")
             el.classList.add("media-file")

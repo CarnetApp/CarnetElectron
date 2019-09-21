@@ -18,6 +18,7 @@ CarnetRecorder.prototype.init = function () {
   }
 
   else {
+    this.displayWaves = compatibility.isAndroid && AudioBuffer.prototype.getChannelData != undefined; // issue with getChannelData on bromite
     var carnetRecorder = this;
     var recordingDurationInt;
     this.startIcon = document.getElementById("startIcon");
@@ -32,7 +33,7 @@ CarnetRecorder.prototype.init = function () {
     var canvasWidth;
     var canvasHeight;
     var analyserContext;
-   
+
     this.deleteButton.onclick = function () {
       if (carnetRecorder.hasRecorded) {
         console.log("url " + carnetRecorder.currentUrl)
@@ -53,12 +54,12 @@ CarnetRecorder.prototype.init = function () {
     this.audioplayer = document.getElementById("audio-player")
     this.wavesurfer = wavesurfer;
     this.hasRecorded = false;
-    progressBar.oninput = function(){
+    progressBar.oninput = function () {
       progressBar.isSeeking = true
     }
-    progressBar.onchange = function(){
+    progressBar.onchange = function () {
       progressBar.isSeeking = false
-      carnetRecorder.audioplayer.currentTime = progressBar.value/1000
+      carnetRecorder.audioplayer.currentTime = progressBar.value / 1000
     }
     wavesurfer.on("finish", function () { carnetRecorder.refreshButtons(); });
 
@@ -69,17 +70,20 @@ CarnetRecorder.prototype.init = function () {
       encoderBitRate: 192000,
       encoderSampleRate: 48000,
       encoderPath: rootpath + "reader/libs/recorder/encoderWorker.min.js",
+      //encoderPath: RequestBuilder.sRequestBuilder.api_url + "recorder/encoderWorker.min.js",
     };
     var recordingDuration = 0;
 
-    this.audioplayer.onloadedmetadata = function() {
-      progressBar.max = carnetRecorder.audioplayer.duration*1000
-    }; 
+    this.audioplayer.onloadedmetadata = function () {
+      progressBar.max = (carnetRecorder.audioplayer.duration == "Infinity" ? carnetRecorder.duration : carnetRecorder.audioplayer.duration) * 1000;
+    };
 
-    
-    var recorder = new Recorder(options);
+
+    var recorder = compatibility.getRecorder(options);
     this.recorder = recorder
-    stopButton.onclick = function () { recorder.stop(); };
+    stopButton.onclick = function () {
+      recorder.stop();
+    };
     start.onclick = function () {
       if (recorder.state === "recording") {
         recorder.pause();
@@ -87,17 +91,17 @@ CarnetRecorder.prototype.init = function () {
         recorder.resume();
       } else if (!carnetRecorder.hasRecorded) {
         recorder.start();
-      } else if (carnetRecorder.displayWaves){
-        if(!wavesurfer.isPlaying()) {
+      } else if (carnetRecorder.displayWaves) {
+        if (!wavesurfer.isPlaying()) {
           wavesurfer.play();
         } else
           wavesurfer.pause();
-     } else {
-       if(carnetRecorder.audioplayer.paused)
-       carnetRecorder.audioplayer.play()
-       else
-       carnetRecorder.audioplayer.pause()
-     }
+      } else {
+        if (carnetRecorder.audioplayer.paused)
+          carnetRecorder.audioplayer.play()
+        else
+          carnetRecorder.audioplayer.pause()
+      }
       carnetRecorder.refreshButtons();
 
     }
@@ -118,18 +122,18 @@ CarnetRecorder.prototype.init = function () {
       if (!carnetRecorder.hasRecorded) {
         totalTime.innerHTML = currentTime.innerHTML = getFormatedTime(recordingDuration)
       } else {
-        totalTime.innerHTML = getFormatedTime(carnetRecorder.displayWaves ? wavesurfer.getDuration() * 1000 : carnetRecorder.audioplayer.duration * 1000)
+        totalTime.innerHTML = getFormatedTime(carnetRecorder.displayWaves ? wavesurfer.getDuration() * 1000 : (carnetRecorder.audioplayer.duration == "Infinity" ? carnetRecorder.duration : carnetRecorder.audioplayer.duration) * 1000);
         currentTime.innerHTML = getFormatedTime(carnetRecorder.displayWaves ? wavesurfer.getCurrentTime() * 1000 : carnetRecorder.audioplayer.currentTime * 1000)
-        if (!progressBar.isSeeking){
-          progressBar.material.change(carnetRecorder.audioplayer.currentTime*1000)
+        if (!progressBar.isSeeking) {
+          progressBar.material.change(carnetRecorder.audioplayer.currentTime * 1000)
         }
 
-        
+
       }
     }
-    this.audioplayer.onended = function() {
+    this.audioplayer.onended = function () {
       carnetRecorder.refreshButtons()
-    }; 
+    };
     var updateAnalysers = function (time) {
       canvasWidth = carnetRecorder.canvas.width;
       canvasHeight = carnetRecorder.canvas.height;
@@ -169,10 +173,12 @@ CarnetRecorder.prototype.init = function () {
     recorder.onstart = function (e) {
       recordingDuration = 0
       stopButton.disabled = false;
-      analyserNode = recorder.audioContext.createAnalyser();
-      analyserNode.fftSize = 2048;
-      recorder.recordingGainNode.connect(analyserNode)
-      updateAnalysers();
+      if (recorder.audioContext != undefined) {
+        analyserNode = recorder.audioContext.createAnalyser();
+        analyserNode.fftSize = 2048;
+        recorder.recordingGainNode.connect(analyserNode)
+        updateAnalysers();
+      }
       carnetRecorder.refreshButtons();
       recordingDurationInt = setInterval(updateRecordingDuration, 1000)
     };
@@ -201,38 +207,55 @@ CarnetRecorder.prototype.init = function () {
     recorder.onresume = function (e) {
       stopButton.disabled = false;
       recordingDurationInt = setInterval(updateRecordingDuration, 1000)
-      updateAnalysers();
+      if (recorder.audioContext != undefined) updateAnalysers();
     };
 
-    recorder.ondataavailable = function (typedArray) {
+    recorder.ondataavailable = function (typedArray, url) {
 
-      var fileName = new Date().toISOString() + ".opus";
+      document.getElementById("recorder-loading").style.display = "block"
+      document.getElementById("analyser").style.display = "none"
+      writer.hasTextChanged = true;
+      if (typedArray != undefined) {
+        var fileName = new Date().toISOString() + ".opus";
 
-      var dataBlob = new Blob([typedArray], { type: 'audio/ogg' });
-      dataBlob.name = fileName
-      writer.sendFiles([dataBlob], function (list) {
-        for (var i = 0; i < list.length; i++) {
-          if (list[i].endsWith(fileName)) {
-            carnetRecorder.currentUrl = api_url + list[i]
-            carnetRecorder.name = FileUtils.getFilename(list[i])
-            console.log("current url " + carnetRecorder.currentUrl)
-            break;
+        var dataBlob = new Blob([typedArray], { type: 'audio/ogg' });
+        dataBlob.name = fileName
+        writer.sendFiles([dataBlob], function (list) {
+          for (var i = 0; i < list.length; i++) {
+            if (list[i].endsWith(fileName)) {
+              carnetRecorder.currentUrl = api_url + list[i]
+              carnetRecorder.name = FileUtils.getFilename(list[i])
+              console.log("current url " + carnetRecorder.currentUrl)
+              break;
+            }
           }
-        }
-      })
-      var url = URL.createObjectURL(dataBlob);
+        })
+
+        if (url == undefined)
+          url = URL.createObjectURL(dataBlob);
+      }
+      else {
+        writer.refreshMedia()
+      }
       carnetRecorder.setAudioUrl(url)
-
-
     };
 
 
     var timerInterval = -1;
     var startTimers = function () {
-      timerInterval = setInterval(updateTimers, 100)
+      timerInterval = setInterval(updateTimers, 1000)
     }
     startTimers();
   }
+}
+
+CarnetRecorder.prototype.onEncodingStart = function () {
+  document.getElementById("analyser").style.display = "none"
+  document.getElementById("recorder-loading").style.display = "block"
+}
+
+CarnetRecorder.prototype.onEncodingEnd = function () {
+  document.getElementById("recorder-loading").style.display = "none"
 }
 CarnetRecorder.prototype.setAudioUrl = function (url, name) {
   console.log("name " + FileUtils.getFilename(url))
@@ -241,16 +264,37 @@ CarnetRecorder.prototype.setAudioUrl = function (url, name) {
   this.hasRecorded = true;
   document.getElementById("analyser").style.display = "none"
 
-  if(this.displayWaves){
+  if (this.displayWaves) {
     document.getElementById("waveform").style.display = "block"
     document.getElementById("audio-progress").style.display = "none"
     this.wavesurfer.load(url)
-
+    document.getElementById("recorder-loading").style.display = "none"
   }
-  else{
+  else {
+    document.getElementById("recorder-loading").style.display = "block"
     document.getElementById("audio-progress").style.display = "block"
     document.getElementById("waveform").style.display = "none"
+    var audioplayer = this.audioplayer
+    var carnetRecorder = this
     this.audioplayer.src = url
+    this.audioplayer.oncanplay = function () {
+      document.getElementById("recorder-loading").style.display = "none"
+      if (audioplayer.duration == "Infinity" || true) { // bromite has issues getting metadata, we do it ourselves
+        var req = new XMLHttpRequest();
+        req.open('GET', url, true);
+        req.responseType = 'arraybuffer';
+        req.onload = function () {
+          var ctx = new AudioContext();
+          ctx.decodeAudioData(req.response, function (buffer) {
+            console.log("duraction : " + buffer.duration)
+            carnetRecorder.duration = buffer.duration; // 116
+            audioplayer.onloadedmetadata()
+          })
+        };
+
+        req.send();
+      }
+    };
   }
   this.refreshButtons();
 }
@@ -263,13 +307,12 @@ CarnetRecorder.prototype.new = function () {
 
 }
 CarnetRecorder.prototype.refreshButtons = function () {
-  console.log("call")
   this.saveButton.disabled = !this.hasRecorded
   if (this.recorder.state === "recording") {
     this.startIcon.innerHTML = "pause"
   } else if (this.recorder.state === "paused" || !this.hasRecorded) {
     this.startIcon.innerHTML = "mic"
-  } else if(this.displayWaves){
+  } else if (this.displayWaves) {
     if (this.wavesurfer.isPlaying()) {
       this.startIcon.innerHTML = "pause"
     } else {

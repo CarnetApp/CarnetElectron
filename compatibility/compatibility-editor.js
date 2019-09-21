@@ -65,6 +65,12 @@ class CompatibilityEditor extends Compatibility {
         else if (window.self !== window.top) //in iframe
             parent.postMessage("exit", "*")
     }
+
+    getRecorder(options) {
+        if (this.isAndroid) return new AndroidRecorder(options);
+        return new Recorder(options);
+    }
+
     onNoteLoaded() {
         if (this.isGtk) {
             document.getElementsByClassName('mdl-layout__header')[0].style.display = "none"

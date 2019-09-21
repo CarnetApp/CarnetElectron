@@ -46,6 +46,7 @@ if [ "$1" == "android" ]; then
     cp reader/libs/material-datetime-picker.js dist/build/reader/libs/
     cp reader/libs/rome.standalone.js dist/build/reader/libs/
     cp reader/reminders.js dist/build/reader/
+    cp reader/libs/recorder dist/build/reader/libs/ -R
 
     cp libs/polyfill.js dist/build/libs/
 
