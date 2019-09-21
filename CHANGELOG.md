@@ -7,6 +7,7 @@ Async load of notes
 Faster when fullscreen (see nextcloud admin settings): don't load nextcloud completely
 Faster load of languages
 
+Fix settings (tru)
 Fix audio icon
 Fix checkbox with dark theme
 Fix save after moving item in todolist
