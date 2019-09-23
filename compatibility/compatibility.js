@@ -25,12 +25,6 @@ class Compatibility {
     }
 
     loadLang(callback) {
-        var langs = ["tot"];
-        var toLoad;
-
-
-        toLoad = 'settings/lang/json?lang=tot'
-
         RequestBuilder.sRequestBuilder.get('settings/lang/json?lang=tot', function (error, data) {
             $.i18n().load(data).done(callback)
         })

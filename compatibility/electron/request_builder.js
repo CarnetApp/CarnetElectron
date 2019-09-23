@@ -5,6 +5,7 @@ class ElectronRequestBuilder extends RequestBuilder {
         this.main = remote.require("./main.js");
     }
     get(path, callback) {
+        path = this.buildUrl(this.cleanPath(path));
         console.log("getting " + path)
         this.main.sendRequestToServer("GET", path, undefined, function (err, data) {
             if (data != undefined) {
@@ -17,6 +18,7 @@ class ElectronRequestBuilder extends RequestBuilder {
         });
     }
     post(path, data, callback) {
+        path = this.buildUrl(this.cleanPath(path));
         this.main.sendRequestToServer("POST", path, data, function (err, data) {
             if (data != undefined) {
                 try {
@@ -30,6 +32,7 @@ class ElectronRequestBuilder extends RequestBuilder {
     }
 
     postFiles(path, data, files, callback) {
+        path = this.buildUrl(this.cleanPath(path));
         if (data == undefined)
             data = {}
         data.files = []
@@ -66,6 +69,7 @@ class ElectronRequestBuilder extends RequestBuilder {
     }
 
     delete(path, callback) {
+        path = this.buildUrl(this.cleanPath(path));
         this.main.sendRequestToServer("DELETE", path, undefined, function (err, data) {
             if (data != undefined) {
                 try {
@@ -75,5 +79,9 @@ class ElectronRequestBuilder extends RequestBuilder {
             }
             callback(err, data)
         });
+    }
+
+    buildUrl(path) {
+        return "/" + path;
     }
 }
