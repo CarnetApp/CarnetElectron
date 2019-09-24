@@ -136,7 +136,7 @@ SettingsHelper.prototype.getMetadataCache = function () {
 SettingsHelper.prototype.getBrowserSettings = function () {
     var bsettings = String(store.get("browser_settings"));
     if (bsettings == null || bsettings == "undefined") {
-        bsettings = undefined
+        bsettings = "{}"
     }
     return bsettings;
 }

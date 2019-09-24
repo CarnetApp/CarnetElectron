@@ -15,11 +15,7 @@ class UISettingsHelper {
             } catch (e) {
             }
             RequestBuilder.sRequestBuilder.get("settings/ui", function (error, data) {
-                try {
-                    data = JSON.parse(data)
-                } catch (e) {
-                    data = {}
-                }
+                data = data
                 UISettingsHelper.instance.settings = data != null ? data : {}
                 UISettingsHelper.instance.loadDefaultSettings()
                 UISettingsHelper.instance.store.set("ui_settings_cache", JSON.stringify(UISettingsHelper.instance.settings))

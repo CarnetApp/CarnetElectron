@@ -105,7 +105,7 @@ var handle = function (method, path, data, callback) {
                     callback(err, data)
                 }, true);
                 return;
-            case "/settings/browser":
+            case "/settings/ui":
                 callback(false, settingsHelper.getBrowserSettings())
                 return
             case "/keywordsdb":
@@ -242,6 +242,7 @@ var handle = function (method, path, data, callback) {
 
         }
     } else if (method === "POST") {
+
         switch (path) {
             case "/notes/metadata":
                 var JSZip = require('jszip');
@@ -300,7 +301,7 @@ var handle = function (method, path, data, callback) {
                     callback(err)
                 })
                 return;
-            case "/settings/browser":
+            case "/settings/ui":
                 settingsHelper.setBrowserSettings(data.jsonSettings)
                 callback(false, "")
                 return;
