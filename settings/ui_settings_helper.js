@@ -7,6 +7,7 @@ class UISettingsHelper {
     }
     loadSettings(callback) {
         if (this.settings == undefined) {
+            var Store = compatibility.getStore();
             this.store = new Store();
             try {
                 this.settings = JSON.parse(String(this.store.get("ui_settings_cache")))
@@ -14,8 +15,6 @@ class UISettingsHelper {
             } catch (e) {
             }
             RequestBuilder.sRequestBuilder.get("settings/ui", function (error, data) {
-                console.oldlog("settings loaded " + data)
-
                 try {
                     data = JSON.parse(data)
                 } catch (e) {

@@ -124,7 +124,23 @@ $(document).ready(function () {
     compatibility.openUrl(url)
 
   }
+  document.getElementById("browser_default_view").onchange = function (value) {
+    if (value.target.checked)
+      UISettingsHelper.getInstance().set("start_page", "browser");
+    else
+      UISettingsHelper.getInstance().set("start_page", "recent");
+    UISettingsHelper.getInstance().postSettings()
+  }
+  UISettingsHelper.getInstance().loadSettings(function (settings) {
+    if (settings['start_page'] == "browser") {
+      document.getElementById("browser_default_view").checked = true
+      document.getElementById("browser_default_view").parentNode.classList.add("is-checked")
+    } else {
+      document.getElementById("browser_default_view").checked = false
+      document.getElementById("browser_default_view").parentNode.classList.remove("is-checked")
+    }
 
+  })
   document.getElementById("import").onclick = function () {
     var {
       remote

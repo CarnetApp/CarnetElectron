@@ -11,7 +11,8 @@
     <script src="libs/dialog-polyfill.js"></script>
     <script src="libs/material.js"></script>
     <script src="utils/utils.js"></script>
-
+    <script src="compatibility/nextcloud/store.js"></script>
+    <script src="compatibility/electron/store.js"></script>
     <script src="libs/jquery.min.js"></script>
     <script src="requests/request_builder.js"></script>
     <script src="compatibility/electron/request_builder.js"></script>
@@ -22,6 +23,7 @@
     <script src="reader/assets/scripts/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="libs/material.indigo-pink.min.css">
     <link rel="stylesheet" href="libs/polyfill.css">
+    <script src="settings/ui_settings_helper.js"></script>
 
     <!-- Material Design icon font -->
     <link rel="stylesheet" href="libs/material-icons.css">
@@ -41,27 +43,55 @@
             margin-left: calc(50% - 200px);
             width: 400px;
         }
-        .theme-selector{
-            width:100%;
-            padding-top:15px;
-            padding-bottom:15px;
+
+        .theme-selector {
+            width: 100%;
+            padding-top: 15px;
+            padding-bottom: 15px;
             border-bottom: 1px rgba(128, 128, 128, 0.2) solid;
 
         }
-        .theme-selector .mdl-radio{
-            width:100%;
+
+        .theme-selector .mdl-radio {
+            width: 100%;
         }
-        .theme-selector img{
+
+        .theme-selector img {
             max-width: 100%;
             margin-top: 20px;
 
         }
-        #theme-dialog{
-            margin-top:20px;
+
+        #theme-dialog {
+            margin-top: 20px;
             overflow-y: auto;
-            margin-bottom:20px;
+            margin-bottom: 20px;
             max-height: 100%;
 
+        }
+
+        .mdl-checkbox.is-upgraded {
+            padding-left: 0;
+        }
+
+        .mdl-checkbox__label {
+            font-size: unset;
+            left: 0;
+        }
+
+        .mdl-checkbox__ripple-container {
+            left: unset;
+            right: -10;
+        }
+
+        .mdl-checkbox__box-outline {
+            left: unset;
+            right: 0;
+        }
+
+        .mdl-checkbox__focus-helper {
+            left: unset;
+            right: 0;
         }
     </style>
 
@@ -109,6 +139,16 @@
                 <tr>
                     <td class="mdl-data-table__cell--non-numeric carnet-settings-button" id="cloudsync">
                         Get mobile, desktop or online app
+                    </td>
+                </tr>
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric carnet-settings-button" id="cloudsync">
+                        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect carnet-settings-button"
+                            for="browser_default_view">
+                            <input type="checkbox" id="browser_default_view" class="mdl-checkbox__input">
+                            <span class="mdl-checkbox__label" data-i18n="browser_default_view">Browser as default
+                                view</span>
+                        </label>
                     </td>
                 </tr>
                 <tr>

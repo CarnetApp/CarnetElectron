@@ -187,13 +187,6 @@ class BrowserCompatibility extends Compatibility {
         else if (!this.isAndroid)
             return "writer"
     }
-    getStore() {
-        if (this.isElectron) {
-            return ElectronStore;
-        }
-        else
-            return NextcloudStore;
-    }
 
     getMasonry() {
         if (this.isElectron) {
@@ -206,6 +199,6 @@ class BrowserCompatibility extends Compatibility {
 
 var compatibility = new BrowserCompatibility();
 
-
 var Store = compatibility.getStore();
+
 

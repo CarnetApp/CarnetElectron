@@ -30,5 +30,13 @@ class Compatibility {
         })
 
     }
+
+    getStore() {
+        if (this.isElectron) {
+            return ElectronStore;
+        }
+        else
+            return NextcloudStore;
+    }
 }
 
