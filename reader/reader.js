@@ -281,6 +281,9 @@ Writer.prototype.extractNote = function () {
         }
         console.log(data)
         writer.saveID = data.id;
+        RequestBuilder.sRequestBuilder.get("/note/extract?path=" + encodeURIComponent(writer.note.path) + "&id=" + data.id, function (error, data) {
+
+        })
         writer.fillWriter(data.html)
         if (data.metadata == null) {
             writer.note.is_not_created = true;
