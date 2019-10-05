@@ -282,7 +282,8 @@ Writer.prototype.extractNote = function () {
         console.log(data)
         writer.saveID = data.id;
         RequestBuilder.sRequestBuilder.get("/note/extract?path=" + encodeURIComponent(writer.note.path) + "&id=" + data.id, function (error, data) {
-
+            writer.refreshKeywords()
+            writer.refreshMedia();
         })
         writer.fillWriter(data.html)
         if (data.metadata == null) {
@@ -305,8 +306,7 @@ Writer.prototype.extractNote = function () {
         console.log("todo " + writer.note.metadata.todolists)
         console.log(writer.note.metadata.todolists)
 
-        writer.refreshKeywords()
-        writer.refreshMedia();
+
         var ratingStars = document.querySelectorAll("input.star")
         for (var i = 0; i < ratingStars.length; i++) {
             ratingStars[i].checked = writer.note.metadata.rating == (5 - i);
