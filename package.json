@@ -1,6 +1,6 @@
 {
   "name": "Carnet",
-  "version": "0.18.1",
+  "version": "0.18.5",
   "main": "main.js",
   "license": "GPLv3",
   "scripts": {
