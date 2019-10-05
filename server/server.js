@@ -82,6 +82,9 @@ var handle = function (method, path, data, callback) {
                     })
                 })
                 return;
+            case "/note/extract":
+                callback(false, "")
+                return;
             case "/notes/getSearchCache":
                 var toConvert = {}
                 toConvert.files = currentSearch.result
