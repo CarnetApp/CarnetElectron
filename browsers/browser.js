@@ -487,7 +487,7 @@ function list(pathToList, discret) {
     var hasPathChanged = currentPath !== pathToList
     currentPath = pathToList;
 
-    if (pathToList == "/" || pathToList == initPath || pathToList.startsWith("keyword://")) {
+    if (pathToList == "/" || pathToList == "recentdb://" || pathToList.startsWith("keyword://")) {
         if (pathToList != "/") {
             $("#add-directory-button").hide()
         } else
@@ -560,7 +560,7 @@ function closeW() {
 
 document.getElementById("add-note-button").onclick = function () {
     var path = currentPath;
-    if (path == initPath || path.startsWith("keyword://"))
+    if (path == "recentdb://" || path.startsWith("keyword://"))
         path = "";
     RequestBuilder.sRequestBuilder.get("/note/create?path=" + encodeURIComponent(path), function (error, data) {
         if (error) return;
