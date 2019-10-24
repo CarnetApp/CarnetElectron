@@ -51,11 +51,6 @@ TodoListManager.prototype.createTodolist = function (data) {
     var todo = document.createElement("div");
     todo.classList.add("todo")
     todo.id = "todooo" + generateUID();
-    var addItem = document.createElement("a");
-    addItem.innerHTML = "+ Add item";
-    addItem.classList.add("add-item");
-    addItem.classList.add("mdl-button");
-    addItem.href = "#"
 
     var done = document.createElement("div");
     done.classList.add("done")
@@ -63,6 +58,18 @@ TodoListManager.prototype.createTodolist = function (data) {
     todolistContent.appendChild(todoTitle);
     todolistContent.appendChild(todo);
     todolistDiv.todo = todo
+    var addItem = document.createElement("button");
+    addItem.innerHTML = "<i class=\"material-icons\">add</i>";
+    addItem.classList.add("add-todolist-item");
+    addItem.classList.add("mdl-button");
+    addItem.classList.add("mdl-js-button");
+
+    addItem.classList.add("mdl-button--fab");
+    addItem.classList.add("mdl-button--colored");
+    addItem.classList.add("mdl-js-ripple-effect");
+
+    addItem.href = "#"
+
     todolistContent.appendChild(addItem);
     todolistContent.appendChild(doneTitle);
     todolistContent.appendChild(done);
@@ -81,7 +88,55 @@ TodoListManager.prototype.createTodolist = function (data) {
         manager.removeTodolist(todolistDiv.id)
         return false;
     }
+
+
+
+
     console.log("todoodod")
+
+
+    writer.oCenter.addEventListener("scroll", function () {
+        var setFixed = function () {
+            addItem.style.position = "fixed"
+            addItem.style.bottom = "50px"
+            if (window.innerWidth > 620)
+                addItem.style.right = "80px"
+            else
+                addItem.style.right = "20px"
+        }
+
+        var setRelative = function () {
+            addItem.style.position = "absolute"
+            addItem.style.bottom = "unset"
+            addItem.style.top = "unset";
+            if (window.innerWidth > 620)
+                addItem.style.right = "70px"
+            else
+                addItem.style.right = "10px"
+
+        }
+        var rect = todolistDiv.getBoundingClientRect();
+        var rectdoneTitle = doneTitle.getBoundingClientRect();
+        if (rect.top + 120 < $(writer.oCenter).height()) {
+            addItem.style.top = "unset"
+            $(addItem).fadeIn()
+
+            setFixed()
+            if (rectdoneTitle.bottom < $(writer.oCenter).height()) {
+                setRelative();
+
+            }
+            else {
+                setFixed()
+            }
+        }
+        else {
+
+            $(addItem).fadeOut()
+        }
+
+
+    })
 
     return todolist;
 
@@ -126,10 +181,10 @@ var TodoList = function (element) {
     this.element = element
     this.todo = element.todo
     this.done = element.done
-    this.addItem = element.getElementsByClassName("add-item")[0]
+    this.addItem = element.getElementsByClassName("add-todolist-item")[0]
     if (this.addItem != undefined)
         this.addItem.onclick = function () {
-            todolist.createItem("", false)
+            todolist.createItem("", false, undefined, true)
         }
     $(this.todo).sortable({
         handle: ".move-item", stop: function () {
@@ -168,10 +223,10 @@ TodoList.prototype.fromData = function (data) {
     if (data.todo == undefined)
         return
     for (var i = 0; i < data.todo.length; i++) {
-        this.createItem(data.todo[i], false)
+        this.createItem(data.todo[i], false, undefined, false)
     }
     for (var i = 0; i < data.done.length; i++) {
-        this.createItem(data.done[i], true)
+        this.createItem(data.done[i], true, undefined, false)
     }
 
 }
@@ -188,7 +243,7 @@ TodoList.prototype.removeItem = function (item) {
 
 }
 
-TodoList.prototype.createItem = function (text, ischecked, after) {
+TodoList.prototype.createItem = function (text, ischecked, after, scroll) {
     var todolist = this;
     var id = generateUID();
     var div = document.createElement("div");
@@ -229,7 +284,7 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
         var key = e.which || e.keyCode;
         if (e.ctrlKey && key === 13) {
             if (span.value.trim().length > 0) { // 13 is enter
-                todolist.createItem("", false, div).span.focus()
+                todolist.createItem("", false, div, true)
             } else {
                 e.preventDefault()
             }
@@ -285,9 +340,13 @@ TodoList.prototype.createItem = function (text, ischecked, after) {
         this.check(div)
     else
         this.uncheck(div, after)
-    span.onfocus = function () {
+    if (scroll) {
+        //span.focus()
+        var bottom = div.getBoundingClientRect().bottom + 56
+        if (bottom > $(writer.oCenter).height())
+            $(writer.oCenter).animate({ scrollTop: $(writer.oCenter).scrollTop() + bottom - $(writer.oCenter).height() }, 'fast');
+        span.focus()
     }
-    span.focus()
     resizeTextArea(span)
 
     return div

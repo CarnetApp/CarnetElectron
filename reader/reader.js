@@ -418,9 +418,9 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     else this.putDefaultHTML();
     var name = FileUtils.stripExtensionFromName(FileUtils.getFilename(this.note.path))
     document.getElementById("name-input").value = name.startsWith("untitled") ? "" : name
-    this.oCenter.onscroll = function () {
+    this.oCenter.addEventListener("scroll", function () {
         lastscroll = $(writer.oCenter).scrollTop()
-    }
+    })
     this.oDoc = document.getElementById("text");
     this.oDoc.contentEditable = false
     if (this.oDoc.getElementsByClassName("edit-zone").length == 0) { //old note...
