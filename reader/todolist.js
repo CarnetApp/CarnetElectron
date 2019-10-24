@@ -110,7 +110,7 @@ TodoListManager.prototype.createTodolist = function (data) {
             addItem.style.bottom = "unset"
             addItem.style.top = "unset";
             if (window.innerWidth > 620)
-                addItem.style.right = "70px"
+                addItem.style.right = "68px"
             else
                 addItem.style.right = "10px"
 
