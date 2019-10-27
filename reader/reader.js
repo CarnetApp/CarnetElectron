@@ -1478,6 +1478,9 @@ function resetScreenHeight() {
             $("#center").scrollTop(lastscroll - diff);
     }
     console.log(content - 45)
+    if (document.activeElement != undefined && document.activeElement.resizeListener != undefined) {
+        document.activeElement.resizeListener();
+    }
 }
 
 

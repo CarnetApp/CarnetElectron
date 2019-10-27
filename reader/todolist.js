@@ -94,11 +94,11 @@ TodoListManager.prototype.createTodolist = function (data) {
 
     console.log("todoodod")
 
-
-    writer.oCenter.addEventListener("scroll", function () {
+    var setAddItem = function () {
         var setFixed = function () {
+            addItem.isRelative = false
             addItem.style.position = "fixed"
-            addItem.style.bottom = "50px"
+            addItem.style.bottom = "30px"
             if (window.innerWidth > 620)
                 addItem.style.right = "80px"
             else
@@ -106,38 +106,43 @@ TodoListManager.prototype.createTodolist = function (data) {
         }
 
         var setRelative = function () {
+            addItem.isRelative = true;
             addItem.style.position = "absolute"
             addItem.style.bottom = "unset"
             addItem.style.top = "unset";
             if (window.innerWidth > 620)
                 addItem.style.right = "68px"
             else
-                addItem.style.right = "10px"
+                addItem.style.right = "8px"
 
         }
         var rect = todolistDiv.getBoundingClientRect();
         var rectdoneTitle = doneTitle.getBoundingClientRect();
         if (rect.top + 120 < $(writer.oCenter).height()) {
-            addItem.style.top = "unset"
-            $(addItem).fadeIn()
+            if (!addItem.isDisplayed || addItem.isDisplayed == undefined) {
+                addItem.isDisplayed = true
+                $(addItem).fadeIn()
+            }
 
-            setFixed()
             if (rectdoneTitle.bottom < $(writer.oCenter).height()) {
-                setRelative();
+                if (!addItem.isRelative || addItem.isRelative == undefined)
+                    setRelative();
 
             }
-            else {
+            else if (addItem.isRelative || addItem.isRelative == undefined) {
                 setFixed()
             }
         }
-        else {
+        else if (addItem.isDisplayed || addItem.isDisplayed == undefined) {
 
             $(addItem).fadeOut()
+            addItem.isDisplayed = false
         }
 
 
-    })
-
+    }
+    writer.oCenter.addEventListener("scroll", setAddItem)
+    setAddItem();
     return todolist;
 
 }
@@ -340,12 +345,19 @@ TodoList.prototype.createItem = function (text, ischecked, after, scroll) {
         this.check(div)
     else
         this.uncheck(div, after)
+    span.resizeListener = function () {
+        if ($(span).is(':focus')) {
+            var bottom = div.getBoundingClientRect().bottom + 56;
+            if (bottom > $(writer.oCenter).height()) $(writer.oCenter).animate({
+                scrollTop: $(writer.oCenter).scrollTop() + bottom - $(writer.oCenter).height()
+            }, 'fast');
+        }
+    }
+    // $(window).on('resize', span.resizeListener);
+    $(span).on('focus', span.resizeListener);
     if (scroll) {
-        //span.focus()
-        var bottom = div.getBoundingClientRect().bottom + 56
-        if (bottom > $(writer.oCenter).height())
-            $(writer.oCenter).animate({ scrollTop: $(writer.oCenter).scrollTop() + bottom - $(writer.oCenter).height() }, 'fast');
         span.focus()
+
     }
     resizeTextArea(span)
 
