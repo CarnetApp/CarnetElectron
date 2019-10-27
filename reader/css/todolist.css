@@ -51,14 +51,15 @@
 }
 
 .todo-list .mdl-checkbox {
-    width: calc(100% - 70px);
+    width: calc(100% -80px);
 
 }
 .move-item{
     float: left;
     margin-right: 7px;
     margin-top: 1px;
-    
+    padding-left: 5px;
+    padding-right: 5px;
     font-size: 15px;
 }
 
