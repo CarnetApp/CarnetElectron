@@ -34,11 +34,9 @@
     float:right;
     bottom:50px;
     right:80px;
+    z-index:200;
 }
-.add-item{
-    font-size:14px;
-    right:10px;
-}
+
 .remove-todo-list{
     float: right;
     cursor: pointer;
@@ -51,7 +49,7 @@
 }
 
 .todo-list .mdl-checkbox {
-    width: calc(100% -80px);
+    width: calc(100% - 80px);
 
 }
 .move-item{
