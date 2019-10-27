@@ -257,6 +257,7 @@ TodoList.prototype.createItem = function (text, ischecked, after, scroll) {
     var move = document.createElement("span")
     move.innerHTML = "|||";
     move.classList.add("move-item")
+    move.classList.add("block-scroll");
     move.addEventListener('mousedown', function () {
         move.classList.add("grabbing");
     }, false);

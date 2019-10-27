@@ -1557,3 +1557,11 @@ $(document).ready(function () {
     $.i18n().locale = navigator.language;
 
 });
+$(window).on('touchstart', function (e) {
+    if ($(e.target).closest('.block-scroll').length >= 1) {
+        writer.oCenter.style.overflowY = "hidden";
+    }
+});
+$(window).on('touchend', function () {
+    writer.oCenter.style.overflowY = "auto";
+});
