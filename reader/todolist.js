@@ -94,12 +94,24 @@ TodoListManager.prototype.createTodolist = function (data) {
 
     console.log("todoodod")
 
-    var setAddItem = function () {
+    var isWindowLarge = function () {
+        return $(writer.oCenter).width() > 920
+    }
+
+    self.setAddItem = function (event) {
+        if (event != undefined && event.type == "resize" && isWindowLarge() != window.wasLarge) {
+            addItem.isRelative = undefined
+            addItem.isDisplayed = undefined
+        }
+        window.wasLarge = isWindowLarge()
+
+
+
         var setFixed = function () {
             addItem.isRelative = false
             addItem.style.position = "fixed"
             addItem.style.bottom = "30px"
-            if (window.innerWidth > 620)
+            if (isWindowLarge())
                 addItem.style.right = "80px"
             else
                 addItem.style.right = "20px"
@@ -110,7 +122,7 @@ TodoListManager.prototype.createTodolist = function (data) {
             addItem.style.position = "absolute"
             addItem.style.bottom = "unset"
             addItem.style.top = "unset";
-            if (window.innerWidth > 620)
+            if (isWindowLarge())
                 addItem.style.right = "68px"
             else
                 addItem.style.right = "8px"
@@ -142,6 +154,8 @@ TodoListManager.prototype.createTodolist = function (data) {
 
     }
     writer.oCenter.addEventListener("scroll", setAddItem)
+    $(window).on('resize', setAddItem)
+
     setAddItem();
     return todolist;
 
@@ -161,7 +175,8 @@ TodoListManager.prototype.removeTodolist = function (id) {
     event.next = document.getElementById(id).nextElementSibling
     console.log("remove next")
     console.log(document.getElementById(id).nextElementSibling)
-
+    writer.oCenter.removeEventListener("scroll", setAddItem)
+    $(window).off('resize', setAddItem)
     this.element.dispatchEvent(event);
     $("#" + id).remove();
     for (var i = 0; i < this.todolists.length; i++) {
@@ -238,6 +253,7 @@ TodoList.prototype.fromData = function (data) {
 
 TodoList.prototype.removeItem = function (item) {
     var todolist = this
+    $(item.span).off('focus', item.span.resizeListener);
     $(item).animate({ height: '0px' }, 150, function () {
         if (item.previousSibling != undefined && item.previousSibling.span != undefined)
             item.previousSibling.span.focus();
