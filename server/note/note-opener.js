@@ -12,8 +12,8 @@ NoteOpener.prototype.getMainTextMetadataAndPreviews = function (callback) {
   this.getFullHTML(function (data, zip) {
     if (zip != undefined) {
       opener.getMetadataString(zip, function (metadata) {
-        opener.getPreviews(zip, function (previews) {
-          callback(textVersion(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews)
+        opener.getPreviews(zip, function (previews, media) {
+          callback(textVersion(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews, media)
 
         })
       })
@@ -40,10 +40,14 @@ var PreviewOpener = function (zip, callback) {
 PreviewOpener.prototype.start = function () {
   var extractor = this;
   this.files = [];
+  this.media = [];
   this.zip.folder("data").forEach(function (relativePath, file) {
 
     if (relativePath.startsWith("preview_")) {
       extractor.files.push(file.name)
+    } else {
+      extractor.media.push(file.name)
+
     }
   })
   this.fullRead()
@@ -53,7 +57,7 @@ PreviewOpener.prototype.fullRead = function () {
 
   if (this.currentFile >= this.files.length || this.currentFile >= 2) {
 
-    this.callback(this.data)
+    this.callback(this.data, this.media)
     return;
   }
   var filename = this.files[this.currentFile]
@@ -173,7 +177,7 @@ Extractor.prototype.fullExtract = function () {
         console.logDebug("mkdirok");
 
         fs.writeFileSync(dest, content, 'base64');
-        if(filename.startsWith("data/preview_")){
+        if (filename.startsWith("data/preview_")) {
           extractor.previews[filename.substr("data/".length)] = 'data:image/jpeg;base64,' + content;
         }
 

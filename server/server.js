@@ -15,7 +15,7 @@ const path = require('path')
 var textVersion = require("textversionjs");
 var currentcache = {}
 var previews = {}
-
+var media = []
 var handle = function (method, path, data, callback) {
     console.logDebug(method + " " + path)
     var splitPath = path.split("?")
@@ -135,25 +135,28 @@ var handle = function (method, path, data, callback) {
                     this.next()
                     return;
                 }
-                console.logDebug("get metadata " + step)
+                console.log("get metadata " + step)
                 var stepCorrected = cleanPath(step)
                 var cached = CacheManager.getInstance().get(stepCorrected)
                 if (cached != undefined) {
                     handler.addResult(step, {
                         shorttext: cached.shorttext,
                         metadata: cached.metadata,
-                        previews: cached.previews
+                        previews: cached.previews,
+                        media: cached.media
+
                     })
                     handler.next();
-                    console.logDebug("from cache" + cached.shorttext)
+                    console.log("from cache" + cached.media)
                 } else {
-                    console.logDebug("not from cache")
-                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
+                    console.log("not from cache")
+                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews, media) {
                         if (text != undefined) {
                             handler.addResult(step, {
                                 shorttext: text.substr(0, text.length > 200 ? 200 : text.length),
                                 metadata: metadata,
-                                previews: previews
+                                previews: previews,
+                                media: media
                             })
                         }
                         fs.stat(settingsHelper.getNotePath() + "/" + step, function (error, stats) {
@@ -163,7 +166,8 @@ var handle = function (method, path, data, callback) {
                                 last_file_modification: CacheManager.getMTimeFromStat(stats),
                                 shorttext: text != undefined ? text.substr(0, text.length > 200 ? 200 : text.length) : "",
                                 metadata: metadata,
-                                previews: previews
+                                previews: previews,
+                                media: media
                             })
                             CacheManager.getInstance().write()
                         })
@@ -402,10 +406,12 @@ var handle = function (method, path, data, callback) {
                         console.logDebug(JSON.stringify(previews))
                         if (!e)
                             delete previews["preview_" + toDelete.substring(1) + ".jpg"]
-
-                        saveNote(note, function () {
-                            getMediaList(callback)
+                        getMediaList(function (error, media) {
+                            saveNote(note, function () {
+                                callback(error, media)
+                            })
                         })
+
                     })
                 })
                 return;
@@ -417,19 +423,17 @@ var handle = function (method, path, data, callback) {
 }
 var getMediaList = function (callback) {
     var tmppath = getTmpPath() + "/note/data/";
-    var medias = [];
-
+    media = [];
     fs.readdir(tmppath, (err, files) => {
         if (err) {
-            callback(false, medias) // return empty because no medias
+            callback(false, media) // return empty because no medias
             return
         }
         for (let file of files) {
             if (!file.startsWith("preview_"))
-                medias.push(tmppath + file)
+                media.push(tmppath + file)
         }
-        callback(false, medias)
-
+        callback(false, media)
     })
 }
 
@@ -460,15 +464,15 @@ var addMedias = function (path, files, callback) {
         })
 
     }, function () {
-        saveNote(path, function (error, data) {
-            getMediaList(callback)
-        });
+        getMediaList(function (error, media) {
+            saveNote(path, function (error, data) {
+                callback(error, media)
+            });
+        })
+
     });
     handler.next()
-    for (var i = 0; i < files.length; i++) {
 
-
-    }
 }
 
 var saveTextToNote = function (path, html, metadata, callback) {
@@ -519,7 +523,7 @@ var saveNote = function (path, callback) {
             currentcache.previews = []
             for (var i = 0; i < pre.length && i < 2; i++)
                 currentcache.previews.push(pre[i])
-
+            currentcache.media = media
             currentcache.last_file_modification = CacheManager.getMTimeFromStat(stats)
             CacheManager.getInstance().put(cleanPath(path), currentcache)
             CacheManager.getInstance().write();
