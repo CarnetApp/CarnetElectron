@@ -1,3 +1,11 @@
+# Version 0.18.7
+
+Todolists:
+- floating add item button
+- correct scroll when focusing an item
+- bigger space to move items
+
+
 # Version 0.18.5
 
 Start with browser option

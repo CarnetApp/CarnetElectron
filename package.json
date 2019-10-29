@@ -1,14 +1,14 @@
 {
   "name": "Carnet",
-  "version": "0.18.5",
+  "version": "0.18.7",
   "main": "main.js",
   "license": "GPLv3",
   "scripts": {
     "postinstall": "install-app-deps",
-    "start": "npm install && electron ./app",
+    "start": "npm install && electron .",
     "pack": "build --dir",
     "distapp": "build --x64 --ia32  --linux AppImage",
-    "dist": "build"
+    "dist": "electron-builder"
   },
   "author": {
     "name": "Phie",
@@ -85,6 +85,6 @@
     "@babel/preset-env": "^7.1.5",
     "@babel/cli": "^7.1.5",
     "electron": "3.1.9",
-    "electron-builder": "^20.36.2"
+    "electron-builder": "^21.2.0"
   }
 }
