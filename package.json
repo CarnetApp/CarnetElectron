@@ -6,8 +6,8 @@
   "scripts": {
     "postinstall": "install-app-deps",
     "start": "npm install && electron .",
-    "pack": "build --dir",
-    "distapp": "build --x64 --ia32  --linux AppImage",
+    "pack": "electron-builder --dir",
+    "distapp": "electron-builder --x64 --ia32  --linux AppImage",
     "dist": "electron-builder"
   },
   "author": {
