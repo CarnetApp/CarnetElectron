@@ -134,6 +134,60 @@ NoteCardView.prototype.setNote = function (note) {
             div.appendChild(a)
             this.cardUrls.appendChild(div);
         }
+    this.audioList.innerHTML = "";
+    if (note.media != undefined){
+
+        for (let url of note.media) {
+            let audio = url.substr(url.lastIndexOf("/")+1)
+            if(!FileUtils.isFileAudio(audio))
+                continue;
+            var table = document.createElement('table');
+            var tr = document.createElement('tr');
+            var td1 = document.createElement('td');
+            var td2 = document.createElement('td');
+            tr.appendChild(td1)
+            tr.appendChild(td2)
+            table.appendChild(tr)
+
+            table.classList.add("note-audio")
+            var playpause = document.createElement('button');
+            playpause.classList.add('mdl-button')
+            playpause.classList.add('mdl-js-button')
+            playpause.innerHTML = "<i class=\"material-icons\">play_arrow</i>"
+            playpause.onclick = function(event){
+                event.stopPropagation()
+                var audioplayer = document.getElementById("audio-player");
+                if(audioplayer.onended != undefined)
+                    audioplayer.onended()
+                audioplayer.onended = function () {
+                    playpause.innerHTML = "<i class=\"material-icons\">play_arrow</i>"
+                };
+                audioplayer.onpause = function () {
+                    playpause.innerHTML = "<i class=\"material-icons\">play_arrow</i>"
+                };
+                audioplayer.onplay = function () {
+                    playpause.innerHTML = "<i class=\"material-icons\">pause</i>"
+                };
+                audioplayer.src = url;
+                audioplayer.play();
+               
+            }
+            td1.appendChild(playpause)
+            var a = document.createElement('a');
+            a.href = url;
+            a.onclick = function () {
+                return false;
+            }
+            table.onclick = function (event) {
+                event.stopPropagation()
+                compatibility.openUrl(url)
+                
+            }
+            a.innerHTML = audio
+            td2.appendChild(a)
+            this.audioList.appendChild(table);
+        }
+    }
 
 }
 
@@ -165,7 +219,9 @@ NoteCardView.prototype.init = function () {
     this.cardContent.appendChild(this.cardTitleText)
     this.cardContent.appendChild(this.cardText)
     this.cardContent.appendChild(this.cardTodoLists)
-
+    this.audioList = document.createElement('div');
+    this.audioList.classList.add("card-audio-list");
+    this.cardContent.appendChild(this.audioList)
     this.cardRating = document.createElement('div');
     this.cardRating.classList.add("card-rating");
     this.cardContent.appendChild(this.cardRating)
@@ -180,7 +236,6 @@ NoteCardView.prototype.init = function () {
     this.cardUrls = document.createElement('div');
     this.cardUrls.classList.add("card-urls");
     this.cardContent.appendChild(this.cardUrls)
-
     this.cardMedias = document.createElement('div');
     this.cardMedias.classList.add("card-medias");
     this.cardContent.appendChild(this.cardMedias)
@@ -297,6 +352,7 @@ NoteCardViewGrid.prototype.addNext = function (num) {
             }, function (event) {
                 if (!$(this).hasClass('noclick')) {
                     var data = event.data;
+                    event.preventDefault()
                     data.callback(data.note)
                     return false;
                 }
