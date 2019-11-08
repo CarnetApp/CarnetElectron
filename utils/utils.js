@@ -28,6 +28,11 @@ Utils.sortByCreationDate = function (a, b) {
     }
     return dateA < dateB ? -1 : 1
 }
+Utils.cleanNoteName = function(name){
+    if(name.startsWith('note$'))
+        name = name.substring('note$'.length, name.length)
+    return FileUtils.stripExtensionFromName(name)
+}
 
 Utils.sortByCustomDate = function (a, b) {
     if(a.metadata == undefined || b.metadata == undefined)

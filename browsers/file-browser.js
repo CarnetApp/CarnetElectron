@@ -75,8 +75,9 @@ FileBrowser.prototype.list = function (callback) {
                 file = new File(node.path, !node.isDir, node.name);
                 if (!node.isDir)
                     files_in.push(file)
-                else
+                else{
                     dirs_in.push(file)
+                }
             }
             files = files.concat(dirs_in)
             files = files.concat(files_in)

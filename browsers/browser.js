@@ -53,7 +53,7 @@ TextGetterTask.prototype.getNext = function () {
     if (paths.length > 0) {
         RequestBuilder.sRequestBuilder.get("/metadata?paths=" + encodeURIComponent(paths), function (error, data) {
             for (var meta in data) {
-                var note = new Note(stripExtensionFromName(getFilenameFromPath(meta)), data[meta].shorttext, meta, data[meta].metadata, data[meta].previews, false, data[meta].media)
+                var note = new Note(Utils.cleanNoteName(getFilenameFromPath(meta)), data[meta].shorttext, meta, data[meta].metadata, data[meta].previews, false, data[meta].media)
                 cachedMetadata[meta] = note
                 notes[notePath.indexOf(meta)] = note
                 noteCardViewGrid.updateNote(note)
@@ -391,9 +391,9 @@ function onListEnd(pathToList, files, metadatas, discret) {
         var i = 0
         for (let file of files) {
             var filename = getFilenameFromPath(file.path);
-            if (file.isFile && filename.endsWith(".sqd")) {
+            if (file.isFile && (filename.endsWith(".sqd") || filename.startsWith("note$"))) {
                 let metadata = metadatas != undefined ? metadatas[file.path] : undefined;
-                var noteTestTxt = new Note(stripExtensionFromName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined, metadata != undefined ? metadata.media : undefined);
+                var noteTestTxt = new Note( Utils.cleanNoteName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined, metadata != undefined ? metadata.media : undefined);
                 noteTestTxt.isPinned = file.isPinned
                 noteTestTxt.originalIndex = i;
                 notes.push(noteTestTxt)
