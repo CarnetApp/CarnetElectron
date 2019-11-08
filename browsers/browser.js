@@ -391,7 +391,7 @@ function onListEnd(pathToList, files, metadatas, discret) {
         var i = 0
         for (let file of files) {
             var filename = getFilenameFromPath(file.path);
-            if (file.isFile && (filename.endsWith(".sqd") || filename.startsWith("note$"))) {
+            if (filename.endsWith(".sqd")) {
                 let metadata = metadatas != undefined ? metadatas[file.path] : undefined;
                 var noteTestTxt = new Note( Utils.cleanNoteName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined, metadata != undefined ? metadata.media : undefined);
                 noteTestTxt.isPinned = file.isPinned
