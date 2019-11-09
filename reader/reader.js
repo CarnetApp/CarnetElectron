@@ -1231,6 +1231,30 @@ Writer.prototype.getWord = function (elem) {
     return word;
 }
 
+Writer.prototype.handleAction = function(type, value){
+    if(type === "prefill"){
+        document.execCommand('insertHTML', false, value);
+        var elements = document.getElementsByClassName("edit-zone");
+        var element = elements[elements.length - 1];
+        element.innerHTML += value;
+
+    }
+    else if(type === "record-audio"){
+        writer.recorder.new()
+        writer.recorderDialog.showModal()
+    }
+    else if(type === "add-media"){
+
+    }
+}
+
+Writer.prototype.handleActions = function(actions){
+    if(actions === undefined)
+        return;
+     for(var action of actions){
+        this.handleAction(action.type, action.value)
+     }
+}
 Writer.prototype.onEditableClick = function (event) {
     var word = this.getWord(event.target)
     var match = word.match(Utils.httpReg)
@@ -1484,14 +1508,16 @@ function resetScreenHeight() {
 }
 
 
-function loadPath(path) {
+function loadPath(path, actions) {
     if (writer == undefined)
         return;
     writer.reset();
     var note = new Note("", "", path, undefined);
     writer.setNote(note);
     console.log("extract")
-    writer.extractNote();
+    writer.extractNote(function(){
+        writer.handleActions(actions)
+    });
 }
 if (loaded == undefined)
     var loaded = false; //don't know why, loaded twice on android
