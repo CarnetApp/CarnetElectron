@@ -70,7 +70,7 @@ String.prototype.replaceAll = function (search, replacement) {
     return target.replace(new RegExp(search, 'g'), replacement);
 };
 
-function openNote(notePath) {
+function openNote(notePath,action) {
     isLoadCanceled = false;
     currentNotePath = notePath
     RequestBuilder.sRequestBuilder.get("/note/open/prepare", function (error, data) {
@@ -79,12 +79,12 @@ function openNote(notePath) {
             return;
         if (writerFrame.src == "") {
             if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1) {//open in new tab for firefox android
-                window.open("writer?path=" + encodeURIComponent(notePath), "_blank");
+                window.open("writer?path=" + encodeURIComponent(notePath)+(action!=undefined?"&action="+action:""), "_blank");
             }
             else {
                 $("#editor-container").show()
                 $(loadingView).fadeIn(function () {
-                    writerFrame.src = data + "?path=" + encodeURIComponent(notePath);
+                    writerFrame.src = data + "?path=" + encodeURIComponent(notePath)+(action!=undefined?"&action="+action:"");
                     writerFrame.style.display = "inline-flex"
 
                 })
@@ -100,7 +100,7 @@ function openNote(notePath) {
                 if (compatibility.isElectron)
                     writerFrame.send('loadnote', notePath);
                 else
-                    writerFrame.contentWindow.loadPath(notePath);
+                    writerFrame.contentWindow.loadPath(notePath, action);
                 writerFrame.style.display = "inline-flex"
 
             })
@@ -559,6 +559,14 @@ function closeW() {
 })*/
 
 document.getElementById("add-note-button").onclick = function () {
+    createAndOpenNote();
+}
+
+document.getElementById("add-record-button").onclick = function () {
+    createAndOpenNote("record-audio");
+}
+
+function createAndOpenNote(action){
     var path = currentPath;
     if (path == "recentdb://" || path.startsWith("keyword://"))
         path = "";
@@ -568,17 +576,10 @@ document.getElementById("add-note-button").onclick = function () {
         wasNewNote = true;
         var db = RecentDBManager.getInstance()
         db.addToDB(data, function () {
-            openNote(data)
+            openNote(data, action)
         });
 
     })
-    /*new NewNoteCreationTask(function (path) {
-        console.log("found " + path)
-        wasNewNote = true;
-        var db = new RecentDBManager(main.getNotePath() + "/quickdoc/recentdb/" + main.getAppUid())
-        db.addToDB(NoteUtils.getNoteRelativePath(main.getNotePath(), path));
-        openNote(path)
-    })*/
 }
 
 document.getElementById("add-directory-button").onclick = function () {

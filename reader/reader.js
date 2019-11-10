@@ -270,7 +270,7 @@ Writer.prototype.displayErrorLarge = function (error) {
 
 }
 
-Writer.prototype.extractNote = function () {
+Writer.prototype.extractNote = function (callback) {
     console.log("Writer.prototype.extractNote")
     const writer = this;
     RequestBuilder.sRequestBuilder.get("/note/open?path=" + encodeURIComponent(this.note.path), function (error, data) {
@@ -314,6 +314,7 @@ Writer.prototype.extractNote = function () {
         writer.updateRating(writer.note.metadata.rating)
         writer.updateNoteColor(writer.note.metadata.color != undefined ? writer.note.metadata.color : "none");
         writer.setDoNotEdit(false)
+        callback();
         setTimeout(function () {
             if (!writer.isBigNote()) {
                 var elements = writer.oDoc.getElementsByClassName("edit-zone");
@@ -1509,7 +1510,7 @@ function resetScreenHeight() {
 }
 
 
-function loadPath(path, actions) {
+function loadPath(path, action) {
     if (writer == undefined)
         return;
     writer.reset();
@@ -1517,7 +1518,7 @@ function loadPath(path, actions) {
     writer.setNote(note);
     console.log("extract")
     writer.extractNote(function(){
-        writer.handleActions(actions)
+        writer.handleAction(action, undefined)
     });
 }
 if (loaded == undefined)
@@ -1561,12 +1562,13 @@ $(document).ready(function () {
         $(window).on('resize', resetScreenHeight);
 
         var path = getParameterByName("path");
+        var action = getParameterByName("action");
         var tmp = getParameterByName("tmppath");
         if (tmp != null)
             tmppath = tmp;
         if (path != undefined) {
-            console.log("path " + getParameterByName("path"))
-            loadPath(path)
+            console.log("path " + getParameterByName("action"))
+            loadPath(path, action)
 
         }
 
