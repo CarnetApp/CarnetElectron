@@ -225,31 +225,29 @@ TodoList.prototype.toData = function () {
     var done = [];
 
     //separated ids to keep compatibility
-    var idsToName = {}
-    var nameToIds = {}
+    var todoIds = []
+    var doneIds = []
 
     var todoChildren = this.todo.childNodes;
     for (var i = 0; i < todoChildren.length; i++) {
         if (todoChildren[i].span != undefined) {
             todo.push(todoChildren[i].span.value)
-            idsToName[todoChildren[i].itemId] = todoChildren[i].span.value
-            nameToIds[todoChildren[i].span.value] = todoChildren[i].itemId
+            todoIds.push(todoChildren[i].itemId)
         }
     }
     var todoChildren = this.done.childNodes;
     for (var i = 0; i < todoChildren.length; i++) {
         if (todoChildren[i].span != undefined) {
             done.push(todoChildren[i].span.value)
-            idsToName[odoChildren[i].itemId] = todoChildren[i].span.value
-            nameToIds[todoChildren[i].span.value] = todoChildren[i].itemId
+            doneIds.push(todoChildren[i].itemId)
         }
     }
     result.id = this.element.id
     result.todo = todo
     result.done = done
     result.stats = this.stats
-    result.nameToIds = nameToIds;
-    result.idsToName = idsToName;
+    result.todoIds = todoIds;
+    result.doneIds = doneIds;
     return result
 
 }
@@ -258,10 +256,10 @@ TodoList.prototype.fromData = function (data) {
     if (data.todo == undefined)
         return
     for (var i = 0; i < data.todo.length; i++) {
-        this.createItem(data.todo[i], false, undefined, false, data.nameToIds != undefined ? data.nameToIds[data.todo[i]] : undefined)
+        this.createItem(data.todo[i], false, undefined, false, data.todoIds != undefined ? data.todoIds[i] : undefined)
     }
     for (var i = 0; i < data.done.length; i++) {
-        this.createItem(data.done[i], true, undefined, false, data.nameToIds != undefined ? data.nameToIds[data.done[i]] : undefined)
+        this.createItem(data.done[i], true, undefined, false, data.doneIds != undefined ? data.doneIds[i] : undefined)
     }
     if (data.stats != undefined)
         this.stats = data.stats;
