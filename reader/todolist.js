@@ -199,6 +199,7 @@ TodoListManager.prototype.toData = function () {
 var TodoList = function (element) {
     var todolist = this;
     this.element = element
+    this.stats = [];
     this.todo = element.todo
     this.done = element.done
     this.addItem = element.getElementsByClassName("add-todolist-item")[0]
@@ -221,20 +222,34 @@ TodoList.prototype.toData = function () {
     if (this.todo == undefined)
         return result
     var todo = [];
-    var done = []
+    var done = [];
+
+    //separated ids to keep compatibility
+    var idsToName = {}
+    var nameToIds = {}
+
     var todoChildren = this.todo.childNodes;
     for (var i = 0; i < todoChildren.length; i++) {
-        if (todoChildren[i].span != undefined)
+        if (todoChildren[i].span != undefined) {
             todo.push(todoChildren[i].span.value)
+            idsToName[todoChildren[i].itemId] = todoChildren[i].span.value
+            nameToIds[todoChildren[i].span.value] = todoChildren[i].itemId
+        }
     }
     var todoChildren = this.done.childNodes;
     for (var i = 0; i < todoChildren.length; i++) {
-        if (todoChildren[i].span != undefined)
+        if (todoChildren[i].span != undefined) {
             done.push(todoChildren[i].span.value)
+            idsToName[odoChildren[i].itemId] = todoChildren[i].span.value
+            nameToIds[todoChildren[i].span.value] = todoChildren[i].itemId
+        }
     }
     result.id = this.element.id
     result.todo = todo
     result.done = done
+    result.stats = this.stats
+    result.nameToIds = nameToIds;
+    result.idsToName = idsToName;
     return result
 
 }
@@ -243,12 +258,13 @@ TodoList.prototype.fromData = function (data) {
     if (data.todo == undefined)
         return
     for (var i = 0; i < data.todo.length; i++) {
-        this.createItem(data.todo[i], false, undefined, false)
+        this.createItem(data.todo[i], false, undefined, false, data.nameToIds != undefined ? data.nameToIds[data.todo[i]] : undefined)
     }
     for (var i = 0; i < data.done.length; i++) {
-        this.createItem(data.done[i], true, undefined, false)
+        this.createItem(data.done[i], true, undefined, false, data.nameToIds != undefined ? data.nameToIds[data.done[i]] : undefined)
     }
-
+    if (data.stats != undefined)
+        this.stats = data.stats;
 }
 
 TodoList.prototype.removeItem = function (item) {
@@ -264,9 +280,11 @@ TodoList.prototype.removeItem = function (item) {
 
 }
 
-TodoList.prototype.createItem = function (text, ischecked, after, scroll) {
+TodoList.prototype.createItem = function (text, ischecked, after, scroll, itemId) {
     var todolist = this;
     var id = generateUID();
+    if (itemId == undefined)
+        itemId = id;
     var div = document.createElement("div");
     div.classList.add("todo-item")
     div.id = "item" + id;
@@ -328,6 +346,7 @@ TodoList.prototype.createItem = function (text, ischecked, after, scroll) {
     label.appendChild(span)
     div.label = label
     div.span = span
+    div.itemId = itemId;
     div.appendChild(label)
     input.oldonchange = input.onchange
     input.onchange = function () {
@@ -389,6 +408,11 @@ TodoList.prototype.check = function (item) {
     item.material.check()
     if (this.done != undefined)
         this.done.appendChild(item)
+    this.stats.push({
+        action: "check",
+        time: Date.now(),
+        itemId: item.itemId
+    })
     var event = new Event('todolist-changed')
     this.element.parentNode.dispatchEvent(event)
 }
@@ -402,6 +426,11 @@ TodoList.prototype.uncheck = function (item, after) {
         this.todo.appendChild(item)
     }
     item.material.uncheck()
+    this.stats.push({
+        action: "uncheck",
+        time: Date.now(),
+        itemId: item.itemId
+    })
     var event = new Event('todolist-changed')
     this.element.parentNode.dispatchEvent(event)
 }
