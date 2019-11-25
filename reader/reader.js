@@ -640,6 +640,7 @@ Writer.prototype.init = function () {
         writer.statsDialog.close();
 
     });
+    this.genericDialog = this.elem.querySelector('#generic-dialog');
 
     this.colorPickerDialog = this.elem.querySelector('#color-picker-dialog');
 

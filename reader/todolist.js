@@ -85,8 +85,17 @@ TodoListManager.prototype.createTodolist = function (data) {
     this.todolists.push(todolist)
     deleteElem.onclick = function () {
         console.log("click remove")
-        manager.removeTodolist(todolistDiv.id)
-        return false;
+        writer.genericDialog.querySelector(".action").onclick = function () {
+            manager.removeTodolist(todolistDiv.id)
+            writer.genericDialog.close()
+        }
+        writer.genericDialog.querySelector(".cancel").onclick = function () {
+            writer.genericDialog.close()
+        }
+        writer.genericDialog.querySelector(".action").innerHTML = $.i18n("ok")
+        writer.genericDialog.querySelector(".content").innerHTML = $.i18n("delete_todolist_confirmation")
+        writer.genericDialog.showModal()
+        return true;
     }
 
 
