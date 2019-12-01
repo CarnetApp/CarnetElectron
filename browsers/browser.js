@@ -8,7 +8,9 @@ var wasNewNote = false
 var dontOpen = false;
 var currentNotePath = undefined
 var root_url = document.getElementById("root-url") != undefined ? document.getElementById("root-url").innerHTML : "";
-var api_url = document.getElementById("api-url").innerHTML !== "!API_URL" ? document.getElementById("api-url").innerHTML : "./";
+var api_url = Utils.getParameterByName("api_url")
+if (api_url == undefined)
+    api_url = document.getElementById("api-url").innerHTML !== "!API_URL" ? document.getElementById("api-url").innerHTML : "./";
 new RequestBuilder(api_url);
 const store = new Store();
 var noteCacheStr = String(store.get("note_cache"))

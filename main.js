@@ -82,10 +82,10 @@ function createWindow() {
         pathname: path.join(__dirname, isDebug ? 'index.html' : 'index.html'),
         protocol: 'file:',
         slashes: true
-    }))
+    }) + '?api_url=' + server.carnetHttpServer.getAddress())
 
     // Open the DevTools.
-    //win.webContents.openDevTools()
+    win.webContents.openDevTools()
     console.log("app uid " + uid)
 
     // Emitted when the window is closed.
@@ -211,3 +211,4 @@ exports.isSyncing = function () {
 exports.createWindow = createWindow;
 
 var server = require("./server/server");
+server.carnetHttpServer.start()

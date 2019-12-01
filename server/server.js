@@ -684,4 +684,52 @@ class ArrayHandler {
     }
 
 }
+
+class CarnetHttpServer {
+    constructor() {
+
+    }
+    start() {
+        const http = require('http')
+        const server = http.createServer(function (request, response) {
+            //console.dir(request)
+
+            const current_url = new URL("http://bla" + request.url);
+
+            if (request.method == 'GET') {
+                var media = current_url.searchParams.get('media');
+                var note =  current_url.searchParams.get('note');
+                if(note.endsWith(".sqd") && note.indexOf("../") == -1){
+                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + note)).getMedia(media, function(mediaStream, zip){
+                        if(mediaStream != undefined){
+                            
+                            mediaStream.pipe(response);
+
+                        }
+                    })
+                }
+
+            } else {
+
+            }
+        })
+        this.host = '127.0.0.1'
+        server.on('listening', function () {
+            carnetHttpServer.port = server.address().port
+            console.log('Listening at ' + carnetHttpServer.getAddress())
+        })
+        server.listen(0, this.host)
+
+
+    }
+
+    getAddress = function () {
+        return `http://${this.host}:${this.port}/`;
+    }
+}
+var carnetHttpServer = new CarnetHttpServer();
+
+
+
 exports.handle = handle;
+exports.carnetHttpServer = carnetHttpServer

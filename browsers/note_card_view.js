@@ -111,7 +111,7 @@ NoteCardView.prototype.setNote = function (note) {
     if (note.previews != undefined)
         for (let preview of note.previews) {
             var img = document.createElement('img');
-            img.src = preview;
+            img.src = (!preview.startsWith("data:") && note.path != "untitleddonotedit.sqd" ? api_url : '') + preview; //fake notes don't need api
             this.cardMedias.appendChild(img);
         }
     this.cardUrls.innerHTML = "";
@@ -168,9 +168,9 @@ NoteCardView.prototype.setNote = function (note) {
                 audioplayer.onplay = function () {
                     playpause.innerHTML = "<i class=\"material-icons\">pause</i>"
                 };
-                audioplayer.src = url;
+                audioplayer.src = api_url + url;
                 audioplayer.play();
-               
+
             }
             td1.appendChild(playpause)
             var a = document.createElement('a');
