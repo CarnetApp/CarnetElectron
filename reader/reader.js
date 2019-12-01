@@ -1233,8 +1233,8 @@ Writer.prototype.getWord = function (elem) {
     return word;
 }
 
-Writer.prototype.handleAction = function(type, value){
-    if(type === "prefill"){
+Writer.prototype.handleAction = function (type, value) {
+    if (type === "prefill") {
         document.execCommand('insertHTML', false, value);
         var elements = document.getElementsByClassName("edit-zone");
         var element = elements[elements.length - 1];
@@ -1242,21 +1242,21 @@ Writer.prototype.handleAction = function(type, value){
         this.hasTextChanged = true
 
     }
-    else if(type === "record-audio"){
+    else if (type === "record-audio") {
         writer.recorder.new()
         writer.recorderDialog.showModal()
     }
-    else if(type === "add-media"){
+    else if (type === "add-media") {
 
     }
 }
 
-Writer.prototype.handleActions = function(actions){
-    if(actions === undefined)
+Writer.prototype.handleActions = function (actions) {
+    if (actions === undefined)
         return;
-     for(var action of actions){
+    for (var action of actions) {
         this.handleAction(action.type, action.value)
-     }
+    }
 }
 Writer.prototype.onEditableClick = function (event) {
     var word = this.getWord(event.target)
@@ -1518,7 +1518,7 @@ function loadPath(path, action) {
     var note = new Note("", "", path, undefined);
     writer.setNote(note);
     console.log("extract")
-    writer.extractNote(function(){
+    writer.extractNote(function () {
         writer.handleAction(action, undefined)
     });
 }
@@ -1549,26 +1549,15 @@ $(document).ready(function () {
     initDragAreas();
 
     if (!loaded) {
-        function getParameterByName(name, url) {
-            if (!url) {
-                url = window.location.href;
-            }
-            name = name.replace(/[\[\]]/g, "\\$&");
-            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, " ").replace(/%2F/g, "/"));
-        }
         $(window).on('resize', resetScreenHeight);
 
-        var path = getParameterByName("path");
-        var action = getParameterByName("action");
-        var tmp = getParameterByName("tmppath");
+        var path = Utils.getParameterByName("path");
+        var action = Utils.getParameterByName("action");
+        var tmp = Utils.getParameterByName("tmppath");
         if (tmp != null)
             tmppath = tmp;
         if (path != undefined) {
-            console.log("path " + getParameterByName("action"))
+            console.log("path " + Utils.getParameterByName("action"))
             loadPath(path, action)
 
         }

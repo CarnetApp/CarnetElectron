@@ -72,7 +72,7 @@ String.prototype.replaceAll = function (search, replacement) {
     return target.replace(new RegExp(search, 'g'), replacement);
 };
 
-function openNote(notePath,action) {
+function openNote(notePath, action) {
     isLoadCanceled = false;
     currentNotePath = notePath
     RequestBuilder.sRequestBuilder.get("/note/open/prepare", function (error, data) {
@@ -81,12 +81,12 @@ function openNote(notePath,action) {
             return;
         if (writerFrame.src == "") {
             if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1) {//open in new tab for firefox android
-                window.open("writer?path=" + encodeURIComponent(notePath)+(action!=undefined?"&action="+action:""), "_blank");
+                window.open("writer?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : ""), "_blank");
             }
             else {
                 $("#editor-container").show()
                 $(loadingView).fadeIn(function () {
-                    writerFrame.src = data + "?path=" + encodeURIComponent(notePath)+(action!=undefined?"&action="+action:"");
+                    writerFrame.src = data + "?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : "");
                     writerFrame.style.display = "inline-flex"
 
                 })
@@ -395,7 +395,7 @@ function onListEnd(pathToList, files, metadatas, discret) {
             var filename = getFilenameFromPath(file.path);
             if (filename.endsWith(".sqd")) {
                 let metadata = metadatas != undefined ? metadatas[file.path] : undefined;
-                var noteTestTxt = new Note( Utils.cleanNoteName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined, metadata != undefined ? metadata.media : undefined);
+                var noteTestTxt = new Note(Utils.cleanNoteName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined, metadata != undefined ? metadata.media : undefined);
                 noteTestTxt.isPinned = file.isPinned
                 noteTestTxt.originalIndex = i;
                 notes.push(noteTestTxt)
@@ -568,7 +568,7 @@ document.getElementById("add-record-button").onclick = function () {
     createAndOpenNote("record-audio");
 }
 
-function createAndOpenNote(action){
+function createAndOpenNote(action) {
     var path = currentPath;
     if (path == "recentdb://" || path.startsWith("keyword://"))
         path = "";

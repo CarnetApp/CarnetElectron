@@ -1,6 +1,7 @@
 var JSZip = require('jszip');
 var mkdirp = require('mkdirp');
-var fs = require('fs');
+var fs = require('fs-extra');
+const intoStream = require('into-stream');
 var textVersion = require("textversionjs");
 var getParentFolderFromPath = require("../../utils/file_utils").FileUtils.getParentFolderFromPath
 var NoteOpener = function (note) {
@@ -12,7 +13,7 @@ NoteOpener.prototype.getMainTextMetadataAndPreviews = function (callback) {
   this.getFullHTML(function (data, zip) {
     if (zip != undefined) {
       opener.getMetadataString(zip, function (metadata) {
-        opener.getPreviews(zip, function (previews, media) {
+        opener.getMediaList(zip, function (previews, media) {
           callback(textVersion(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews, media)
 
         })
@@ -24,11 +25,33 @@ NoteOpener.prototype.getMainTextMetadataAndPreviews = function (callback) {
   });
 }
 
-NoteOpener.prototype.getPreviews = function (zip, callback) {
-  var p = new PreviewOpener(zip, callback)
+NoteOpener.prototype.getMediaList = function (zip, callback) {
+  var p = new MediaLister(zip, callback)
   p.start();
 }
 
+var MediaLister = function (zip, callback) {
+  this.zip = zip;
+  this.currentFile = 0;
+  this.callback = callback;
+  this.data = []
+}
+
+MediaLister.prototype.start = function () {
+  var extractor = this;
+  this.files = [];
+  this.media = [];
+  this.zip.folder("data").forEach(function (relativePath, file) {
+
+    if (relativePath.startsWith("preview_")) {
+      extractor.files.push(file.name)
+    } else {
+      extractor.media.push(file.name)
+
+    }
+  })
+  this.callback(this.data, this.media)
+}
 
 var PreviewOpener = function (zip, callback) {
   this.zip = zip;
@@ -88,6 +111,68 @@ NoteOpener.prototype.getMetadataString = function (zip, callback) {
   }
 }
 
+//https://miguelmota.com/bytes/arraybuffer-to-buffer/
+var isArrayBufferSupported = (new Buffer(new Uint8Array([1]).buffer)[0] === 1);
+
+var arrayBufferToBuffer = isArrayBufferSupported ? arrayBufferToBufferAsArgument : arrayBufferToBufferCycle;
+
+function arrayBufferToBufferAsArgument(ab) {
+  return new Buffer(ab);
+}
+
+function arrayBufferToBufferCycle(ab) {
+  var buffer = new Buffer(ab.byteLength);
+  var view = new Uint8Array(ab);
+  for (var i = 0; i < buffer.length; ++i) {
+      buffer[i] = view[i];
+  }
+  return buffer;
+}
+const path = require('path')
+
+NoteOpener.prototype.getMedia= function (media, callback) {
+  fs.stat(this.note.path, (err, stat) => {
+    if(err){
+      callback(undefined, undefined)
+      return
+    }
+    if (stat.isFile()){
+      fs.readFile(this.note.path, function (err, data) {
+        if (err) {
+          callback(undefined, undefined)
+          return console.logDebug(err);
+        }
+    
+        if (data.length != 0)
+          JSZip.loadAsync(data, {
+            base64: true
+          }).then(function (zip) {
+            zip.file(media).async("arraybuffer").then(function (content) {
+              callback(intoStream(content), zip)
+            })
+          }, function (e) {
+            callback(undefined, undefined)
+          });
+        else callback(undefined, undefined)
+      });
+
+    } else {
+
+      var readStream = fs.createReadStream(path.join(this.note.path, media));
+      readStream.on('open', function () {
+        callback(readStream, undefined)
+      });
+      readStream.on('error', function(err) {
+        callback(undefined, undefined)
+      });
+
+      
+    }
+  })
+  
+}
+
+
 NoteOpener.prototype.getFullHTML = function (callback) {
   console.logDebug("this.note.path  " + this.note.path)
 
@@ -123,6 +208,49 @@ NoteOpener.prototype.extractTo = function (path, callback) {
       extractor.start();
     } else callback(true)
   });
+}
+
+NoteOpener.prototype.openTo = function (path, callback) {
+  var opener = this;
+  fs.stat(this.note.path, (err, stat) => {
+    if (stat == undefined || stat.isFile()){
+      opener.extractTo(path, callback)
+    } else {
+      opener.copyTo(path, callback)
+    }
+  })
+}
+
+NoteOpener.prototype.copyTo = function (path, callback) {
+  fs.copy(this.note.path, path, err => {
+    if (err) return callback(true)
+
+    callback(false)
+
+  })
+}
+
+NoteOpener.prototype.saveFrom = function (fromPath, modifiedFiles, callback) {
+  var opener = this;
+  fs.stat(this.note.path, (err, stat) => {
+    if (stat == undefined || stat.isFile()){
+      opener.compressFrom(fromPath, callback)
+    } else {
+      if(modifiedFiles != undefined){
+        for (var modifiedFile of modifiedFiles){
+          var parent = getParentFolderFromPath(modifiedFile)
+          var toDir = path.join(opener.note.path, parent)
+          try{
+          fs.mkdirSync(toDir)
+          } catch(e){
+
+          }
+          fs.copySync(path.join(fromPath, modifiedFile), path.join(toDir, modifiedFile))
+          callback(false)
+        }
+      }
+    }
+  })
 }
 
 NoteOpener.prototype.compressFrom = function (path, callback) {

@@ -135,11 +135,11 @@ NoteCardView.prototype.setNote = function (note) {
             this.cardUrls.appendChild(div);
         }
     this.audioList.innerHTML = "";
-    if (note.media != undefined){
+    if (note.media != undefined) {
 
         for (let url of note.media) {
-            let audio = url.substr(url.lastIndexOf("/")+1)
-            if(!FileUtils.isFileAudio(audio))
+            let audio = url.substr(url.lastIndexOf("/") + 1)
+            if (!FileUtils.isFileAudio(audio))
                 continue;
             var table = document.createElement('table');
             var tr = document.createElement('tr');
@@ -154,10 +154,10 @@ NoteCardView.prototype.setNote = function (note) {
             playpause.classList.add('mdl-button')
             playpause.classList.add('mdl-js-button')
             playpause.innerHTML = "<i class=\"material-icons\">play_arrow</i>"
-            playpause.onclick = function(event){
+            playpause.onclick = function (event) {
                 event.stopPropagation()
                 var audioplayer = document.getElementById("audio-player");
-                if(audioplayer.onended != undefined)
+                if (audioplayer.onended != undefined)
                     audioplayer.onended()
                 audioplayer.onended = function () {
                     playpause.innerHTML = "<i class=\"material-icons\">play_arrow</i>"
@@ -181,7 +181,7 @@ NoteCardView.prototype.setNote = function (note) {
             table.onclick = function (event) {
                 event.stopPropagation()
                 compatibility.openUrl(url)
-                
+
             }
             a.innerHTML = audio
             td2.appendChild(a)

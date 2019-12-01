@@ -14,8 +14,8 @@ var fs = require('fs');
 const path = require('path')
 var textVersion = require("textversionjs");
 var currentcache = {}
-var previews = {}
 var media = []
+var openedNotePath = undefined
 var handle = function (method, path, data, callback) {
     console.logDebug(method + " " + path)
     var splitPath = path.split("?")
@@ -231,7 +231,7 @@ var handle = function (method, path, data, callback) {
                             const file = {};
                             file['name'] = f;
                             file['path'] = folder + f;
-                            file['isDir'] = !stat.isFile();
+                            file['isDir'] = !f.endsWith(".sqd");
                             file['mtime'] = stat.mtime;
                             arrayResult.push(file)
                             arrayH.next()
@@ -407,7 +407,7 @@ var handle = function (method, path, data, callback) {
                         if (!e)
                             delete previews["preview_" + toDelete.substring(1) + ".jpg"]
                         getMediaList(function (error, media) {
-                            saveNote(note, function () {
+                            saveNote(undefined, note, function () {
                                 callback(error, media)
                             })
                         })
@@ -429,9 +429,18 @@ var getMediaList = function (callback) {
             callback(false, media) // return empty because no medias
             return
         }
+        currentcache.media = []
+        currentcache.previews = []
         for (let file of files) {
-            if (!file.startsWith("preview_"))
+            if (!file.startsWith("preview_")) {
                 media.push(tmppath + file)
+                currentcache.media.push("getMedia?note=" + openedNotePath + "&media=data/" + file)
+            }
+            else {
+                currentcache.previews.push("getMedia?note=" + openedNotePath + "&media=data/" + file)
+            }
+
+
         }
         callback(false, media)
     })
@@ -448,7 +457,6 @@ var addMedias = function (path, files, callback) {
                     if (!err) {
                         image.scaleToFit(400, 400);
                         image.getBase64(Jimp.MIME_JPEG, function (err, base) {
-                            previews['preview_' + file.name + ".jpg"] = base;
                             fs.writeFile(tmppath + 'data/preview_' + file.name + ".jpg", base.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
                                 handler.next()
                             })
@@ -465,7 +473,7 @@ var addMedias = function (path, files, callback) {
 
     }, function () {
         getMediaList(function (error, media) {
-            saveNote(path, function (error, data) {
+            saveNote(undefined, path, function (error, data) {
                 callback(error, media)
             });
         })
@@ -492,7 +500,7 @@ var saveTextToNote = function (path, html, metadata, callback) {
             var text = textVersion(html)
             currentcache.shorttext = text.substr(0, text.length > 200 ? 200 : text.length)
             currentcache.metadata = JSON.parse(metadata)
-            saveNote(path, callback)
+            saveNote(['index.html','metadata.json'], path, callback)
 
         });
 
@@ -507,11 +515,11 @@ var cleanPath = function (path) {
         path = path.substr(1)
     return path;
 }
-var saveNote = function (path, callback) {
+var saveNote = function (modifiedFiles, path, callback) {
     var note = new Note("", "", settingsHelper.getNotePath() + "/" + path)
     var noteOpener = new NoteOpener(note)
     var tmppath = getTmpPath() + "/note/";
-    noteOpener.compressFrom(tmppath, function () {
+    noteOpener.saveFrom(tmppath, modifiedFiles,  function () {
         console.logDebug("compressed")
         callback(false, "")
         fs.stat(settingsHelper.getNotePath() + "/" + path, function (error, stats) {
@@ -519,11 +527,6 @@ var saveNote = function (path, callback) {
                 return;
             if (path.startsWith("/"))
                 path = path.substr(1)
-            var pre = Object.values(previews)
-            currentcache.previews = []
-            for (var i = 0; i < pre.length && i < 2; i++)
-                currentcache.previews.push(pre[i])
-            currentcache.media = media
             currentcache.last_file_modification = CacheManager.getMTimeFromStat(stats)
             CacheManager.getInstance().put(cleanPath(path), currentcache)
             CacheManager.getInstance().write();
@@ -534,7 +537,7 @@ var saveNote = function (path, callback) {
 
 var openNote = function (path, callback) {
     currentcache = {};
-    previews = {}
+    openedNotePath = path;
     const tmppath = getTmpPath() + "/note/";
     console.logDebug("extractNote" + settingsHelper.getNotePath() + "/" + path + " to " + tmppath)
     var rimraf = require('rimraf');
@@ -542,15 +545,12 @@ var openNote = function (path, callback) {
         var mkdirp = require('mkdirp');
         mkdirp.sync(tmppath);
         const noteOpener = new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + path));
-        noteOpener.extractTo(tmppath, function (noSuchFile, expreviews) {
+        noteOpener.openTo(tmppath, function (noSuchFile, expreviews) {
             var result = {}
             result["id"] = 0;
             currentcache = CacheManager.getInstance().get(cleanPath(path))
             if (currentcache == undefined)
                 currentcache = {}
-            if (expreviews == undefined)
-                expreviews = {}
-            previews = expreviews
             console.logDebug("done " + noSuchFile)
             if (!noSuchFile) {
                 fs.readFile(tmppath + 'index.html', 'utf8', function read(err, data) {
