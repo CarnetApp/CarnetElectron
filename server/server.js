@@ -398,16 +398,15 @@ var handle = function (method, path, data, callback) {
                     callback(true, "")
                     return;
                 }
+                var deletedFiles = []
                 var tmppath = getTmpPath() + "/note/data" + toDelete;
+                deletedFiles.push("data" + toDelete);
                 fs.unlink(tmppath, function () {
-
                     fs.unlink(getTmpPath() + "/note/data/preview_" + toDelete.substring(1) + ".jpg", function (e) {
-                        console.logDebug(e)
-                        console.logDebug(JSON.stringify(previews))
-                        if (!e)
-                            delete previews["preview_" + toDelete.substring(1) + ".jpg"]
+                        deletedFiles.push("data/preview_" + toDelete.substring(1) + ".jpg");
+
                         getMediaList(function (error, media) {
-                            saveFilesInNote(undefined, note, function () {
+                            deleteFilesFromNote(deletedFiles, note, function () {
                                 callback(error, media)
                             })
                         })

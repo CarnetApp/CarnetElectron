@@ -251,7 +251,7 @@ NoteOpener.prototype.saveFrom = function (fromPath, modifiedFiles, deletedFiles,
       }
       if(deletedFiles != undefined){
         for (var deletedFile of deletedFiles){          
-          fs.deleteSync(path.join(toDir, deletedFile))
+          fs.unlinkSync(path.join(opener.note.path, deletedFile))
           
         }
       }
