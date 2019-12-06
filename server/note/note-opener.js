@@ -230,7 +230,7 @@ NoteOpener.prototype.copyTo = function (path, callback) {
   })
 }
 
-NoteOpener.prototype.saveFrom = function (fromPath, modifiedFiles, callback) {
+NoteOpener.prototype.saveFrom = function (fromPath, modifiedFiles, deletedFiles, callback) {
   var opener = this;
   fs.stat(this.note.path, (err, stat) => {
     if (stat == undefined || stat.isFile()){
@@ -245,10 +245,17 @@ NoteOpener.prototype.saveFrom = function (fromPath, modifiedFiles, callback) {
           } catch(e){
 
           }
-          fs.copySync(path.join(fromPath, modifiedFile), path.join(toDir, modifiedFile))
-          callback(false)
+          fs.copySync(path.join(fromPath, modifiedFile), path.join(opener.note.path, modifiedFile))
+          
         }
       }
+      if(deletedFiles != undefined){
+        for (var deletedFile of deletedFiles){          
+          fs.deleteSync(path.join(toDir, deletedFile))
+          
+        }
+      }
+      callback(false)
     }
   })
 }

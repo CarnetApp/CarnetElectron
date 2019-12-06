@@ -407,7 +407,7 @@ var handle = function (method, path, data, callback) {
                         if (!e)
                             delete previews["preview_" + toDelete.substring(1) + ".jpg"]
                         getMediaList(function (error, media) {
-                            saveNote(undefined, note, function () {
+                            saveFilesInNote(undefined, note, function () {
                                 callback(error, media)
                             })
                         })
@@ -452,12 +452,15 @@ var addMedias = function (path, files, callback) {
     require('mkdirp').sync(tmppath + 'data/');
     var handler = new ArrayHandler(files, function (file) {
         fs.writeFile(tmppath + 'data/' + file.name, file.data, 'base64', function (err) {
+            handler.filesToSave.push('data/' + file.name)
             if (!err) {
                 Jimp.read(tmppath + 'data/' + file.name, (err, image) => {
                     if (!err) {
                         image.scaleToFit(400, 400);
                         image.getBase64(Jimp.MIME_JPEG, function (err, base) {
                             fs.writeFile(tmppath + 'data/preview_' + file.name + ".jpg", base.replace(/^data:image\/\w+;base64,/, ""), 'base64', function (err) {
+                                handler.filesToSave.push('data/preview_' + file.name + ".jpg")
+
                                 handler.next()
                             })
 
@@ -473,12 +476,15 @@ var addMedias = function (path, files, callback) {
 
     }, function () {
         getMediaList(function (error, media) {
-            saveNote(undefined, path, function (error, data) {
+            saveFilesInNote(handler.filesToSave, path, function (error, data) {
                 callback(error, media)
             });
         })
 
     });
+    
+    handler.filesToSave = []
+
     handler.next()
 
 }
@@ -500,7 +506,7 @@ var saveTextToNote = function (path, html, metadata, callback) {
             var text = textVersion(html)
             currentcache.shorttext = text.substr(0, text.length > 200 ? 200 : text.length)
             currentcache.metadata = JSON.parse(metadata)
-            saveNote(['index.html','metadata.json'], path, callback)
+            saveFilesInNote(['index.html','metadata.json'], path, callback)
 
         });
 
@@ -515,11 +521,11 @@ var cleanPath = function (path) {
         path = path.substr(1)
     return path;
 }
-var saveNote = function (modifiedFiles, path, callback) {
+var saveFilesInNote = function (modifiedFiles, path, callback) {
     var note = new Note("", "", settingsHelper.getNotePath() + "/" + path)
     var noteOpener = new NoteOpener(note)
     var tmppath = getTmpPath() + "/note/";
-    noteOpener.saveFrom(tmppath, modifiedFiles,  function () {
+    noteOpener.saveFrom(tmppath, modifiedFiles, undefined, function () {
         console.logDebug("compressed")
         callback(false, "")
         fs.stat(settingsHelper.getNotePath() + "/" + path, function (error, stats) {
@@ -534,6 +540,27 @@ var saveNote = function (modifiedFiles, path, callback) {
     })
 
 }
+
+var deleteFilesFromNote = function (deletedFiles, path, callback) {
+    var note = new Note("", "", settingsHelper.getNotePath() + "/" + path)
+    var noteOpener = new NoteOpener(note)
+    var tmppath = getTmpPath() + "/note/";
+    noteOpener.saveFrom(tmppath, undefined, deletedFiles,  function () {
+        console.logDebug("compressed")
+        callback(false, "")
+        fs.stat(settingsHelper.getNotePath() + "/" + path, function (error, stats) {
+            if (error)
+                return;
+            if (path.startsWith("/"))
+                path = path.substr(1)
+            currentcache.last_file_modification = CacheManager.getMTimeFromStat(stats)
+            CacheManager.getInstance().put(cleanPath(path), currentcache)
+            CacheManager.getInstance().write();
+        })
+    })
+
+}
+
 
 var openNote = function (path, callback) {
     currentcache = {};
@@ -700,11 +727,17 @@ class CarnetHttpServer {
                 var media = current_url.searchParams.get('media');
                 var note =  current_url.searchParams.get('note');
                 if(note.endsWith(".sqd") && note.indexOf("../") == -1){
-                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + note)).getMedia(media, function(mediaStream, zip){
+                    console.log("get "+media)
+                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + note)).getMedia(media, function(mediaStream, zip){                            console.log("get "+media)
+                    console.log("mediaStream "+mediaStream)
+
                         if(mediaStream != undefined){
-                            
+
                             mediaStream.pipe(response);
 
+                        } else {
+                            response.statusCode = 404;
+                            response.end();                        
                         }
                     })
                 }
