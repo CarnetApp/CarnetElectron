@@ -859,8 +859,13 @@ UISettingsHelper.getInstance().loadSettings(function (settings, fromCache) {
     console.oldlog("settings from cache " + fromCache + " order " + settings["sort_by"])
     if (settings['start_page'] == 'recent')
         initPath = "recentdb://"
-    if (settings['start_page'] == 'browser')
+    if (settings['start_page'] == 'browser'){
+        // we need to load recent db
+        RecentDBManager.getInstance().getFlatenDB(function(){
+            
+        })
         initPath = "/"
+    }
     $("input[name='sort-by'][value='" + settings['sort_by'] + "']").parent().addClass("is-checked")
     $("input[name='sort-by'][value='" + settings['sort_by'] + "']").attr('checked', 'checked')
 
