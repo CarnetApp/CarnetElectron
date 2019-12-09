@@ -6,8 +6,19 @@ RecentDBManager.prototype.getFullDB = function (callback) {
     RequestBuilder.sRequestBuilder.get("/recentdb", callback)
 }
 
-RecentDBManager.prototype.getFlatenDB = function (callback) {
+RecentDBManager.prototype.getFlatenDB = function (callback, trial = 0) {
+    var dbManager = this
     this.getFullDB(function (err, data) {
+        if(data == null){
+            //error, let's retry
+            if(trial < 2)
+                setTimeout(function(){
+                    dbManager.getFlatenDB(callback, trial+1);
+                }, 1000);
+            else
+                callback(true)
+            return;
+        }
         //with electron, working on big object transmitted to ui is a nightmare... so... sending string (far faster)
         if (typeof data === "string")
             data = JSON.parse(data)

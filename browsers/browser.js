@@ -508,10 +508,16 @@ function list(pathToList, discret) {
 
     }
     var fb = new FileBrowser(pathToList);
-    fb.list(function (files, endOfSearch, metadatas) {
-        if (endOfSearch || files.length > 0) {
+    fb.list(function (error, files, endOfSearch, metadatas) {
+        if (error || endOfSearch || files.length > 0) {
             document.getElementById("page-content").style.display = "block";
             document.getElementById("note-loading-view").style.display = "none";
+        }
+        if(error){
+            document.getElementById("page-content").style.display = "none";
+            $("#emty-view").fadeIn("fast");
+            document.getElementById("emty-view").innerHTML = $.i18n("something_went_wrong_please_reload")
+            return
         }
         if (files != null && pathToList === "recentdb://" && files.length > 0) {
             //save to cache
