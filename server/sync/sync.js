@@ -184,14 +184,21 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
         })
     } else {
         this.client
-            .getFileContents(this.nextcloudRoot + "/" + remoteDBItem.path)
+            .getFileContents(this.nextcloudRoot + sync.path.sep + remoteDBItem.path)
             .then(function (data) {
                 sync.fs.writeFileSync(fpath, data);
                 const stat = sync.fs.statSync(fpath)
                 sync.save(DBItem.fromFS(sync.settingsHelper.getNotePath(), fpath, stat), remoteDBItem)
                 sync.hasDownloadedSmt = true;
-                if (fpath.endsWith(".sqd")) {
-                    sync.addToCache(fpath, remoteDBItem.path, stat);
+                var notePath = fpath;
+                if (!notePath.endsWith(".sqd")) {
+                    notePath = sync.FileUtils.getParentFolderFromPath(notePath)
+                    if (notePath.endsWith(sync.path.sep + "data")) {
+                        notePath = sync.FileUtils.getParentFolderFromPath(notePath)
+                    }
+                }
+                if (notePath.endsWith(".sqd")) {
+                    sync.addToCache(notePath, sync.correctLocalPath(sync.settingsHelper.getNotePath(), notePath), stat);
 
                 }
                 callback();
