@@ -150,7 +150,7 @@ var handle = function (method, path, data, callback) {
                     console.log("from cache" + cached.media)
                 } else {
                     console.log("not from cache")
-                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step)).getMainTextMetadataAndPreviews(function (text, metadata, previews, media) {
+                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step), step).getMainTextMetadataAndPreviews(function (text, metadata, previews, media) {
                         if (text != undefined) {
                             handler.addResult(step, {
                                 shorttext: text.substr(0, text.length > 200 ? 200 : text.length),
@@ -481,7 +481,7 @@ var addMedias = function (path, files, callback) {
         })
 
     });
-    
+
     handler.filesToSave = []
 
     handler.next()
@@ -505,7 +505,7 @@ var saveTextToNote = function (path, html, metadata, callback) {
             var text = textVersion(html)
             currentcache.shorttext = text.substr(0, text.length > 200 ? 200 : text.length)
             currentcache.metadata = JSON.parse(metadata)
-            saveFilesInNote(['index.html','metadata.json'], path, callback)
+            saveFilesInNote(['index.html', 'metadata.json'], path, callback)
 
         });
 
@@ -522,7 +522,7 @@ var cleanPath = function (path) {
 }
 var saveFilesInNote = function (modifiedFiles, path, callback) {
     var note = new Note("", "", settingsHelper.getNotePath() + "/" + path)
-    var noteOpener = new NoteOpener(note)
+    var noteOpener = new NoteOpener(note, path)
     var tmppath = getTmpPath() + "/note/";
     noteOpener.saveFrom(tmppath, modifiedFiles, undefined, function () {
         console.logDebug("compressed")
@@ -542,9 +542,9 @@ var saveFilesInNote = function (modifiedFiles, path, callback) {
 
 var deleteFilesFromNote = function (deletedFiles, path, callback) {
     var note = new Note("", "", settingsHelper.getNotePath() + "/" + path)
-    var noteOpener = new NoteOpener(note)
+    var noteOpener = new NoteOpener(note, path)
     var tmppath = getTmpPath() + "/note/";
-    noteOpener.saveFrom(tmppath, undefined, deletedFiles,  function () {
+    noteOpener.saveFrom(tmppath, undefined, deletedFiles, function () {
         console.logDebug("compressed")
         callback(false, "")
         fs.stat(settingsHelper.getNotePath() + "/" + path, function (error, stats) {
@@ -570,7 +570,7 @@ var openNote = function (path, callback) {
     rimraf(tmppath, function (e) {
         var mkdirp = require('mkdirp');
         mkdirp.sync(tmppath);
-        const noteOpener = new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + path));
+        const noteOpener = new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + path), openedNotePath);
         noteOpener.openTo(tmppath, function (noSuchFile, expreviews) {
             var result = {}
             result["id"] = 0;
@@ -724,19 +724,22 @@ class CarnetHttpServer {
 
             if (request.method == 'GET') {
                 var media = current_url.searchParams.get('media');
-                var note =  current_url.searchParams.get('note');
-                if(note.endsWith(".sqd") && note.indexOf("../") == -1){
-                    console.log("get "+media)
-                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + note)).getMedia(media, function(mediaStream, zip){                            console.log("get "+media)
-                    console.log("mediaStream "+mediaStream)
+                var note = current_url.searchParams.get('note');
+                if (note.endsWith(".sqd") && note.indexOf("../") == -1) {
+                    console.log("get " + media)
+                    console.log("from note " + note)
 
-                        if(mediaStream != undefined){
+                    new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + note), note).getMedia(media, function (mediaStream, zip) {
+                        console.log("get " + media)
+                        console.log("mediaStream " + mediaStream)
+
+                        if (mediaStream != undefined) {
 
                             mediaStream.pipe(response);
 
                         } else {
                             response.statusCode = 404;
-                            response.end();                        
+                            response.end();
                         }
                     })
                 }

@@ -210,13 +210,14 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
 }
 
 Sync.prototype.addToCache = function (fullpath, relativePath, stat) {
-    new NoteOpener(new Note("", "", fullpath)).getMainTextMetadataAndPreviews(function (text, metadata, previews) {
+    new NoteOpener(new Note("", "", fullpath), relativePath).getMainTextMetadataAndPreviews(function (text, metadata, previews, media) {
         if (text != undefined) {
             CacheManager.getInstance().put(relativePath, {
                 last_file_modification: CacheManager.getMTimeFromStat(stat),
                 shorttext: text != undefined ? text.substr(0, text.length > 200 ? 200 : text.length) : "",
                 metadata: metadata,
-                previews: previews
+                previews: previews,
+                media: media
             })
         }
     })
