@@ -1,3 +1,16 @@
+# Version 0.19.1
+
+Direct recording button
+Play records from note list
+Confirmation before deleting todolist
+
+Premisces to folder note support
+
+Translations:
+
+Ivan Pleva (Slovak), Mac Guffin (Russian), Locness (French), Özcan Oğuz (Turkish), bittorcs (Basque), Leschek (Czech), Izzy (Dutch)
+
+
 # Version 0.18.7
 
 Todolists:
