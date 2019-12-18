@@ -175,7 +175,7 @@ ZipNoteOpener.prototype.getFullHTML = function (callback) {
 }
 
 
-ZipNoteOpener.prototype.saveFrom = function (path, callback) {
+ZipNoteOpener.prototype.saveFrom = function (path, modifiedFiles, deletedFiles, callback) {
     var comp = new Compressor(path, this.note.path, callback);
     comp.start();
 }
