@@ -29,13 +29,13 @@ class CompatibilityEditor extends Compatibility {
         var dateC = new Date(note.metadata.creation_date)
         var dateM = new Date(note.metadata.last_modification_date)
         var tmpDiv = document.createElement('div');
-        if(printTitle)
-            tmpDiv.innerHTML += "<h3>"+FileUtils.stripExtensionFromName(FileUtils.getFilename(note.path))+"<h3>";
-        if(printCreation)
-            tmpDiv.innerHTML += "<span> Created: "+dateC.toLocaleDateString()+" "+dateC.toLocaleTimeString()+"</span><br />";
-        if(printMod)
-            tmpDiv.innerHTML += "<span> Modified: "+dateM.toLocaleDateString()+" "+dateM.toLocaleTimeString()+"</span><br />";
-        if(printMod || printCreation)
+        if (printTitle)
+            tmpDiv.innerHTML += "<h3>" + FileUtils.stripExtensionFromName(FileUtils.getFilename(note.path)) + "<h3>";
+        if (printCreation)
+            tmpDiv.innerHTML += "<span> Created: " + dateC.toLocaleDateString() + " " + dateC.toLocaleTimeString() + "</span><br />";
+        if (printMod)
+            tmpDiv.innerHTML += "<span> Modified: " + dateM.toLocaleDateString() + " " + dateM.toLocaleTimeString() + "</span><br />";
+        if (printMod || printCreation)
             tmpDiv.innerHTML += "<br />";
         tmpDiv.innerHTML += writer.oDoc.innerHTML
         if (this.isAndroid) {

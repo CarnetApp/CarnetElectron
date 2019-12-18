@@ -85,7 +85,7 @@ function createWindow() {
     }) + '?api_url=' + server.carnetHttpServer.getAddress())
 
     // Open the DevTools.
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
     console.log("app uid " + uid)
 
     // Emitted when the window is closed.

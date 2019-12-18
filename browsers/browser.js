@@ -515,7 +515,7 @@ function list(pathToList, discret) {
             document.getElementById("page-content").style.display = "block";
             document.getElementById("note-loading-view").style.display = "none";
         }
-        if(error){
+        if (error) {
             document.getElementById("page-content").style.display = "none";
             $("#emty-view").fadeIn("fast");
             document.getElementById("emty-view").innerHTML = $.i18n("something_went_wrong_please_reload")
@@ -861,10 +861,10 @@ UISettingsHelper.getInstance().loadSettings(function (settings, fromCache) {
     console.oldlog("settings from cache " + fromCache + " order " + settings["sort_by"])
     if (settings['start_page'] == 'recent')
         initPath = "recentdb://"
-    if (settings['start_page'] == 'browser'){
+    if (settings['start_page'] == 'browser') {
         // we need to load recent db
-        RecentDBManager.getInstance().getFlatenDB(function(){
-            
+        RecentDBManager.getInstance().getFlatenDB(function () {
+
         })
         initPath = "/"
     }
