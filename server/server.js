@@ -715,7 +715,7 @@ class CarnetHttpServer {
     constructor() {
 
     }
-    start() {
+    start(callback) {
         const http = require('http')
         const server = http.createServer(function (request, response) {
             //console.dir(request)
@@ -752,6 +752,7 @@ class CarnetHttpServer {
         server.on('listening', function () {
             carnetHttpServer.port = server.address().port
             console.log('Listening at ' + carnetHttpServer.getAddress())
+            callback()
         })
         server.listen(0, this.host)
 
