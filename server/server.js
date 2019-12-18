@@ -759,7 +759,7 @@ class CarnetHttpServer {
 
     }
 
-    getAddress = function () {
+    getAddress() {
         return `http://${this.host}:${this.port}/`;
     }
 }
