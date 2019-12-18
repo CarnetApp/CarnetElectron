@@ -56,8 +56,10 @@ function startKeywordsMerging() {
 
     });
 }
+var server = require("./server/server");
 
 function createWindow() {
+    server.carnetHttpServer.start()
     setTimeout(function () {
         startMerging();
         startKeywordsMerging()
@@ -210,5 +212,4 @@ exports.isSyncing = function () {
 }
 exports.createWindow = createWindow;
 
-var server = require("./server/server");
-server.carnetHttpServer.start()
+
