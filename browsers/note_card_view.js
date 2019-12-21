@@ -136,28 +136,27 @@ NoteCardView.prototype.setNote = function (note) {
         }
     this.audioList.innerHTML = "";
     if (note.media != undefined) {
+        console.oldlog("audio " + note.media.length)
 
         for (let url of note.media) {
             let audio = url.substr(url.lastIndexOf("/") + 1)
             if (!FileUtils.isFileAudio(audio))
                 continue;
-            var table = document.createElement('table');
             var tr = document.createElement('tr');
+            tr.classList.add("note-audio")
             var td1 = document.createElement('td');
             var td2 = document.createElement('td');
             tr.appendChild(td1)
             tr.appendChild(td2)
-            table.appendChild(tr)
 
-            table.classList.add("note-audio")
-            var playpause = document.createElement('button');
+            let playpause = document.createElement('button');
             playpause.classList.add('mdl-button')
             playpause.classList.add('mdl-js-button')
             playpause.innerHTML = "<i class=\"material-icons\">play_arrow</i>"
             playpause.onclick = function (event) {
                 event.stopPropagation()
                 var audioplayer = document.getElementById("audio-player");
-                if (audioplayer.src == api_url + url && !audioplayer.paused) {
+                if (audioplayer.rawurl == api_url + url && !audioplayer.paused) {
                     audioplayer.pause()
                     return;
                 }
@@ -173,6 +172,7 @@ NoteCardView.prototype.setNote = function (note) {
                     playpause.innerHTML = "<i class=\"material-icons\">pause</i>"
                 };
                 audioplayer.src = api_url + url;
+                audioplayer.rawurl = api_url + url;
                 audioplayer.play();
 
             }
@@ -182,14 +182,14 @@ NoteCardView.prototype.setNote = function (note) {
             a.onclick = function () {
                 return false;
             }
-            table.onclick = function (event) {
+            tr.onclick = function (event) {
                 event.stopPropagation()
                 compatibility.openUrl(url)
 
             }
             a.innerHTML = audio
             td2.appendChild(a)
-            this.audioList.appendChild(table);
+            this.audioList.appendChild(tr);
         }
     }
 
@@ -223,7 +223,7 @@ NoteCardView.prototype.init = function () {
     this.cardContent.appendChild(this.cardTitleText)
     this.cardContent.appendChild(this.cardText)
     this.cardContent.appendChild(this.cardTodoLists)
-    this.audioList = document.createElement('div');
+    this.audioList = document.createElement('table');
     this.audioList.classList.add("card-audio-list");
     this.cardContent.appendChild(this.audioList)
     this.cardRating = document.createElement('div');
