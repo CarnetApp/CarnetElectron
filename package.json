@@ -8,6 +8,7 @@
     "start": "npm install && electron .",
     "pack": "electron-builder --dir",
     "distapp": "electron-builder --x64 --ia32  --linux AppImage",
+    "distmac": "electron-builder --x64  --mac zip",
     "dist": "electron-builder"
   },
   "author": {
@@ -32,7 +33,8 @@
       ]
     },
     "mac": {
-      "category": "public.app-category.productivity"
+      "category": "public.app-category.productivity",
+      "target":["zip"]
     },
     "linux": {
       "category": "Office",
