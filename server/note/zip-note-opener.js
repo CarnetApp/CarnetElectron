@@ -2,7 +2,7 @@ var JSZip = require('jszip');
 var mkdirp = require('mkdirp');
 var fs = require('fs-extra');
 const intoStream = require('into-stream');
-var textVersion = require("textversionjs");
+var NoteUtils = require("./NoteUtils").NoteUtils;
 
 var getParentFolderFromPath = require("../../utils/file_utils").FileUtils.getParentFolderFromPath
 var ZipNoteOpener = function (note) {
@@ -17,7 +17,7 @@ ZipNoteOpener.prototype.getMainTextMetadataAndPreviews = function (callback) {
         if (zip != undefined) {
             opener.getMetadataString(zip, function (metadata) {
                 opener.getMediaList(zip, function (previews, media) {
-                    callback(textVersion(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews, media)
+                    callback(NoteUtils.getShortText(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews, media)
 
                 })
             })

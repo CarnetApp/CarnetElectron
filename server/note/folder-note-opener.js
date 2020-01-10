@@ -1,5 +1,5 @@
 var fs = require('fs-extra');
-var textVersion = require("textversionjs");
+var NoteUtils = require("./NoteUtils").NoteUtils;
 const path = require('path')
 
 var getParentFolderFromPath = require("../../utils/file_utils").FileUtils.getParentFolderFromPath
@@ -14,7 +14,7 @@ FolderNoteOpener.prototype.getMainTextMetadataAndPreviews = function (callback) 
     this.getFullHTML(function (data) {
         opener.getMetadataString(function (metadata) {
             opener.getMediaList(function (previews, media) {
-                callback(textVersion(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews, media)
+                callback(NoteUtils.getShortText(data), metadata != undefined ? JSON.parse(metadata) : undefined, previews, media)
             })
         })
     });

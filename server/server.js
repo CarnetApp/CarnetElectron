@@ -12,7 +12,6 @@ var currentSearch = undefined;
 var Note = require("../browsers/note").Note;
 var fs = require('fs');
 const path = require('path')
-var textVersion = require("textversionjs");
 var currentcache = {}
 var media = []
 var openedNotePath = undefined
@@ -502,8 +501,7 @@ var saveTextToNote = function (path, html, metadata, callback) {
                 return console.logDebug(err);
             }
             console.logDebug("compress")
-            var text = textVersion(html)
-            currentcache.shorttext = text.substr(0, text.length > 200 ? 200 : text.length)
+            currentcache.shorttext = NoteUtils.getShortText(html)
             currentcache.metadata = JSON.parse(metadata)
             saveFilesInNote(['index.html', 'metadata.json'], path, callback)
 
@@ -585,8 +583,7 @@ var openNote = function (path, callback) {
                         throw err;
                     }
                     result["html"] = data
-                    var text = textVersion(data)
-                    currentcache.shorttext = text.substr(0, text.length > 200 ? 200 : text.length)
+                    currentcache.shorttext = NoteUtils.getShortText(data)
                     fs.readFile(tmppath + 'metadata.json', 'utf8', function read(err, metadata) {
                         if (err) {
                             throw err;

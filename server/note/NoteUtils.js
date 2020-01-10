@@ -1,6 +1,7 @@
 var SettingsHelper = require("../settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
 var RecentDBManager = require('../recent/local_recent_db_manager').LocalRecentDBManager;
+var textVersion = require("textversionjs");
 
 var NoteUtils = function () {
 
@@ -19,6 +20,11 @@ NoteUtils.deleteNote = function (notePath, callback) {
 
 NoteUtils.moveNote = function (notePath, callback) {
 
+}
+
+NoteUtils.getShortText = function (html) {
+    var text = textVersion(html).replace(/\n/g, "<br />");
+    return text.substr(0, text.length > 200 ? 200 : text.length)
 }
 
 NoteUtils.renameNote = function (notePath, newPath, callback) {
