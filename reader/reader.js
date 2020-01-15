@@ -1020,10 +1020,12 @@ Writer.prototype.displayCountDialog = function () {
 
 
 Writer.prototype.increaseFontSize = function () {
-    this.surroundSelection(document.createElement('big'));
+    this.formatDoc("increaseFontSize", undefined);
 }
 Writer.prototype.decreaseFontSize = function () {
-    this.surroundSelection(document.createElement('small'));
+    
+    this.formatDoc("decreaseFontSize", undefined);
+
 }
 Writer.prototype.surroundSelection = function (element) {
     if (window.getSelection) {
