@@ -1427,13 +1427,11 @@ SaveNoteTask.prototype.trySave = function (onEnd, trial) {
     var urls = this.writer.oEditor.innerText.match(Utils.httpReg)
     if (urls == null)
         urls = []
-    urls = urls.map(function (x) { return x.toLowerCase() })
     if (this.writer.note.metadata.urls == undefined) {
         this.writer.note.metadata.urls = {}
     }
     var currentUrls = Object.keys(this.writer.note.metadata.urls)
     for (var url of urls) {
-        url = url.toLowerCase()
         if (currentUrls.indexOf(url) < 0)
             this.writer.note.metadata.urls[url] = {}
     }
