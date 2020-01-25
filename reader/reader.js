@@ -596,6 +596,89 @@ Writer.prototype.openRemindersDialog = function () {
     remindersDialog.dialog.showModal()
 }
 
+Writer.prototype.showKeywordsDialog = function () {
+    writer.newKeywordDialog.showModal();
+    writer.updateKeywordsListSelector()
+}
+
+Writer.prototype.updateKeywordsListSelector = function (currentWord = "") {
+    currentWord = currentWord.trim()
+    writer.newKeywordDialog.currentWord = currentWord
+    writer.keywordsList.innerHTML = ""
+    var head = document.createElement("thead");
+    writer.keywordsList.appendChild(head)
+    var tbody = document.createElement("tbody");
+    writer.keywordsList.appendChild(tbody)
+    var tr = document.createElement("tr");
+    head.appendChild(tr)
+    var th = document.createElement("th");
+    th.classList.add("mdl-data-table__cell--non-numeric")
+    th.innerHTML = ""
+    tr.appendChild(th)
+    var i = 0
+    if (currentWord != "") {
+        var isIn = false
+        for (var word in writer.availableKeyword) {
+            if (word == currentWord && writer.availableKeyword[word] != 0) {
+                isIn = true
+                break
+            }
+        }
+        if (!isIn) {
+            var o = document.createElement("tr")
+            var td = document.createElement("td")
+            td.classList.add("mdl-data-table__cell--non-numeric")
+            td.classList.add("in-dialog-keyword")
+
+            td.innerHTML = currentWord;
+            o.appendChild(td)
+            o.word = word
+            tbody.appendChild(o)
+
+        }
+
+
+    }
+
+
+    for (var word in writer.availableKeyword) {
+
+        if (writer.availableKeyword[word] == 0)
+            continue;
+        if (currentWord == "" || word.toLowerCase().indexOf(currentWord) >= 0) {
+            var o = document.createElement("tr")
+            var td = document.createElement("td")
+            td.classList.add("mdl-data-table__cell--non-numeric")
+            td.classList.add("in-dialog-keyword")
+
+            td.innerHTML = word;
+            if (writer.note.metadata.keywords.indexOf(word) >= 0)
+                o.classList.add("is-selected")
+            o.appendChild(td)
+            o.word = word
+            tbody.appendChild(o)
+        }
+    }
+
+    try {
+        new MaterialDataTable(writer.keywordsList)
+    } catch (e) { console.log(e) }
+
+    for (var checkbox of writer.keywordsList.getElementsByClassName('mdl-checkbox__input')) {
+        checkbox.onchange = function (event) {
+            var word = event.target.parentElement.parentElement.parentElement.getElementsByClassName("in-dialog-keyword")[0].innerHTML
+            console.log("on change " + $(event.target).is(":checked"))
+            if ($(event.target).is(":checked"))
+                writer.addKeyword(word)
+            else
+                writer.removeKeyword(word)
+            console.log(word)
+        }
+    }
+
+
+}
+
 Writer.prototype.init = function () {
     var writer = this;
     this.recorder = new CarnetRecorder();
@@ -728,7 +811,7 @@ Writer.prototype.init = function () {
 
     document.getElementById("button-add-keyword").onclick = function () {
         writer.toggleDrawer();
-        writer.newKeywordDialog.showModal();
+        writer.showKeywordsDialog();
         return false;
     }
     document.getElementById("options-button").onclick = function () {
@@ -846,36 +929,9 @@ Writer.prototype.init = function () {
 
     writer.keywordsList.innerHTML = "";
     document.getElementById('keyword-input').addEventListener("input", function () {
+        var currentWord = this.value.toLowerCase()
         console.log("input i")
-        writer.keywordsList.innerHTML = "";
-        if (this.value.length < 2)
-            return;
-        var i = 0
-        for (var word in writer.availableKeyword) {
-            if (i > 2)
-                break;
-            if (writer.availableKeyword[word] == 0)
-                continue;
-            if (word.toLowerCase().indexOf(this.value.toLowerCase()) >= 0) {
-                var o = document.createElement("tr")
-                var td = document.createElement("td")
-                td.classList.add("mdl-data-table__cell--non-numeric")
-                td.innerHTML = word;
-                o.style = "cursor: pointer;"
-                o.appendChild(td)
-                o.word = word
-                o.onclick = function () {
-                    document.getElementById('keyword-input').value = this.word
-                    return false
-                }
-                writer.keywordsList.appendChild(o)
-                i++;
-            }
-        }
-
-        try {
-            new MaterialDataTable(writer.keywordsList)
-        } catch (e) { }
+        writer.updateKeywordsListSelector(currentWord)
     })
 
     this.addMediaMenu = document.getElementById("add-media-menu")

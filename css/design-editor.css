@@ -641,3 +641,27 @@ div#container-button::-webkit-scrollbar {
 #generic-dialog .content{
 	padding:15px;
 }
+
+#keywors-in-text-container{
+	padding-top: 10px;
+}
+.keyword-in-text{
+	padding-left: 10px;
+	padding-right: 10px;
+	border: 1px rgba(119, 119, 119, 0.5) solid;
+	cursor: pointer;
+	margin: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	font-size:14px;
+	border-radius: 5px;
+
+}
+
+.in-dialog-keyword{
+	width:100%;
+}
+
+#keywords thead{
+	display: none;
+}
