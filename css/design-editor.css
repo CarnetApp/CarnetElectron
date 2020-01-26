@@ -61,7 +61,7 @@ html {
 .more-button.second{
 	display: none;
 }
-@media screen and (min-width: 1280px) {
+@media screen and (min-width: 900px) {
 	.second{
 		display:inline;
 	}
@@ -192,7 +192,7 @@ html {
 	color:black;
 	overflow-x: auto;
 	white-space: nowrap;
-	width:100%;
+	margin-right: 50px;
 }
 
 .toolbar .mdl-textfield {
@@ -211,6 +211,9 @@ html {
 	padding: 3px;
 	margin: 0px;
 	box-shadow: 0px 7px 10px 0px grey;
+}
+.in-toolbar-button{
+	text-transform: unset;
 }
 
 #center {
@@ -681,4 +684,6 @@ div#container-button::-webkit-scrollbar {
 	height: calc(100% - 50px);
 	overflow-y: auto;
 }
+#toolbar-container{
+	background:var(--header-bg);
 }

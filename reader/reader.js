@@ -473,8 +473,8 @@ Writer.prototype.refreshKeywords = function () {
     var writer = this;
     for (var i = 0; i < this.note.metadata.keywords.length; i++) {
         var word = this.note.metadata.keywords[i]
-        var keywordElem = document.createElement("a")
-        keywordElem.classList.add("mdl-navigation__link");
+        var keywordElem = document.createElement("span")
+        keywordElem.classList.add("keyword-in-text");
         keywordElem.innerHTML = word;
         keywordsContainer.appendChild(keywordElem);
         keywordElem.word = word
@@ -486,7 +486,7 @@ Writer.prototype.refreshKeywords = function () {
     keywordsDBManager.getFlatenDB(function (error, data) {
         writer.availableKeyword = data;
     })
-
+    resetScreenHeight();
 }
 Writer.prototype.simulateKeyPress = function (character) {
     $.event.trigger({
@@ -814,12 +814,23 @@ Writer.prototype.init = function () {
         writer.showKeywordsDialog();
         return false;
     }
-    document.getElementById("options-button").onclick = function () {
-        writer.toggleDrawer();
-        document.getElementById("options-dialog").showModal()
-        return false;
-    }
+
     document.getElementById("button-add-keyword-ok").onclick = function () {
+
+
+        var selectedKeywords = []
+
+        for (var keywordElem of document.getElementsByClassName("in-dialog-keyword")) {
+            if (keywordElem.parentElement.getElementsByClassName("mdl-checkbox__input")[0].checked)
+                selectedKeywords.push(keywordElem.innerText)
+        }
+
+        for (var noteKeyword of writer.note.metadata.keywords) {
+            if (selectedKeywords.indexOf(noteKeyword) < 0) {
+                //check if keyword was deleted
+            }
+        }
+
         writer.addKeyword(document.getElementById('keyword-input').value);
         writer.newKeywordDialog.close();
     }
@@ -892,6 +903,10 @@ Writer.prototype.init = function () {
                     writer.createEditableZone().onclick = function (event) {
                         writer.onEditableClick(event);
                     }
+                    break;
+                case "options-button":
+                    writer.toggleDrawer();
+                    document.getElementById("options-dialog").showModal()
                     break;
                 case "open-second-toolbar":
                     document.getElementById("toolbar").classList.add("more")
@@ -976,6 +991,7 @@ Writer.prototype.init = function () {
     })
     // $("#editor").webkitimageresize().webkittableresize().webkittdresize();
 }
+
 
 Writer.prototype.closeFullscreenMediaToolbar = function () {
     var layout = document.getElementsByClassName("mdl-layout")[0]
@@ -1079,7 +1095,7 @@ Writer.prototype.increaseFontSize = function () {
     this.formatDoc("increaseFontSize", undefined);
 }
 Writer.prototype.decreaseFontSize = function () {
-    
+
     this.formatDoc("decreaseFontSize", undefined);
 
 }
@@ -1546,13 +1562,11 @@ var lastscroll = 0;
 function resetScreenHeight() {
     console.log("resetScreenHeight")
     var screen = $(window).innerHeight(),
-        header = $("#header-carnet").height() + $("#toolbars").height(),
-        content = screen - header;
-    var style = window.getComputedStyle(document.getElementById("header-carnet"));
-    if (style.getPropertyValue('display') == "none")
-        content = screen;
+        header = 0,
+        content = screen - header - 35
+
     $("#center").height(content);
-    $("#text").css('min-height', content - 45 - $("#name-input").height() - 20 - (writer == undefined || writer.listOfMediaURL == undefined || writer.listOfMediaURL.length == 0 ? $("#media-toolbar").height() + 5 : 0) + "px");
+    $("#text").css('min-height', content - 45 - $("#keywords-list").height() - $("#name-input").height() - 20 - (writer == undefined || writer.listOfMediaURL == undefined || writer.listOfMediaURL.length == 0 ? $("#media-toolbar").height() + 5 : 0) + "px");
     $("#center").scrollTop(lastscroll);
     if (writer != undefined) {
         var diff = content - 45 - writer.getCaretPosition().y + header
