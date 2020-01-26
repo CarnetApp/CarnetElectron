@@ -650,12 +650,11 @@ div#container-button::-webkit-scrollbar {
 	padding-right: 10px;
 	border: 1px rgba(119, 119, 119, 0.5) solid;
 	cursor: pointer;
-	margin: 5px;
 	padding-top: 3px;
 	padding-bottom: 3px;
-	font-size:14px;
+	font-size: 14px;
 	border-radius: 5px;
-
+	margin-right: 10px;
 }
 
 .in-dialog-keyword{
@@ -664,4 +663,22 @@ div#container-button::-webkit-scrollbar {
 
 #keywords thead{
 	display: none;
+}
+
+#keywords-list{
+	word-break: break-all;
+	line-height: 30px;
+	padding-left: 5px;
+}
+#new-keyword-dialog{
+	height: 100%;
+}
+
+#new-keyword-dialog .mdl-dialog__content{
+	height: calc(100% - 120px);
+}
+#keywords-table-container{
+	height: calc(100% - 50px);
+	overflow-y: auto;
+}
 }
