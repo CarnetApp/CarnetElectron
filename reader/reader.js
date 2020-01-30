@@ -954,7 +954,13 @@ Writer.prototype.init = function () {
         writer.openRemindersDialog()
         return false;
     }
-
+    document.getElementById("note-color-button").onclick = function () {
+        document.getElementById("note-color-picker-dialog").showModal()
+        document.getElementById("note-color-picker-dialog").getElementsByClassName("ok")[0].onclick = function () {
+            document.getElementById("note-color-picker-dialog").close()
+        }
+        return false;
+    }
     document.getElementById("add-file-button").onclick = function () {
         writer.addMedia();
     }
@@ -1190,13 +1196,14 @@ Writer.prototype.updateRating = function (rating) {
 
 Writer.prototype.saveNoteColor = function (color) {
     this.note.metadata.color = color;
+    document.getElementById("note-color-picker-dialog").style.background = "var(--note-" + color + ")"
     console.log("new color " + this.note.metadata.color)
     writer.hasTextChanged = true;
 }
 
 Writer.prototype.updateNoteColor = function (color) {
     console.log("color " + color)
-
+    document.getElementById("note-color-picker-dialog").style.background = "var(--note-" + color + ")"
     var inputs = document.querySelectorAll("input[name='color']")
     for (var i = 0; i < inputs.length; i++) {
         if (inputs[i].id == color) {
@@ -1204,6 +1211,7 @@ Writer.prototype.updateNoteColor = function (color) {
 
         }
     };
+
 }
 
 Writer.prototype.getCaretPosition = function () {

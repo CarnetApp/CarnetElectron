@@ -106,38 +106,7 @@
 			<button type="button" class="mdl-button option-button" data-i18n="print" id="print-button">Print</button>
 			<button type="button" class="mdl-button option-button" data-i18n="statistics"
 				id="statistics-button">Statistics</button>
-			<div id="note-color">
-				<input type="radio" name="color" id="none" />
-				<label for="none"><span class="none"></span></label>
 
-				<input type="radio" name="color" id="red" />
-				<label for="red"><span class="red"></span></label>
-
-				<input type="radio" name="color" id="green" />
-				<label for="green"><span class="green"></span></label>
-
-				<input type="radio" name="color" id="yellow" />
-				<label for="yellow"><span class="yellow"></span></label>
-
-				<input type="radio" name="color" id="orange" />
-				<label for="orange"><span class="orange"></span></label>
-
-				<input type="radio" name="color" id="teal" />
-				<label for="teal"><span class="teal"></span></label>
-
-				<input type="radio" name="color" id="blue" />
-				<label for="blue"><span class="blue"></span></label>
-
-				<input type="radio" name="color" id="violet" />
-				<label for="violet"><span class="violet"></span></label>
-
-				<input type="radio" name="color" id="purple" />
-				<label for="purple"><span class="purple"></span></label>
-
-				<input type="radio" name="color" id="pink" />
-				<label for="pink"><span class="pink"></span></label>
-
-			</div>
 
 		</div>
 		<div class="mdl-dialog__actions">
@@ -304,6 +273,45 @@
 			<button type="button" class="mdl-button ok" data-i18n="ok">OK</button>
 		</div>
 	</dialog>
+	<dialog class="mdl-dialog" id="note-color-picker-dialog">
+		<div class="mdl-dialog__content">
+			<div id="note-color">
+				<input type="radio" name="color" id="none" />
+				<label for="none"><span class="none"></span></label>
+
+				<input type="radio" name="color" id="red" />
+				<label for="red"><span class="red"></span></label>
+
+				<input type="radio" name="color" id="green" />
+				<label for="green"><span class="green"></span></label>
+
+				<input type="radio" name="color" id="yellow" />
+				<label for="yellow"><span class="yellow"></span></label>
+
+				<input type="radio" name="color" id="orange" />
+				<label for="orange"><span class="orange"></span></label>
+
+				<input type="radio" name="color" id="teal" />
+				<label for="teal"><span class="teal"></span></label>
+
+				<input type="radio" name="color" id="blue" />
+				<label for="blue"><span class="blue"></span></label>
+
+				<input type="radio" name="color" id="violet" />
+				<label for="violet"><span class="violet"></span></label>
+
+				<input type="radio" name="color" id="purple" />
+				<label for="purple"><span class="purple"></span></label>
+
+				<input type="radio" name="color" id="pink" />
+				<label for="pink"><span class="pink"></span></label>
+
+			</div>
+		</div>
+		<div class="mdl-dialog__actions">
+			<button type="button" class="mdl-button ok" data-i18n="ok">OK</button>
+		</div>
+	</dialog>
 
 	<dialog class="mdl-dialog" id="new-keyword-dialog">
 		<div class="mdl-dialog__content">
@@ -400,7 +408,7 @@
 							<li class="mdl-menu__item" id="add-recording-button" data-i18n="recording">Recording
 							</li>
 							<li class="mdl-menu__item" id="button-add-keyword" data-i18n="keywords">Labels</li>
-							<li class="mdl-menu__item" id="add-recording-button" data-i18n="note_color">Note Color
+							<li class="mdl-menu__item" id="note-color-button" data-i18n="note_color">Note Color
 							</li>
 							<li class="mdl-menu__item in-toolbar-button" href="" id="reminders-button"
 								data-i18n="reminders">
