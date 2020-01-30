@@ -192,7 +192,7 @@ html {
 	color:black;
 	overflow-x: auto;
 	white-space: nowrap;
-	margin-right: 50px;
+	height:100%;
 }
 
 .toolbar .mdl-textfield {
@@ -686,4 +686,10 @@ div#container-button::-webkit-scrollbar {
 }
 #toolbar-container{
 	background:var(--header-bg);
+	box-shadow: 0 -3px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);
+	height: 45px;
+	margin-top:3px;
+    bottom: 0px;
 }
+
+

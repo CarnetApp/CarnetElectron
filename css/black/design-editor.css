@@ -38,3 +38,7 @@
 .mdl-data-table tbody tr.is-selected {
     background-color: #1f1e1e !important;
 }
+
+#toolbar-container{
+    box-shadow: 0 -3px 2px 0 rgba(193, 193, 193, 0.14);
+}

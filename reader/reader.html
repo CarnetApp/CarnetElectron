@@ -34,7 +34,6 @@
 
 <body>
 
-	<script src="<!ROOTPATH>utils/mdl_drawer_drag.js"></script>
 	<script src="<!ROOTPATH>utils/utils.js"></script>
 	<script src="<!ROOTPATH>browsers/note.js"></script>
 	<script src="<!ROOTPATH>browsers/file-browser.js"></script>
@@ -326,20 +325,9 @@
 		</div>
 	</dialog>
 
-	<div class="mdl-layout mdl-js-layout mdl-layout--fixed-drawer
-mdl-layout--fixed-header">
-
-		<div class="mdl-layout__drawer">
-			<nav class="mdl-navigation">
-
-				<a class="mdl-navigation__link" href="" id="reminders-button" data-i18n="reminders">Reminders</a>
+	<div class="mdl-layout mdl-js-layout">
 
 
-				<span style="text-align:center; margin:10px;" data-i18n="keywords"> Keywords</span>
-
-
-			</nav>
-		</div>
 		<script>
 			var testtt = undefined;
 		</script>
@@ -396,9 +384,9 @@ mdl-layout--fixed-header">
 
 					</div>
 				</div>
-				<div id="toolbar-container"
-					style="box-shadow: 0 -3px 2px 0 rgba(0, 0, 0, .14), 0 3px 1px -2px rgba(0, 0, 0, .2), 0 1px 5px 0 rgba(0, 0, 0, .12);height: 40px;">
-
+				<div id="toolbar-container">
+					<button id="exit" class="mdl-button mdl-js-button headerbar-button in-toolbar-button first"
+						style="float:right; right:0">Close</button>
 					<div id="toolbar" class="toolbar">
 
 
@@ -414,6 +402,10 @@ mdl-layout--fixed-header">
 							<li class="mdl-menu__item" id="button-add-keyword" data-i18n="keywords">Labels</li>
 							<li class="mdl-menu__item" id="add-recording-button" data-i18n="note_color">Note Color
 							</li>
+							<li class="mdl-menu__item in-toolbar-button" href="" id="reminders-button"
+								data-i18n="reminders">
+								Reminders</li>
+
 							<li id="todolist-button" class="mdl-menu__item in-toolbar-button" data-i18n="new_todolist">
 								Todo-List
 							</li>
@@ -503,8 +495,7 @@ mdl-layout--fixed-header">
 								<input class="mdl-textfield__input" type="text" name="sample" id="search-input">
 							</div>
 						</div>
-						<button id="exit" class="mdl-button mdl-js-button headerbar-button in-toolbar-button first"
-							style="float:right; position: absolute; right:0">Close</button>
+
 
 					</div>
 				</div>

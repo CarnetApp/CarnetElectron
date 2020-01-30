@@ -155,14 +155,12 @@ Writer.prototype.setMediaList = function (list) {
         document.getElementById("fullscreen-media-button").style.display = "block"
         writer.mediaList.style.display = "block"
 
-        this.addMediaMenu.parentNode.style.left = "unset"
         if (this.oDoc.innerText.trim() == "") {
             var mediaBar = document.getElementById("media-toolbar");
             if (!$(mediaBar).is(":visible"))
                 this.toolbarManager.toggleToolbar(mediaBar)
         }
     } else {
-        //this.addMediaMenu.parentNode.style.left = "0px"
         writer.mediaList.style.display = "none"
         document.getElementById("fullscreen-media-button").style.display = "none"
 
@@ -810,7 +808,6 @@ Writer.prototype.init = function () {
     };
 
     document.getElementById("button-add-keyword").onclick = function () {
-        writer.toggleDrawer();
         writer.showKeywordsDialog();
         return false;
     }
@@ -905,7 +902,6 @@ Writer.prototype.init = function () {
                     }
                     break;
                 case "options-button":
-                    writer.toggleDrawer();
                     document.getElementById("options-dialog").showModal()
                     break;
                 case "open-second-toolbar":
@@ -951,12 +947,10 @@ Writer.prototype.init = function () {
 
     this.addMediaMenu = document.getElementById("add-media-menu")
     document.getElementById("exit").onclick = function () {
-        writer.toggleDrawer();
         writer.askToExit();
     }
 
     document.getElementById("reminders-button").onclick = function () {
-        writer.toggleDrawer();
         writer.openRemindersDialog()
         return false;
     }
@@ -994,22 +988,13 @@ Writer.prototype.init = function () {
 
 
 Writer.prototype.closeFullscreenMediaToolbar = function () {
-    var layout = document.getElementsByClassName("mdl-layout")[0]
-    if (!layout.classList.contains("mdl-layout--fixed-drawer")) {
-        document.getElementsByTagName("header")[0].style.zIndex = "3";
-        layout.classList.add("mdl-layout--fixed-drawer")
-        this.mediaToolbar.classList.remove("fullscreen-media-toolbar")
-        if (this.oDoc.innerText.trim() == "") {
-            //put focus
-            var elements = this.oDoc.getElementsByClassName("edit-zone");
-            this.placeCaretAtEnd(elements[elements.length - 1]);
-        }
+    this.mediaToolbar.classList.remove("fullscreen-media-toolbar")
+    if (this.oDoc.innerText.trim() == "") {
+        //put focus
+        var elements = this.oDoc.getElementsByClassName("edit-zone");
+        this.placeCaretAtEnd(elements[elements.length - 1]);
     }
-}
 
-Writer.prototype.toggleDrawer = function () {
-    if (document.getElementsByClassName("is-small-screen").length > 0 || /* close also on big screen when media toolbar is fullscreen */document.getElementsByClassName("mdl-layout--fixed-drawer").length == 0)
-        document.getElementsByClassName("mdl-layout__drawer-button")[0].click()
 }
 
 Writer.prototype.askToExit = function () {
@@ -1563,10 +1548,10 @@ function resetScreenHeight() {
     console.log("resetScreenHeight")
     var screen = $(window).innerHeight(),
         header = 0,
-        content = screen - header - 35
+        content = screen - header - $("#toolbar-container").height()
 
     $("#center").height(content);
-    $("#text").css('min-height', content - 45 - $("#keywords-list").height() - $("#name-input").height() - 20 - (writer == undefined || writer.listOfMediaURL == undefined || writer.listOfMediaURL.length == 0 ? $("#media-toolbar").height() + 5 : 0) + "px");
+    $("#text").css('min-height', content - $("#toolbar-container").height() - $("#keywords-list").height() - $("#name-input").height() - 20 - (writer == undefined || writer.listOfMediaURL == undefined || writer.listOfMediaURL.length == 0 ? $("#media-toolbar").height() + 5 : 0) + "px");
     $("#center").scrollTop(lastscroll);
     if (writer != undefined) {
         var diff = content - 45 - writer.getCaretPosition().y + header
@@ -1616,7 +1601,6 @@ $(document).ready(function () {
         writer = new Writer(document);
         writer.init();
     }
-    initDragAreas();
 
     if (!loaded) {
         $(window).on('resize', resetScreenHeight);
