@@ -675,6 +675,7 @@ div#container-button::-webkit-scrollbar {
 }
 #new-keyword-dialog{
 	height: 100%;
+	max-height:600px;
 }
 
 #new-keyword-dialog .mdl-dialog__content{
