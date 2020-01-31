@@ -55,3 +55,7 @@
 .mdl-menu__item:hover, .mdl-menu__item:active, .mdl-menu__item:focus {
     background-color: black;
 }
+
+#note-color input[type="radio"]:checked + label span{
+    border: 1px solid white;
+}

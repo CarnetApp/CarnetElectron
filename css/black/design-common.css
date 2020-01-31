@@ -71,7 +71,7 @@ html {
 
 
 :root{
-    --note-none: #2f3341;
+    --note-none: #000000;
     --note-red: rgb(78, 40, 40);
     --note-orange: rgb(68, 44, 28);
     --note-yellow: rgb(70, 59, 26);

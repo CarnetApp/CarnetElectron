@@ -61,3 +61,7 @@
 .mdl-checkbox.is-checked .mdl-checkbox__tick-outline {
     mask:unset;
 }
+
+#note-color input[type="radio"]:checked + label span{
+    border: 1px solid white;
+}
