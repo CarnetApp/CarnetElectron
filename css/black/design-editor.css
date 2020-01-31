@@ -1,7 +1,7 @@
 :root{
     --main-text-color:white;
     --header-bg: #000000;
-    --dialog-bg: #171a20;
+    --dialog-bg: black;
     --background-todolist-item: rgba(255, 255, 255, 0.05);
 }
 .mdl-data-table {
@@ -64,4 +64,8 @@
 
 #note-color input[type="radio"]:checked + label span{
     border: 1px solid white;
+}
+
+dialog{
+    border: solid 2px #27326e !important;
 }
