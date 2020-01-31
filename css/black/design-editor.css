@@ -40,5 +40,6 @@
 }
 
 #toolbar-container{
-    box-shadow: 0 -3px 2px 0 #27326e;
+    box-shadow:unset;
+    border-bottom: solid 2px #27326e;
 }

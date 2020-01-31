@@ -346,52 +346,6 @@
 
 			</div>
 			<div id="page-content" class="page-content">
-				<div id="center" style="height:100%;padding:0px;overflow-y: auto;">
-					<div id="media-toolbar">
-						<div id="media-header">
-							<button class="mdl-button mdl-js-button in-toolbar-button" id="back-to-text-button"
-								data-i18n="back_to_text">
-								Back to text
-							</button>
-						</div>
-						<div id="media-list">
-						</div>
-						<div class="mdl-spinner mdl-js-spinner is-active " id="media-loading"></div>
-
-						<div style="display: inline-grid;float: right;vertical-align: middle;">
-							<button id="fullscreen-media-button"
-								class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button in-toolbar-button"
-								data-upgraded=",MaterialButton">
-								<i class="material-icons">aspect_ratio</i>
-								<span class="mdl-button__ripple-container"><span
-										class="mdl-ripple"></span></span></button>
-
-
-						</div>
-						<div style="clear:both"></div>
-
-					</div>
-					<button id="scroll-bottom" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button">
-						<i class="material-icons">
-							arrow_downward
-						</i>
-					</button>
-					<div id="name-container">
-						<input class="mdl-textfield__input" type="text" name="name" id="name-input" value=""
-							placeholder="Title" data-i18n="[placeholder]note_name">
-
-					</div>
-					<div id="keywords-list">
-						<span class="keyword-in-text">keyword</span>
-						<span class="keyword-in-text">keyword2</span>
-
-						<span class="keyword-in-text">blabla</span>
-
-					</div>
-					<div id="editor" style="overflow-x: none;position: relative;">
-
-					</div>
-				</div>
 				<div id="toolbar-container">
 					<button id="exit" class="mdl-button mdl-js-button headerbar-button in-toolbar-button first"
 						style="float:right; right:0">Close</button>
@@ -402,7 +356,7 @@
 							id="more-button">
 							<i class=" material-icons">more_vert</i>
 						</button>
-						<ul class="mdl-menu mdl-menu--top-left mdl-js-menu mdl-js-ripple-effect" id="more-menu"
+						<ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" id="more-menu"
 							for="more-button">
 							<li class="mdl-menu__item" id="add-file-button" data-i18n="file_photo">File/Photo</li>
 							<li class="mdl-menu__item" id="add-recording-button" data-i18n="recording">Recording
@@ -507,6 +461,53 @@
 
 					</div>
 				</div>
+				<div id="center" style="height:100%;padding:0px;overflow-y: auto;">
+					<div id="media-toolbar">
+						<div id="media-header">
+							<button class="mdl-button mdl-js-button in-toolbar-button" id="back-to-text-button"
+								data-i18n="back_to_text">
+								Back to text
+							</button>
+						</div>
+						<div id="media-list">
+						</div>
+						<div class="mdl-spinner mdl-js-spinner is-active " id="media-loading"></div>
+
+						<div style="display: inline-grid;float: right;vertical-align: middle;">
+							<button id="fullscreen-media-button"
+								class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button in-toolbar-button"
+								data-upgraded=",MaterialButton">
+								<i class="material-icons">aspect_ratio</i>
+								<span class="mdl-button__ripple-container"><span
+										class="mdl-ripple"></span></span></button>
+
+
+						</div>
+						<div style="clear:both"></div>
+
+					</div>
+					<button id="scroll-bottom" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button">
+						<i class="material-icons">
+							arrow_downward
+						</i>
+					</button>
+					<div id="name-container">
+						<input class="mdl-textfield__input" type="text" name="name" id="name-input" value=""
+							placeholder="Title" data-i18n="[placeholder]note_name">
+
+					</div>
+					<div id="keywords-list">
+						<span class="keyword-in-text">keyword</span>
+						<span class="keyword-in-text">keyword2</span>
+
+						<span class="keyword-in-text">blabla</span>
+
+					</div>
+					<div id="editor" style="overflow-x: none;position: relative;">
+
+					</div>
+				</div>
+
 			</div>
 
 			<div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
