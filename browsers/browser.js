@@ -736,7 +736,8 @@ function registerWriterEvent(event, callback) {
 registerWriterEvent("exit", function () {
     $(writerFrame).fadeOut();
     $("#editor-container").hide()
-    $("#no-drag-bar").hide()
+    $("#drag-bar").show()
+    setDraggable(true)
     if (!wasNewNote) {
         if (currentTask != undefined) {
             const index = notePath.indexOf(currentNotePath)
@@ -756,7 +757,9 @@ var isLoadCanceled = false;
 registerWriterEvent("loaded", function () {
     if (!isLoadCanceled) {
         $(loadingView).fadeOut()
-        $("#no-drag-bar").show()
+        $("#drag-bar").hide()
+        setDraggable(false)
+
     }
 })
 
@@ -764,12 +767,20 @@ registerWriterEvent("error", function () {
     cancelLoad()
 })
 
+function setDraggable(draggable) {
+    if (draggable)
+        $(document.getElementsByClassName("mdl-layout__header")[0]).css("-webkit-app-region", "drag");
+    else
+        $(document.getElementsByClassName("mdl-layout__header")[0]).css("-webkit-app-region", "unset");
+
+}
 function cancelLoad() {
     isLoadCanceled = true;
     $(loadingView).fadeOut()
     $(writerFrame).fadeOut();
     $("#editor-container").hide()
-    $("#no-drag-bar").hide()
+    $("#drag-bar").show()
+    setDraggable(true)
 }
 
 document.getElementById("cancel-load-button").onclick = function () {
@@ -903,3 +914,4 @@ $(".sort-item").click(function () {
 });
 
 
+setDraggable(true)
