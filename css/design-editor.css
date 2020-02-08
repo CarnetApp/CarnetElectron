@@ -700,3 +700,6 @@ div#container-button::-webkit-scrollbar {
 
 }
 
+.mdl-layout {
+	overflow-y: hidden;
+}

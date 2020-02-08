@@ -1539,11 +1539,11 @@ var lastscroll = 0;
 function resetScreenHeight() {
     console.log("resetScreenHeight")
     var screen = $(window).innerHeight(),
-        header = 0,
-        content = screen - header - $("#toolbar-container").height()
+        header = $("#toolbar-container").height(),
+        content = screen - header
 
     $("#center").height(content);
-    $("#text").css('min-height', content - $("#toolbar-container").height() - $("#keywords-list").height() - $("#name-input").height() - 20 - (writer == undefined || writer.listOfMediaURL == undefined || writer.listOfMediaURL.length == 0 ? $("#media-toolbar").height() + 5 : 0) + "px");
+    $("#text").css('min-height', content - header - $("#keywords-list").height() - $("#name-input").height() - 20 - (writer == undefined || writer.listOfMediaURL == undefined || writer.listOfMediaURL.length == 0 ? $("#media-toolbar").height() + 5 : 0) + "px");
     $("#center").scrollTop(lastscroll);
     if (writer != undefined) {
         var diff = content - 45 - writer.getCaretPosition().y + header
