@@ -1,6 +1,6 @@
 {
   "name": "Carnet",
-  "version": "0.19.1",
+  "version": "0.20.0",
   "main": "main.js",
   "license": "GPLv3",
   "scripts": {
@@ -34,7 +34,9 @@
     },
     "mac": {
       "category": "public.app-category.productivity",
-      "target":["zip"]
+      "target": [
+        "zip"
+      ]
     },
     "linux": {
       "category": "Office",
