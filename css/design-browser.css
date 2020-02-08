@@ -152,7 +152,7 @@ body{
 
     background: var(--loading-view-bg);
     color:white;
-    max-width: 1300px;
+    max-width: 900px;
     margin:auto;
     top:0px; 
     position:absolute; 
