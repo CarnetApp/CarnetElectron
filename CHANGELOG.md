@@ -6,6 +6,7 @@ New keywords selector
 New note color dialog
 Authorize Url with capitalize letters
 Fix text resize on firefox
+Keep new line in short text
 
 
 
