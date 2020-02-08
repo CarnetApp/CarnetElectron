@@ -813,22 +813,6 @@ Writer.prototype.init = function () {
     }
 
     document.getElementById("button-add-keyword-ok").onclick = function () {
-
-
-        var selectedKeywords = []
-
-        for (var keywordElem of document.getElementsByClassName("in-dialog-keyword")) {
-            if (keywordElem.parentElement.getElementsByClassName("mdl-checkbox__input")[0].checked)
-                selectedKeywords.push(keywordElem.innerText)
-        }
-
-        for (var noteKeyword of writer.note.metadata.keywords) {
-            if (selectedKeywords.indexOf(noteKeyword) < 0) {
-                //check if keyword was deleted
-            }
-        }
-
-        writer.addKeyword(document.getElementById('keyword-input').value);
         writer.newKeywordDialog.close();
     }
     this.mediaToolbar = document.getElementById("media-toolbar");
