@@ -477,7 +477,7 @@ Writer.prototype.refreshKeywords = function () {
         keywordsContainer.appendChild(keywordElem);
         keywordElem.word = word
         keywordElem.addEventListener('click', function () {
-            writer.removeKeyword(this.word);
+            writer.showKeywordsDialog()
         });
 
     }
