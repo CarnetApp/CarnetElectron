@@ -788,6 +788,11 @@ document.getElementById("cancel-load-button").onclick = function () {
     return false;
 }
 
+document.getElementById("editor-container").onclick = function () {
+    cancelLoad();
+    return false;
+}
+
 
 setTimeout(function () {
     RequestBuilder.sRequestBuilder.get("/settings/isfirstrun", function (error, data) {
