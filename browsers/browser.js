@@ -764,7 +764,7 @@ registerWriterEvent("loaded", function () {
 })
 
 registerWriterEvent("error", function () {
-    cancelLoad()
+    hideEditor()
 })
 
 function setDraggable(draggable) {
@@ -774,7 +774,7 @@ function setDraggable(draggable) {
         $(document.getElementsByClassName("mdl-layout__header")[0]).css("-webkit-app-region", "unset");
 
 }
-function cancelLoad() {
+function hideEditor() {
     isLoadCanceled = true;
     $(loadingView).fadeOut()
     $(writerFrame).fadeOut();
@@ -784,12 +784,12 @@ function cancelLoad() {
 }
 
 document.getElementById("cancel-load-button").onclick = function () {
-    cancelLoad();
+    hideEditor();
     return false;
 }
 
 document.getElementById("editor-container").onclick = function () {
-    cancelLoad();
+    hideEditor();
     return false;
 }
 
