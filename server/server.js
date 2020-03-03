@@ -365,6 +365,18 @@ var handle = function (method, path, data, callback) {
                 addMedias(data.path, data.files, callback)
                 return;
             }
+            case "/note/import": {
+                console.log("/note/import")
+                const path = require('path')
+
+                var notepath = path.join(settingsHelper.getNotePath(), data.files[0].name)
+
+                fs.writeFile(notepath, data.files[0].data, 'base64', function (err) {
+                    console.log("/note/import finished " + err)
+                    callback(err, "")
+                })
+                return;
+            }
         }
     } else if (method === "DELETE") {
 

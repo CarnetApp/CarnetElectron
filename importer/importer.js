@@ -1,20 +1,17 @@
-var FileUtils = require("../utils/file_utils.js").FileUtils
+new RequestBuilder();
 var Importer = function (destPath) {
     this.elem = document.getElementById("table-container");
     this.progressView = document.getElementById("progress-view");
     this.destPath = destPath;
     this.importingSpan = document.getElementById("importing");
     this.webview = document.getElementById("webview")
-    var settingsHelper = require("../server/settings_helper").SettingsHelper
-    var SettingsHelper = new settingsHelper();
-    this.notePath = SettingsHelper.getNotePath();
     var importer = this
     document.getElementById("folder-picker").style.display = "none"
     $("#note-selection-view").hide();
     $("#importing-view").hide();
 
     document.getElementById("select-folder-button").onclick = function () {
-        document.getElementById("folder-picker").style.display = "block"
+        document.getElementById("input_file").click();
 
     }
     this.webview.addEventListener('ipc-message', event => {
@@ -28,6 +25,9 @@ var Importer = function (destPath) {
             $("#note-selection-view").show()
         }
     })
+    document.getElementById("input_file").onchange = function () {
+        importer.onArchiveSelected(this.files[0])
+    }
 
 }
 
@@ -43,8 +43,6 @@ function generateUID() {
 
 Importer.prototype.listNotes = function (callback) {
     var fs = require("fs");
-    var FileUtils = require("../utils/file_utils.js").FileUtils
-
     var importer = this;
     fs.readdir(this.path, (err, dir) => {
         if (err)
@@ -72,7 +70,8 @@ Importer.prototype.importNotes = function () {
     this.timeStampedKeywords = []
     var importer = this;
     this.importNext(function () {
-        console.log(importer.timeStampedNotes.length + " note(s) imported " + document.getElementById("add-to-recent-cb").checked)
+        importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
+        /*console.log(importer.timeStampedNotes.length + " note(s) imported " + document.getElementById("add-to-recent-cb").checked)
         if (document.getElementById("add-to-recent-cb").checked) {
             importer.timeStampedNotes.sort(keysrt('time'))
             importer.timeStampedKeywords.sort(keysrt('time'))
@@ -95,7 +94,7 @@ Importer.prototype.importNotes = function () {
         db.actionArray(importer.timeStampedKeywords, function () {
             importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
 
-        })
+        })*/
     })
 }
 
@@ -106,61 +105,79 @@ Importer.prototype.importNext = function (callback) {
     }
     var notePath = this.notesToImport.pop();
     var importer = this;
-    var FileUtils = require("../utils/file_utils.js").FileUtils
     this.importNote(notePath, this.destPath, function () {
         importer.importNext(callback);
     })
 }
 
-Importer.prototype.fillNoteList = function (callback) {
+Importer.prototype.onArchiveSelected = function (archive) {
+    var importer = this
+    JSZip.loadAsync(archive).then(function (zip) {
+        var list = []
+        importer.currentZip = zip
+        // if you return a promise in a "then", you will chain the two promises
+        zip.folder("Takeout/Keep").forEach(function (relativePath, zipEntry) {  // 2) print entries
+            console.log("note " + relativePath)
+            if (relativePath.endsWith(".json"))
+                list.push(relativePath)
+        });
+        document.getElementById("folder-picker").style.display = "none"
+        $("#select-folder").hide()
+        $("#note-selection-view").show()
+        importer.fillNoteList(function () { }, list)
+
+    })
+
+}
+
+Importer.prototype.fillNoteList = function (callback, list) {
     var importer = this;
     $(this.progressView).show();
     for (var elem of document.getElementsByClassName("import-button")) {
         $(elem).hide();
     }
     $("#add-to-recent").hide();
-    this.listNotes(function (success, notes) {
-        var table = document.createElement("table");
-        table.classList.add("mdl-data-table")
-        table.classList.add("mdl-js-data-table")
-        table.classList.add("mdl-data-table--selectable")
-        table.classList.add("mdl-shadow--2dp")
-        var head = document.createElement("thead");
-        table.appendChild(head)
+    var table = document.createElement("table");
+    table.classList.add("mdl-data-table")
+    table.classList.add("mdl-js-data-table")
+    table.classList.add("mdl-data-table--selectable")
+    table.classList.add("mdl-shadow--2dp")
+    var head = document.createElement("thead");
+    table.appendChild(head)
+    var tr = document.createElement("tr");
+    head.appendChild(tr)
+    var th = document.createElement("th");
+    th.classList.add("mdl-data-table__cell--non-numeric")
+    th.innerHTML = "Title"
+    tr.appendChild(th)
+    var tbody = document.createElement("tbody");
+    table.appendChild(tbody)
+
+
+    importer.elem.appendChild(table)
+    for (var note of list) {
         var tr = document.createElement("tr");
-        head.appendChild(tr)
-        var th = document.createElement("th");
-        th.classList.add("mdl-data-table__cell--non-numeric")
-        th.innerHTML = "Title"
-        tr.appendChild(th)
-        var tbody = document.createElement("tbody");
-        table.appendChild(tbody)
+        tbody.appendChild(tr)
+
+        var td = document.createElement("td");
+        td.classList.add("mdl-data-table__cell--non-numeric")
+        tr.appendChild(td)
+        td.innerHTML = note
+        td = document.createElement("td");
+        tr.appendChild(td)
+        td.classList.add("value")
+        td.innerHTML = note
 
 
-        importer.elem.appendChild(table)
-        for (var note of notes) {
-            var tr = document.createElement("tr");
-            tbody.appendChild(tr)
+    }
+    new MaterialDataTable(table)
+    $(importer.progressView).hide()
+    for (var elem of document.getElementsByClassName("import-button")) {
+        $(elem).show();
+    }
+    $("#add-to-recent").show();
+    callback()
 
-            var td = document.createElement("td");
-            td.classList.add("mdl-data-table__cell--non-numeric")
-            tr.appendChild(td)
-            td.innerHTML = note.title
-            td = document.createElement("td");
-            tr.appendChild(td)
-            td.classList.add("value")
-            td.innerHTML = note.path
-
-
-        }
-        new MaterialDataTable(table)
-        $(importer.progressView).hide()
-        for (var elem of document.getElementsByClassName("import-button")) {
-            $(elem).show();
-        }
-        $("#add-to-recent").show();
-        callback()
-    })
 }
 
 Importer.prototype.getSelectedNotes = function () {
@@ -233,9 +250,167 @@ Importer.prototype.writeNext = function (callback) {
 function DateError() { }
 
 Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
-    var FileUtils = require("../utils/file_utils.js").FileUtils
+
     var fileName = FileUtils.getFilename(keepNotePath);
     this.importingSpan.innerHTML = fileName + " (" + this.notesToImport.length + " remaining)";
+    if (fileName.endsWith(".json"))
+        this.importNoteJson(keepNotePath, destFolder, callback)
+    else
+        this.oldImportNote(keepNotePath, destFolder, callback)
+}
+
+
+Importer.prototype.importNoteAttachments = function (destZip, attachments, callback) {
+    this.importNoteAttachment(destZip, attachments, callback)
+
+}
+
+Importer.prototype.importNoteAttachment = function (destZip, attachments, callback) {
+    if (attachments == undefined || attachments.length <= 0) {
+        callback()
+        return;
+    }
+    var importer = this;
+    var attachment = attachments.pop()
+    var attachmentName = attachment['filePath']
+    if (attachmentName.endsWith("jpeg"))
+        attachmentName = attachmentName.substr(0, attachmentName.length - 4) + "jpg"
+    console.log("attachment " + "Takeout/Keep/" + attachmentName)
+
+    this.currentZip.files["Takeout/Keep/" + attachmentName].async("base64")
+        .then(function (data) {
+            destZip.file("data/" + attachmentName, data, { base64: true });
+
+            if (FileUtils.isFileImage(attachmentName)) {
+                var img = new Image();
+
+                img.onload = function () {
+
+                    var maxWidth = 400,
+                        maxHeight = 400,
+                        imageWidth = img.width,
+                        imageHeight = img.height;
+
+
+                    if (imageWidth > imageHeight) {
+                        if (imageWidth > maxWidth) {
+                            imageHeight *= maxWidth / imageWidth;
+                            imageWidth = maxWidth;
+                        }
+                    }
+                    else if (imageHeight > maxHeight) {
+                        imageWidth *= maxHeight / imageHeight;
+                        imageHeight = maxHeight;
+                    }
+                    var canvas = document.createElement('canvas');
+                    canvas.width = imageWidth;
+                    canvas.height = imageHeight;
+                    this.width = imageWidth;
+                    this.height = imageHeight;
+                    var ctx = canvas.getContext("2d");
+                    ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
+                    //console.log(canvas.toDataURL('image/jpeg').substr("data:image/jpeg;base64,".length));
+                    destZip.file("data/" + "preview_" + attachmentName + ".jpg", canvas.toDataURL('image/jpeg').substr("data:image/jpeg;base64,".length), { base64: true });
+                    importer.importNoteAttachment(destZip, attachments, callback)
+                };
+
+                img.src = "data:" + attachment['mimetype'] + ";base64," + data;
+            }
+            else importer.importNoteAttachment(destZip, attachments, callback)
+        });
+}
+Importer.prototype.importNoteJson = function (keepNotePath, destFolder, callback) {
+    var importer = this
+    var fileName = FileUtils.getFilename(keepNotePath);
+    this.currentZip.files["Takeout/Keep/" + keepNotePath].async('text').then(function (txt) {
+        var json = JSON.parse(txt)
+        console.log(json['title']);
+        var zip = new JSZip();
+        zip.file("index.html", '<div id="text" contenteditable="true" style="height:100%;">\
+            <!-- be aware that THIS will be modified in java -->\
+            <!-- soft won\'t save note if contains -->' + Utils.nl2br(json['textContent']) + '\
+        </div>\
+        <div id="floating">\
+        \
+        </div>');
+        var filename = keepNotePath.substr(0, keepNotePath.length - 4) + "sqd"
+        if (json['title'] === "")
+            filename = "untitled " + filename;
+        var metadata = {}
+        metadata['creation_date'] = json['userEditedTimestampUsec']
+        metadata['title'] = json['title']
+        metadata['last_modification_date'] = json['userEditedTimestampUsec']
+        metadata['keywords'] = []
+        metadata['rating'] = -1
+        metadata['color'] = "none"
+        metadata['urls'] = {}
+        metadata['todolists'] = []
+        if (json['labels'] != undefined)
+            for (var label of json['labels'])
+                metadata['keywords'].push(label)
+        if (json['annotations'] != undefined) {
+            for (var annotation of json['annotations']) {
+                if (annotation['url'] != undefined) {
+                    var url = {}
+                    url['title'] = annotation['title']
+                    url['description'] = annotation['description']
+                    metadata['urls'][annotation['url']] = url
+                }
+            }
+        }
+        zip.file("metadata.json", JSON.stringify(metadata));
+
+        importer.importNoteAttachments(zip, json['attachments'], function () {
+            //zip.saveAs(blob, "hello.zip");
+            console.log("generateAsync")
+            importer.sendNote(zip, metadata)
+
+        })
+
+    })
+
+}
+
+Importer.prototype.sendNote = function (zip, metadata) {
+    zip.generateAsync({ type: "blob" }).then(function (blob) {
+        var files = []
+
+        blob.name = filename
+        files.push(blob)
+        RequestBuilder.sRequestBuilder.postFiles("/note/import", {
+
+        }, files, function (error, data) {
+            console.log("error " + error)
+            if (error) {
+                importer.onError()
+            } else {
+                var db = RecentDBManager.getInstance()
+                var keywordDB = new KeywordsDBManager();
+                keywordDB.removeFromDB(undefined, note.path, function (error, data) {
+                    console.log("deleted from db " + error)
+                    if (!error)
+                        db.removeFromDB(note.path, function (error, data) {
+                            console.log("deleted from db " + error)
+                            if (!error)
+                                callback()
+                            else
+                                importer.onError()
+
+                        });
+
+                    else
+                        importer.onError()
+                });
+
+            }
+        })
+    }, function (err) {
+
+    });
+}
+
+Importer.prototype.oldImportNote = function (keepNotePath, destFolder, callback) {
+    var fileName = FileUtils.getFilename(keepNotePath);
     var fs = require("fs");
     console.log(keepNotePath)
     var importer = this;
@@ -260,6 +435,7 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
         var text = "";
         if (textDiv != null)
             text = textDiv.innerHTML;
+
         importer.toWrite.push({
             type: "utf8",
             path: "importtmp/index.html",
@@ -406,5 +582,4 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
 
 
     });
-
 }
