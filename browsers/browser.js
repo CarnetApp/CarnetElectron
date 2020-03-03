@@ -151,19 +151,7 @@ function refreshKeywords() {
     })
 }
 
-function searchInNotes(searching) {
-    resetGrid(false)
-    notes = [];
-    document.getElementById("note-loading-view").style.display = "inline";
 
-    RequestBuilder.sRequestBuilder.get("/notes/search?path=." + "&query=" + encodeURIComponent(searching), function (error, data) {
-        if (!error) {
-
-            list("search://", true);
-        }
-    });
-
-}
 
 function resetGrid(discret) {
     var grid = document.getElementById("page-content");
@@ -397,7 +385,11 @@ function onListEnd(pathToList, files, metadatas, discret) {
             var filename = getFilenameFromPath(file.path);
             if (filename.endsWith(".sqd")) {
                 let metadata = metadatas != undefined ? metadatas[file.path] : undefined;
-                var noteTestTxt = new Note(Utils.cleanNoteName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, metadata == undefined, metadata != undefined ? metadata.media : undefined);
+                let needsRefresh = metadata == undefined;
+                if (metadata == undefined) {
+                    metadata = cachedMetadata[file.path]
+                }
+                var noteTestTxt = new Note(Utils.cleanNoteName(filename), metadata != undefined ? metadata.shorttext : "", file.path, metadata != undefined ? metadata.metadata : undefined, metadata != undefined ? metadata.previews : undefined, needsRefresh, metadata != undefined ? metadata.media : undefined);
                 noteTestTxt.isPinned = file.isPinned
                 noteTestTxt.originalIndex = i;
                 notes.push(noteTestTxt)
@@ -597,11 +589,7 @@ document.getElementById("add-directory-button").onclick = function () {
 }
 
 
-document.getElementById("search-input").onkeydown = function (event) {
-    if (event.key === 'Enter') {
-        searchInNotes(this.value)
-    }
-}
+
 
 document.getElementById("back_arrow").addEventListener("click", function () {
     list(FileUtils.getParentFolderFromPath(currentPath))
@@ -635,12 +623,6 @@ console.log("pet")
 var dias = document.getElementsByClassName("mdl-dialog")
 for (var i = 0; i < dias.length; i++) {
     dialogPolyfill.registerDialog(dias[i]);
-}
-
-document.getElementById("search-button").onclick = function () {
-    var value = document.getElementById("search-input").value;
-    if (value.length > 0)
-        searchInNotes(value)
 }
 
 //nav buttons
