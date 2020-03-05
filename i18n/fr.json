@@ -85,5 +85,9 @@
     "delete_todolist_confirmation": "Voulez-vous supprimer cette liste ? Cette opération est irréversible.",
     "start_with_browser_view": "Démarrer en mode \"explorateur\"",
     "note_color": "Couleur de la note",
-    "new_todolist": "Nouvelle Todo-Liste"
+    "new_todolist": "Nouvelle Todo-Liste",
+    "remove_todo_list": "Supprimer la ToDo-List",
+    "add_item": "Ajouter un élément",
+    "completed": "Terminés",
+    "todo": "À faire"
 }
