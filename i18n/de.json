@@ -86,5 +86,9 @@
     "delete_todolist_confirmation": "Dieser Vorgang kann nicht rückgängig gemacht werden, soll die To-do-Liste wirklich gelöscht werden?",
     "something_went_wrong_please_reload": "Etwas ist schiefgelaufen... Bitte neu laden",
     "note_color": "Notizfarbe",
-    "new_todolist": "Neue To-do-Liste"
+    "new_todolist": "Neue To-do-Liste",
+    "remove_todo_list": "To-do-Liste entfernen",
+    "add_item": "Eintrag hinzufügen",
+    "completed": "Abgeschlossen",
+    "todo": "Zu erledigen"
 }
