@@ -42,12 +42,12 @@ TodoListManager.prototype.createTodolist = function (data) {
     var deleteElem = document.createElement("a");
     deleteElem.classList.add("remove-todo-list");
     deleteElem.classList.add("mdl-button");
-    deleteElem.innerHTML = "Remove Todo-List"
+    deleteElem.innerHTML = $.i18n("remove_todo_list")
 
     var todoTitle = document.createElement("h3");
-    todoTitle.innerHTML = "To do"
+    todoTitle.innerHTML = $.i18n("todo")
     var doneTitle = document.createElement("h3");
-    doneTitle.innerHTML = "Completed"
+    doneTitle.innerHTML = $.i18n("completed")
     var todo = document.createElement("div");
     todo.classList.add("todo")
     todo.id = "todooo" + generateUID();
@@ -59,13 +59,10 @@ TodoListManager.prototype.createTodolist = function (data) {
     todolistContent.appendChild(todo);
     todolistDiv.todo = todo
     var addItem = document.createElement("button");
-    addItem.innerHTML = "<i class=\"material-icons\">add</i>";
+    addItem.innerHTML = $.i18n("add_item");
     addItem.classList.add("add-todolist-item");
     addItem.classList.add("mdl-button");
     addItem.classList.add("mdl-js-button");
-
-    addItem.classList.add("mdl-button--fab");
-    addItem.classList.add("mdl-button--colored");
     addItem.classList.add("mdl-js-ripple-effect");
 
     addItem.href = "#"
@@ -119,7 +116,8 @@ TodoListManager.prototype.createTodolist = function (data) {
         var setFixed = function () {
             addItem.isRelative = false
             addItem.style.position = "fixed"
-            addItem.style.bottom = "30px"
+            addItem.style.bottom = "10px"
+            addItem.style.marginTop = "unset";
             if (isWindowLarge())
                 addItem.style.right = "80px"
             else
@@ -131,6 +129,8 @@ TodoListManager.prototype.createTodolist = function (data) {
             addItem.style.position = "absolute"
             addItem.style.bottom = "unset"
             addItem.style.top = "unset";
+            addItem.style.marginTop = "13px";
+
             if (isWindowLarge())
                 addItem.style.right = "68px"
             else
@@ -145,7 +145,7 @@ TodoListManager.prototype.createTodolist = function (data) {
                 $(addItem).fadeIn()
             }
 
-            if (rectdoneTitle.bottom < $(writer.oCenter).height()) {
+            if (rectdoneTitle.bottom < $(writer.oCenter).height() + 50) {
                 if (!addItem.isRelative || addItem.isRelative == undefined)
                     setRelative();
 
