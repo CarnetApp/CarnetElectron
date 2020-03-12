@@ -1,6 +1,6 @@
 .demo-card-wide.mdl-card {
     min-height: 0px;
-    margin: 5px;
+    margin: 10px;
     cursor: pointer;
 }
 
@@ -123,13 +123,10 @@ body {
 }
 
 .card-more-button {
+    top:5px;
     right: 0px;
     background: inherit !important;
     position: absolute !important;
-}
-
-.keywords{
-    margin-bottom:16px;
 }
 
 .keyword {

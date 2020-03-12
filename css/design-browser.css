@@ -20,9 +20,11 @@
 
 .mdl-checkbox__box-outline {
     border: 2px solid var(--note-text-color);
+    opacity: .4;
 }
-
-
+.mdl-checkbox__label {
+    font-size: inherit;
+}
 #drag-bar{
     background: var(--drag-bar-bg);
     width:100%;
@@ -33,7 +35,6 @@
 .todo-list{
     margin-top:15px;
     max-width: 300px;
-    width:100%;  
 }
 .todo-list .mdl-checkbox{
     height: auto;
@@ -64,6 +65,9 @@ body{
 }
 .mdl-card__supporting-text{
     color:inherit;
+    padding: 0;
+    width: 100%;
+    padding-bottom: 1em; /* add some padding to the bottom for more breathing */
 }
 
 .mdl-card{
@@ -92,6 +96,7 @@ body{
 }
 .card-text{
     color:inherit;
+    margin: 0;
 }
 
 .card-title {
@@ -298,4 +303,102 @@ body{
 
 #audio-player{
     display: none;
+}
+
+.card-date{
+    opacity: 0.5;
+    font-size: .9rem;
+}
+
+.keywords{
+    font-size: .9rem;
+    padding: .3rem .5rem !important;
+    margin-right: .3rem;
+}
+
+.keyword:last-of-type {
+    margin-right: 0;
+}
+
+.mdl-card__supporting-text [class^="card"], .mdl-card__supporting-text .keywords, .mdl-card__supporting-text .todo-list {
+    margin-top: .5rem;
+}
+
+.mdl-card__supporting-text [class^="card"] {
+    padding-right: 1rem;
+    padding-left: .9rem;
+}
+.mdl-card__supporting-text .keywords, .mdl-card__supporting-text .todo-list {
+    padding-right: 1rem;
+    padding-left: .8rem;
+}
+.mdl-card__supporting-text .card-audio-list {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: -.2rem;
+}
+
+
+.note-audio {
+    border-top: 0 transparent !important;
+}
+
+/* leave some space at the top, even if there's no title */
+.card-title{
+	min-height: 1em;
+}
+
+
+/* making media take less vertical space */
+ .mdl-card__supporting-text .card-medias {
+    padding-left:0;
+    padding-right:0;
+    background: transparent;
+    /* remove black bar */
+    margin: 0 !important;
+    width: 100%;
+    display:flex;
+    /* this probably needs to be smarter, but for 2 or 3 images, it's ok*/
+}
+.mdl-card__supporting-text .card-medias img {
+    width: 100%;
+    object-fit: cover;
+}
+/* making voice notes nicer */
+ .card-audio-list {
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    font-size: .9rem;
+}
+/* reversing the damage that <table>s do */
+ .card-audio-list tr, .card-audio-list td {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: flex-start;
+}
+.card-audio-list tr > td:first-of-type {
+    width: 36px;
+}
+.card-audio-list td a {
+    color: inherit;
+    opacity: .5;
+}
+.note-audio button {
+    min-width: 36px;
+    /* countering the md1-button style*/
+    width: 36px;
+    overflow:hidden;
+    margin: 0 !important;
+    padding: 0 !important;
+    /* restoring margins*/
+    opacity: .5;
+}
+.note-audio button:hover {
+    opacity: 1
+}
+
+.note-card-view{
+    border-radius: 10px;
 }

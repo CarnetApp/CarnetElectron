@@ -64,8 +64,10 @@ NoteCardView.prototype.setNote = function (note) {
         this.elem.classList.add(this.note.metadata.color)
         this.oldColor = this.note.metadata.color;
     }
-    if (note.title.indexOf("untitled") == 0)
+    if (note.title.indexOf("untitled") == 0) {
         this.cardTitleText.innerHTML = ""
+        this.cardTitleText.style.display = "none";
+    }
     else
         this.cardTitleText.innerHTML = note.title;
     var dateStamp = note.metadata.custom_date;
@@ -98,15 +100,17 @@ NoteCardView.prototype.setNote = function (note) {
     if (note.metadata.rating > 0)
         this.cardRating.innerHTML = note.metadata.rating + "★"
     this.cardKeywords.innerHTML = "";
-
-    if (typeof note.metadata.keywords[Symbol.iterator] === 'function')
-        for (let keyword of note.metadata.keywords) {
-            console.log("keyword " + keyword)
-            keywordSpan = document.createElement('span');
-            keywordSpan.innerHTML = keyword;
-            keywordSpan.classList.add("keyword");
-            this.cardKeywords.appendChild(keywordSpan)
-        }
+    if (note.metadata.keywords.length > 0) {
+        if (typeof note.metadata.keywords[Symbol.iterator] === 'function')
+            for (let keyword of note.metadata.keywords) {
+                console.log("keyword " + keyword)
+                keywordSpan = document.createElement('span');
+                keywordSpan.innerHTML = keyword;
+                keywordSpan.classList.add("keyword");
+                this.cardKeywords.appendChild(keywordSpan)
+            }
+    } else
+        this.cardKeywords.style.display = "none"
     this.cardMedias.innerHTML = "";
     if (note.previews != undefined)
         for (let preview of note.previews) {
@@ -277,7 +281,7 @@ NoteCardViewGrid.prototype.init = function () {
         // options
         itemSelector: '.demo-card-wide.mdl-card',
         fitWidth: true,
-        columnWidth: this.width + 10,
+        columnWidth: this.width + 20,
         transitionDuration: grid.discret ? 0 : "0.6s",
         animationOptions: {
 
