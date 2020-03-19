@@ -16,6 +16,8 @@
     --fab-color: black;
     --editor-container-bg: rgba(0,0,0,0.5);
     --editor-container-border-color: unset;
+    --current-note-bg-color: var(--note-bg);
+
 }   
 
 .mdl-checkbox__box-outline {
@@ -84,10 +86,19 @@ body{
     transition: background-color 250ms linear, box-shadow 250ms linear;
 }
 
+.small-view .todo-lists{
+    max-height: 300px;
+    overflow-y: hidden;
+}
+
+.small-view .card-medias{
+    max-height: 300px;
+    overflow-y: hidden;
+}
+
 
 .mdl-card:hover {
-    background-color: var(--note-bg-hover);
-    
+    filter: brightness(95%);
     cursor: pointer;
 }
 
@@ -216,45 +227,50 @@ body{
 
 
 .mdl-card.red{
-    background: var(--note-red);
+    --current-note-bg-color: var(--note-red);
+    
     box-shadow:none;
 }
 .mdl-card.orange{
-    background: var(--note-orange);
+    --current-note-bg-color: var(--note-orange);
     box-shadow:none;
 }
 .mdl-card.yellow{
-    background: var(--note-yellow);
+    --current-note-bg-color: var(--note-yellow);
     box-shadow:none;
 }
 
 .mdl-card.green{
-    background: var(--note-green);
+    --current-note-bg-color: var(--note-green);
     box-shadow:none;
 }
 .mdl-card.teal{
-    background: var(--note-teal);
+    --current-note-bg-color: var(--note-teal);
     box-shadow:none;
 }
 .mdl-card.blue{
-    background: var(--note-blue);
+    --current-note-bg-color: var(--note-blue);
     box-shadow:none;
 }
 .mdl-card.violet{
-    background: var(--note-violet);
+    --current-note-bg-color: var(--note-violet);
     box-shadow:none;
 }
 .mdl-card.purple{
-    background: var(--note-purple);
+    --current-note-bg-color: var(--note-purple);
     box-shadow:none;
 }
 .mdl-card.pink{
-    background: var(--note-pink);
+    --current-note-bg-color: var(--note-pink);
     box-shadow:none;
 }
 
 .mdl-card:hover{
     box-shadow: var(--note-shadow-hover);
+}
+
+.mdl-card{
+    background: var(--current-note-bg-color);
 }
 
 /* nextcloud */
@@ -357,8 +373,6 @@ body{
     /* remove black bar */
     margin: 0 !important;
     width: 100%;
-    display:flex;
-    /* this probably needs to be smarter, but for 2 or 3 images, it's ok*/
 }
 .mdl-card__supporting-text .card-medias img {
     width: 100%;
@@ -401,4 +415,19 @@ body{
 
 .note-card-view{
     border-radius: 10px;
+}
+
+.display-more{
+    display: none;
+    text-align:center;
+    width:100%;
+    padding-top:10px;
+    background: var(--current-note-bg-color);
+    padding-bottom:10px;
+}
+.display-more-media{
+    position: absolute;
+    bottom:0;
+    background: var(--current-note-bg-color);
+    opacity: 0.8;
 }

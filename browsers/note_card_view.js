@@ -1,5 +1,6 @@
-var NoteCardView = function (elem, onTodoListChange) {
+var NoteCardView = function (elem, onTodoListChange, masonry) {
     this.elem = elem;
+    this.masonry = masonry
     this.init();
     this.onTodoListChange = onTodoListChange;
 }
@@ -55,6 +56,25 @@ NoteCardView.prototype.refreshTodoList = function () {
     }
 
 }
+
+NoteCardView.prototype.setIsAppend = function (isAppend) {
+    this.isAppend = isAppend
+    if (isAppend)
+        this.toggleDisplayMore()
+
+}
+
+NoteCardView.prototype.toggleDisplayMore = function () {
+    console.log("todolist height " + $(this.cardTodoLists).height())
+    if ($(this.cardMedias).height() >= 300) {
+        this.displayMore.classList.add("display-more-media");
+        this.displayMore.style.display = "block"
+    } else if ($(this.cardTodoLists).height() >= 300) {
+        this.displayMore.style.display = "block"
+    }
+
+}
+
 NoteCardView.prototype.setNote = function (note) {
     if (this.oldColor != undefined) {
         this.elem.classList.remove(this.oldColor)
@@ -201,6 +221,8 @@ NoteCardView.prototype.setNote = function (note) {
 
 NoteCardView.prototype.init = function () {
     this.elem.classList.add("mdl-card");
+    this.elem.classList.add("small-view");
+
     this.elem.classList.add("note-card-view");
 
     this.menuButton = document.createElement('button');
@@ -222,11 +244,25 @@ NoteCardView.prototype.init = function () {
     this.cardText = document.createElement('div');
     this.cardText.classList.add("card-text");
     this.cardTodoLists = document.createElement('div');
+    this.cardTodoLists.classList.add("todo-lists")
     this.cardTitleText = document.createElement('h2');
     this.cardTitleText.classList.add("card-title");
     this.cardContent.appendChild(this.cardTitleText)
     this.cardContent.appendChild(this.cardText)
     this.cardContent.appendChild(this.cardTodoLists)
+    this.displayMore = document.createElement('div');
+    this.displayMore.classList.add("display-more");
+    this.displayMore.innerHTML = "Display More"
+    var self = this
+    this.displayMore.onclick = function () {
+        self.elem.classList.remove("small-view")
+        self.elem.classList.add("noclick")
+        self.displayMore.style.display = "none"
+        self.masonry.layout()
+        return false;
+    }
+    this.cardContent.appendChild(this.displayMore);
+
     this.audioList = document.createElement('table');
     this.audioList.classList.add("card-audio-list");
     this.cardContent.appendChild(this.audioList)
@@ -335,12 +371,13 @@ NoteCardViewGrid.prototype.addNext = function (num) {
             noteElem.classList.add("demo-card-wide")
             noteElem.classList.add("isotope-item")
             noteElem.style.width = this.width + "px";
-            var noteCard = new NoteCardView(noteElem, this.onTodoListChange);
+            var noteCard = new NoteCardView(noteElem, this.onTodoListChange, this.msnry);
             noteCard.setNote(note);
             noteElem.note = note;
             this.noteCards.push(noteCard);
             this.elem.appendChild(noteElem)
             this.msnry.appended(noteElem)
+            noteCard.setIsAppend(true)
 
             $(noteElem).bind('click', {
                 note: note,
