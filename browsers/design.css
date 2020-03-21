@@ -130,11 +130,14 @@ body {
 }
 
 .keyword {
-    margin-right: 3px;
+    margin-right: 10px;
     margin-top: 3px;
     padding: 3px;
-    background: rgba(210, 210, 210, 0.555);
+    padding-left: 10px;
+    padding-right: 10px;
     display: inline-block;
+    border: 1px rgba(119, 119, 119, 0.6) solid;
+    border-radius: 5px;
 }
 
 .card-rating {
