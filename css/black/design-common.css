@@ -27,6 +27,10 @@ html {
   ::-webkit-scrollbar-corner { background-color: #646464;}
   ::-webkit-resizer { background-color: #666;}
 
+
+body{
+    scrollbar-color: #242424 black;
+}
 .mdl-layout__drawer {
     border-right: 0px;
 }

@@ -19,6 +19,10 @@ html {
     scrollbar-shadow-color: #646464;
     scrollbar-dark-shadow-color: #646464;
   }
+
+body{
+    scrollbar-color: #000000 var(--grid-bg);
+}
   
   ::-webkit-scrollbar-button {  height: 0px; background-color: #666; }
   ::-webkit-scrollbar-track {  background-color: #646464;}

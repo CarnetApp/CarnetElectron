@@ -23,6 +23,7 @@
 body{
     font-family: "Roboto", Ubuntu;
     background: var(--body-bg);
+    scrollbar-color: #757575 #fafafa;
 }
 
 .mdl-layout__header-row, .mdl-layout__header {
