@@ -90,5 +90,7 @@
     "remove_todo_list": "Remove ToDo-List",
     "add_item": "Add item",
     "completed": "Completed",
-    "todo": "To do"
+    "todo": "To do",
+    "display_more": "Display more",
+    "display_less": "Display less"
 }

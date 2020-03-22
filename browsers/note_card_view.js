@@ -252,13 +252,20 @@ NoteCardView.prototype.init = function () {
     this.cardContent.appendChild(this.cardTodoLists)
     this.displayMore = document.createElement('div');
     this.displayMore.classList.add("display-more");
-    this.displayMore.innerHTML = "Display More"
+    this.displayMore.innerHTML = $.i18n("display_more")
     var self = this
     this.displayMore.onclick = function () {
-        self.elem.classList.remove("small-view")
         self.elem.classList.add("noclick")
-        self.displayMore.style.display = "none"
-        self.masonry.layout()
+
+        if (self.elem.classList.contains("small-view")) {
+            self.elem.classList.remove("small-view")
+            self.masonry.layout()
+            self.displayMore.innerHTML = $.i18n("display_less")
+        } else {
+            self.elem.classList.add("small-view")
+            self.masonry.layout()
+            self.displayMore.innerHTML = $.i18n("display_more")
+        }
         return false;
     }
     this.cardContent.appendChild(this.displayMore);
