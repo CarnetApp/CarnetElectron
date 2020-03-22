@@ -336,11 +336,14 @@ body{
     margin-right: 0;
 }
 
-.mdl-card__supporting-text [class^="card"], .mdl-card__supporting-text .keywords, .mdl-card__supporting-text .todo-list {
+.mdl-card__supporting-text [class^="card"], .folder-card-view .mdl-card__supporting-text, .mdl-card__supporting-text .keywords, .mdl-card__supporting-text .todo-list {
     margin-top: .5rem;
 }
 
-.mdl-card__supporting-text [class^="card"] {
+.folder-card-view .card-title{
+    word-break: break-all;
+}
+.mdl-card__supporting-text [class^="card"],.folder-card-view .mdl-card__supporting-text {
     padding-right: 1rem;
     padding-left: .9rem;
 }

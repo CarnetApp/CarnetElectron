@@ -118,10 +118,6 @@ body {
     -webkit-app-region: no-drag;
 }
 
-.folder-icon {
-    width: 50px;
-}
-
 .card-more-button {
     top:5px;
     right: 0px;
