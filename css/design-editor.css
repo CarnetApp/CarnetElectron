@@ -703,3 +703,8 @@ div#container-button::-webkit-scrollbar {
 .mdl-layout {
 	overflow-y: hidden;
 }
+
+
+.mdl-button {
+	min-width: unset;
+}

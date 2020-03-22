@@ -146,7 +146,7 @@ body{
     z-index:100; 
     right:0;
     bottom:0;
-    max-width: 900px;
+    max-width: 910px;
     margin: auto;
 }
 
@@ -168,7 +168,7 @@ body{
 
     background: var(--loading-view-bg);
     color:white;
-    max-width: 900px;
+    max-width: 910px;
     margin:auto;
     top:0px; 
     position:absolute; 
@@ -195,7 +195,7 @@ body{
 	}
 }
 
-@media (max-width: 900px) {
+@media (max-width: 910px) {
     #search-bar{
         margin-left: 0;
         width: calc(100% - 90px);
