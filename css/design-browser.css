@@ -421,7 +421,7 @@ body{
     opacity: 1
 }
 
-.note-card-view{
+.note-card-view, .folder-card-view{
     border-radius: 10px;
 }
 
