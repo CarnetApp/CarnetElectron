@@ -343,6 +343,11 @@ body{
 .folder-card-view .card-title{
     word-break: break-all;
 }
+
+.folder-card-view{
+    padding-bottom: 5px;
+}
+
 .mdl-card__supporting-text [class^="card"],.folder-card-view .mdl-card__supporting-text {
     padding-right: 1rem;
     padding-left: .9rem;
