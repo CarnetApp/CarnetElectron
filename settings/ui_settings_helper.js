@@ -46,6 +46,8 @@ class UISettingsHelper {
         this.setDefaultSetting('sort_by', 'default')
         this.setDefaultSetting('reversed', false)
         this.setDefaultSetting('start_page', 'recent')
+        this.setDefaultSetting('in_line', false)
+
     }
 
 

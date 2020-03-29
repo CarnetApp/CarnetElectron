@@ -159,7 +159,7 @@ function resetGrid(discret) {
     if (discret)
         scroll = document.getElementById("grid-container").scrollTop;
     grid.innerHTML = "";
-    noteCardViewGrid = new NoteCardViewGrid(grid, discret, onDragEnd);
+    noteCardViewGrid = new NoteCardViewGrid(grid, UISettingsHelper.getInstance().get("in_line"), discret, onDragEnd);
     this.noteCardViewGrid = noteCardViewGrid;
     noteCardViewGrid.onFolderClick(function (folder) {
         list(folder.path)
@@ -370,8 +370,8 @@ function sortBy(sortBy, reversed, discret) {
 
 }
 
-function onListEnd(pathToList, files, metadatas, discret) {
-    if (!_.isEqual(files, oldFiles)) {
+function onListEnd(pathToList, files, metadatas, discret, force) {
+    if (!_.isEqual(files, oldFiles) || force) {
         var scroll = resetGrid(discret);
         oldFiles = files;
         var noteCardViewGrid = this.noteCardViewGrid
@@ -765,6 +765,36 @@ function hideEditor() {
     setDraggable(true)
 }
 
+
+
+// line / grid switch
+
+function setInLineButton(isInLine) {
+    document.getElementById("line-grid-switch-button").getElementsByClassName("material-icons")[0]
+        .innerHTML = !isInLine ? "view_headline" : "view_module";
+}
+
+function setInLine(isInLine) {
+    UISettingsHelper.getInstance().set("in_line", isInLine)
+    UISettingsHelper.getInstance().postSettings()
+    setInLineButton(isInLine)
+    onListEnd(currentPath, oldFiles, cachedMetadata, true, true)
+
+}
+
+function toggleInLine() {
+    setInLine(!UISettingsHelper.getInstance().get("in_line"))
+}
+
+
+
+document.getElementById("line-grid-switch-button").onclick = function () {
+    toggleInLine()
+}
+
+
+
+
 document.getElementById("cancel-load-button").onclick = function () {
     hideEditor();
     return false;
@@ -866,6 +896,7 @@ UISettingsHelper.getInstance().loadSettings(function (settings, fromCache) {
         })
         initPath = "/"
     }
+    setInLineButton(settings['in_line'])
     $("input[name='sort-by'][value='" + settings['sort_by'] + "']").parent().addClass("is-checked")
     $("input[name='sort-by'][value='" + settings['sort_by'] + "']").attr('checked', 'checked')
 

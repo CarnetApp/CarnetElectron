@@ -292,47 +292,69 @@ NoteCardView.prototype.init = function () {
     this.cardContent.appendChild(this.cardMedias)
     this.elem.appendChild(this.cardContent);
 
+
+
+
 }
 
-//var Masonry = require('masonry-layout');
-var NoteCardViewGrid = function (elem, discret, dragCallback) {
+var MasonryWrapper = function (elem) {
+    this.elem = elem;
+    this.options = {}
+}
 
+MasonryWrapper.prototype.appended = function () {
+
+}
+
+MasonryWrapper.prototype.layout = function () {
+
+}
+
+var NoteCardViewGrid = function (elem, inLine, discret, dragCallback) {
     this.elem = elem;
     this.discret = discret;
-    this.init();
+    this.init(inLine);
     this.dragCallback = dragCallback;
 }
 
 
 
 
-NoteCardViewGrid.prototype.init = function () {
+NoteCardViewGrid.prototype.init = function (inLine) {
     this.noteCards = [];
     this.lastAdded = 0;
     this.notes = []
-    var grid = this;
-    //calculating card width
-    this.width = 200;
-    if (document.body.clientWidth / 2 - 10 < 200) {
-        if (document.body.clientWidth > 300)
-            this.width = document.body.clientWidth / 2 - 13;
-        else
-            this.width = document.body.clientWidth - 10;
-    }
-    var Masonry = compatibility.getMasonry();
-    this.msnry = new Masonry(this.elem, {
-        // options
-        itemSelector: '.demo-card-wide.mdl-card',
-        fitWidth: true,
-        columnWidth: this.width + 20,
-        transitionDuration: grid.discret ? 0 : "0.6s",
-        animationOptions: {
+    this.setInLine(inLine)
+}
 
-            queue: false,
-            isAnimated: false
-        },
-    });
+NoteCardViewGrid.prototype.setInLine = function (isInLine) {
+    this.isInLine = isInLine
+    if (!isInLine) {
+        var grid = this;
+        //calculating card width
+        this.width = 200;
+        if (document.body.clientWidth / 2 - 10 < 200) {
+            if (document.body.clientWidth > 300)
+                this.width = document.body.clientWidth / 2 - 13;
+            else
+                this.width = document.body.clientWidth - 10;
+        }
+        var Masonry = compatibility.getMasonry();
+        this.msnry = new Masonry(this.elem, {
+            // options
+            itemSelector: '.demo-card-wide.mdl-card',
+            fitWidth: true,
+            columnWidth: this.width + 20,
+            transitionDuration: grid.discret ? 0 : "0.6s",
+            animationOptions: {
 
+                queue: false,
+                isAnimated: false
+            },
+        });
+    } else[
+        this.msnry = new MasonryWrapper(this.elem)
+    ]
 
 }
 
@@ -377,6 +399,9 @@ NoteCardViewGrid.prototype.addNext = function (num) {
             var noteElem = document.createElement("div");
             noteElem.classList.add("demo-card-wide")
             noteElem.classList.add("isotope-item")
+            if (this.isInLine)
+                noteElem.classList.add("in-line-item")
+
             noteElem.style.width = this.width + "px";
             var noteCard = new NoteCardView(noteElem, this.onTodoListChange, this.msnry);
             noteCard.setNote(note);

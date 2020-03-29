@@ -425,6 +425,10 @@ body{
     border-radius: 10px;
 }
 
+.in-line-item{
+    width: unset;
+}
+
 .display-more{
     display: none;
     text-align:center;
