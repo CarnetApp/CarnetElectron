@@ -16,13 +16,14 @@ var currentcache = {}
 var media = []
 var openedNotePath = undefined
 var handle = function (method, path, data, callback) {
-    console.logDebug(method + " " + path)
+    console.log(method + " " + path)
     var splitPath = path.split("?")
     var pathBeforeArgs = splitPath[0]
+    var args = {}
+
     if (splitPath[1] != undefined) {
         var argsStr = path.split("?")[1]
         argsSplit = argsStr.split("&");
-        var args = {}
         for (var arg of argsSplit) {
             argSplit = arg.split("=");
             args[decodeURIComponent(argSplit[0])] = decodeURIComponent(argSplit[1])
@@ -366,14 +367,45 @@ var handle = function (method, path, data, callback) {
                 return;
             }
             case "/note/import": {
-                console.log("/note/import")
-                const path = require('path')
+                console.logDebug("/note/import")
 
-                var notepath = path.join(settingsHelper.getNotePath(), data.files[0].name)
+                const path = require('path')
+                var relativeNotePath = data.files[0].name
+                var notepath = path.join(settingsHelper.getNotePath(), relativeNotePath)
 
                 fs.writeFile(notepath, data.files[0].data, 'base64', function (err) {
-                    console.log("/note/import finished " + err)
-                    callback(err, "")
+                    console.logDebug("/note/import finished " + err)
+                    if (!err) {
+                        var kactions = []
+                        var time = new Date().getTime()
+                        if (data.metadata != undefined) {
+                            for (var keyword of data.metadata.keywords) {
+                                kactions.push({
+                                    keyword,
+                                    time: time,
+                                    action: "add",
+                                    path: relativeNotePath
+                                })
+
+                            }
+                        }
+                        new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).actionArray(kactions, function () {
+                            if (data.add_to_recent) {
+                                var dbactions = []
+                                kactions.push({
+                                    time: time,
+                                    action: "add",
+                                    path: relativeNotePath
+                                })
+                                new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid()).actionArray(dbactions, function () {
+                                    callback(false, "");
+                                })
+                            } else callback(false, "");
+
+                        })
+
+                    } else
+                        callback(err, "")
                 })
                 return;
             }

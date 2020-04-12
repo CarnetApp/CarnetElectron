@@ -1,4 +1,6 @@
+
 $(document).ready(function () {
+  var frame;
   var currentPath;
   document.getElementById("select_note_path_button").onclick = function () {
     if (compatibility.isElectron) {
@@ -142,7 +144,18 @@ $(document).ready(function () {
 
   })
   document.getElementById("import").onclick = function () {
-    var {
+    const url = require('url')
+    const path = require('path')
+    frame.src = url.format({
+      pathname: path.join(__dirname, 'importer/importer.html'),
+      protocol: 'file:',
+      slashes: true
+    })
+    document.getElementById("frame-container").style.display = "block"
+    setTimeout(function () {
+      frame.openDevTools()
+    }, 1000)
+    /* var {
       remote
     } = require('electron');
     const BrowserWindow = remote.BrowserWindow;
@@ -182,4 +195,12 @@ $(document).ready(function () {
   for (var i = 0; i < dias.length; i++) {
     dialogPolyfill.registerDialog(dias[i]);
   }
+  if (compatibility.isElectron) {
+    frame = document.getElementById("webview");
+    console.log("frame " + frame)
+  } else {
+    frame = document.getElementById("iframe");
+  }
 })
+
+
