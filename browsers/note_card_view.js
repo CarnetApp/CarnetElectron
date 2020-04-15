@@ -84,7 +84,11 @@ NoteCardView.prototype.setNote = function (note) {
         this.elem.classList.add(this.note.metadata.color)
         this.oldColor = this.note.metadata.color;
     }
-    if (note.title.indexOf("untitled") == 0) {
+
+    if (note.metadata != undefined && note.metadata.title != undefined && note.metadata.title != "") {
+        this.cardTitleText.innerHTML = note.metadata.title
+    }
+    else if (note.title.indexOf("untitled") == 0)
         this.cardTitleText.innerHTML = ""
         this.cardTitleText.style.display = "none";
     }

@@ -1,4 +1,6 @@
+
 $(document).ready(function () {
+  var frame;
   var currentPath;
   document.getElementById("select_note_path_button").onclick = function () {
     if (compatibility.isElectron) {
@@ -142,7 +144,18 @@ $(document).ready(function () {
 
   })
   document.getElementById("import").onclick = function () {
-    var {
+    const url = require('url')
+    const path = require('path')
+    frame.src = url.format({
+      pathname: path.join(__dirname, 'importer/importer.html'),
+      protocol: 'file:',
+      slashes: true
+    })
+    document.getElementById("frame-container").style.display = "block"
+    setTimeout(function () {
+      frame.openDevTools()
+    }, 1000)
+    /* var {
       remote
     } = require('electron');
     const BrowserWindow = remote.BrowserWindow;
@@ -182,4 +195,45 @@ $(document).ready(function () {
   for (var i = 0; i < dias.length; i++) {
     dialogPolyfill.registerDialog(dias[i]);
   }
-})
+  if (compatibility.isElectron) {
+    frame = document.getElementById("webview");
+    console.log("frame " + frame)
+    frame.addEventListener('ipc-message', event => {
+      if (events[event.channel] !== undefined) {
+        for (var callback of events[event.channel])
+          callback();
+      }
+    });
+  } else {
+    frame = document.getElementById("iframe");
+
+    var eventMethod = window.addEventListener ?
+      "addEventListener" :
+      "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod === "attachEvent" ?
+      "onmessage" :
+      "message";
+    eventer(messageEvent, function (e) {
+      if (events[e.data] !== undefined) {
+        for (var callback of events[e.data])
+          callback();
+      }
+    });
+  }
+  var events = []
+  function registerWriterEvent(event, callback) {
+    if (events[event] == null) {
+      events[event] = []
+    }
+    events[event].push(callback)
+  }
+
+
+  registerWriterEvent("exit", function () {
+    document.getElementById("frame-container").style.display = "none"
+  })
+}
+)
+
+

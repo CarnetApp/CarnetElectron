@@ -16,13 +16,14 @@ var currentcache = {}
 var media = []
 var openedNotePath = undefined
 var handle = function (method, path, data, callback) {
-    console.logDebug(method + " " + path)
+    console.log(method + " " + path)
     var splitPath = path.split("?")
     var pathBeforeArgs = splitPath[0]
+    var args = {}
+
     if (splitPath[1] != undefined) {
         var argsStr = path.split("?")[1]
         argsSplit = argsStr.split("&");
-        var args = {}
         for (var arg of argsSplit) {
             argSplit = arg.split("=");
             args[decodeURIComponent(argSplit[0])] = decodeURIComponent(argSplit[1])
@@ -363,6 +364,50 @@ var handle = function (method, path, data, callback) {
                 console.logDebug(typeof data.files)
 
                 addMedias(data.path, data.files, callback)
+                return;
+            }
+            case "/note/import": {
+                console.logDebug("/note/import")
+
+                const path = require('path')
+                var relativeNotePath = data.files[0].name
+                var notepath = path.join(settingsHelper.getNotePath(), relativeNotePath)
+
+                fs.writeFile(notepath, data.files[0].data, 'base64', function (err) {
+                    console.logDebug("/note/import finished " + err)
+                    if (!err) {
+                        var kactions = []
+                        var time = data.metadata.creation_date
+                        if (data.metadata != undefined) {
+                            for (var keyword of data.metadata.keywords) {
+                                kactions.push({
+                                    keyword,
+                                    time: time,
+                                    action: "add",
+                                    path: relativeNotePath
+                                })
+
+                            }
+                        }
+                        new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).actionArray(kactions, function () {
+                            console.log(data.add_to_recent)
+                            if (data.add_to_recent) {
+                                var dbactions = []
+                                dbactions.push({
+                                    time: time,
+                                    action: "add",
+                                    path: relativeNotePath
+                                })
+                                new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid()).actionArray(dbactions, function () {
+                                    callback(false, "");
+                                })
+                            } else callback(false, "");
+
+                        })
+
+                    } else
+                        callback(err, "")
+                })
                 return;
             }
         }

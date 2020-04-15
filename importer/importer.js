@@ -1,21 +1,22 @@
-var FileUtils = require("../utils/file_utils.js").FileUtils
+new RequestBuilder();
 var Importer = function (destPath) {
     this.elem = document.getElementById("table-container");
     this.progressView = document.getElementById("progress-view");
     this.destPath = destPath;
     this.importingSpan = document.getElementById("importing");
     this.webview = document.getElementById("webview")
-    var settingsHelper = require("../server/settings_helper").SettingsHelper
-    var SettingsHelper = new settingsHelper();
-    this.notePath = SettingsHelper.getNotePath();
     var importer = this
     document.getElementById("folder-picker").style.display = "none"
     $("#note-selection-view").hide();
     $("#importing-view").hide();
+    $('#import-finished').hide();
 
     document.getElementById("select-folder-button").onclick = function () {
-        document.getElementById("folder-picker").style.display = "block"
+        document.getElementById("input_file").click();
 
+    }
+    document.getElementById("back_arrow").onclick = document.getElementById("exit-button").onclick = function () {
+        compatibility.exit()
     }
     this.webview.addEventListener('ipc-message', event => {
         // prints "ping"
@@ -28,6 +29,9 @@ var Importer = function (destPath) {
             $("#note-selection-view").show()
         }
     })
+    document.getElementById("input_file").onchange = function () {
+        importer.onArchiveSelected(this.files[0])
+    }
 
 }
 
@@ -43,8 +47,6 @@ function generateUID() {
 
 Importer.prototype.listNotes = function (callback) {
     var fs = require("fs");
-    var FileUtils = require("../utils/file_utils.js").FileUtils
-
     var importer = this;
     fs.readdir(this.path, (err, dir) => {
         if (err)
@@ -71,8 +73,13 @@ Importer.prototype.importNotes = function () {
     this.timeStampedNotes = []
     this.timeStampedKeywords = []
     var importer = this;
+    importer.imported = 0;
     this.importNext(function () {
-        console.log(importer.timeStampedNotes.length + " note(s) imported " + document.getElementById("add-to-recent-cb").checked)
+        $('#import-finished').show();
+        $('#importing-view').hide();
+
+        $('#import-report').html(importer.imported + " note(s) imported");
+        /*console.log(importer.timeStampedNotes.length + " note(s) imported " + document.getElementById("add-to-recent-cb").checked)
         if (document.getElementById("add-to-recent-cb").checked) {
             importer.timeStampedNotes.sort(keysrt('time'))
             importer.timeStampedKeywords.sort(keysrt('time'))
@@ -95,7 +102,7 @@ Importer.prototype.importNotes = function () {
         db.actionArray(importer.timeStampedKeywords, function () {
             importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
 
-        })
+        })*/
     })
 }
 
@@ -106,61 +113,82 @@ Importer.prototype.importNext = function (callback) {
     }
     var notePath = this.notesToImport.pop();
     var importer = this;
-    var FileUtils = require("../utils/file_utils.js").FileUtils
     this.importNote(notePath, this.destPath, function () {
         importer.importNext(callback);
     })
 }
 
-Importer.prototype.fillNoteList = function (callback) {
+Importer.prototype.onArchiveSelected = function (archive) {
+    var importer = this
+    console.log("$(input[name='archive-type']:checked).val() " + $("input[name='archive-type']:checked").val())
+    switch (parseInt($("input[name='archive-type']:checked").val())) {
+        case 0:
+            importer.converter = new GoogleConverter(this);
+            break;
+        default:
+            importer.converter = undefined
+
+    }
+    JSZip.loadAsync(archive).then(function (zip) {
+        importer.currentZip = zip
+        importer.converter.getListOfNotesFromZip(zip, (list) => {
+            document.getElementById("folder-picker").style.display = "none"
+            $("#select-folder").hide()
+            $("#note-selection-view").show()
+            importer.fillNoteList(function () { }, list)
+        })
+    })
+
+}
+
+Importer.prototype.fillNoteList = function (callback, list) {
     var importer = this;
     $(this.progressView).show();
     for (var elem of document.getElementsByClassName("import-button")) {
         $(elem).hide();
     }
     $("#add-to-recent").hide();
-    this.listNotes(function (success, notes) {
-        var table = document.createElement("table");
-        table.classList.add("mdl-data-table")
-        table.classList.add("mdl-js-data-table")
-        table.classList.add("mdl-data-table--selectable")
-        table.classList.add("mdl-shadow--2dp")
-        var head = document.createElement("thead");
-        table.appendChild(head)
+    var table = document.createElement("table");
+    table.classList.add("mdl-data-table")
+    table.classList.add("mdl-js-data-table")
+    table.classList.add("mdl-data-table--selectable")
+    table.classList.add("mdl-shadow--2dp")
+    var head = document.createElement("thead");
+    table.appendChild(head)
+    var tr = document.createElement("tr");
+    head.appendChild(tr)
+    var th = document.createElement("th");
+    th.classList.add("mdl-data-table__cell--non-numeric")
+    th.innerHTML = "Title"
+    tr.appendChild(th)
+    var tbody = document.createElement("tbody");
+    table.appendChild(tbody)
+
+
+    importer.elem.appendChild(table)
+    for (var note of list) {
         var tr = document.createElement("tr");
-        head.appendChild(tr)
-        var th = document.createElement("th");
-        th.classList.add("mdl-data-table__cell--non-numeric")
-        th.innerHTML = "Title"
-        tr.appendChild(th)
-        var tbody = document.createElement("tbody");
-        table.appendChild(tbody)
+        tbody.appendChild(tr)
+
+        var td = document.createElement("td");
+        td.classList.add("mdl-data-table__cell--non-numeric")
+        tr.appendChild(td)
+        td.innerHTML = note
+        td = document.createElement("td");
+        tr.appendChild(td)
+        td.classList.add("value")
+        td.innerHTML = note
 
 
-        importer.elem.appendChild(table)
-        for (var note of notes) {
-            var tr = document.createElement("tr");
-            tbody.appendChild(tr)
+    }
+    new MaterialDataTable(table)
+    $(importer.progressView).hide()
+    for (var elem of document.getElementsByClassName("import-button")) {
+        $(elem).show();
+    }
+    $("#add-to-recent").show();
+    callback()
 
-            var td = document.createElement("td");
-            td.classList.add("mdl-data-table__cell--non-numeric")
-            tr.appendChild(td)
-            td.innerHTML = note.title
-            td = document.createElement("td");
-            tr.appendChild(td)
-            td.classList.add("value")
-            td.innerHTML = note.path
-
-
-        }
-        new MaterialDataTable(table)
-        $(importer.progressView).hide()
-        for (var elem of document.getElementsByClassName("import-button")) {
-            $(elem).show();
-        }
-        $("#add-to-recent").show();
-        callback()
-    })
 }
 
 Importer.prototype.getSelectedNotes = function () {
@@ -233,178 +261,38 @@ Importer.prototype.writeNext = function (callback) {
 function DateError() { }
 
 Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
-    var FileUtils = require("../utils/file_utils.js").FileUtils
-    var fileName = FileUtils.getFilename(keepNotePath);
-    this.importingSpan.innerHTML = fileName + " (" + this.notesToImport.length + " remaining)";
-    var fs = require("fs");
-    console.log(keepNotePath)
-    var importer = this;
-    fs.readFile(keepNotePath, 'base64', function (err, data) {
-        if (err) {
-            console.log(err)
 
-            callback()
-            return
-        }
-        importer.toWrite = []
-        var buffer = new Buffer(data, 'base64');
-        var content = buffer.toString()
-        var container = document.createElement("div");
-        container.innerHTML = content
-        var titleDiv = container.querySelector("title")
-        var title = "";
-        if (titleDiv != null)
-            title = titleDiv.innerHTML;
-        console.log("title " + title)
-        var textDiv = container.querySelector(".content");
-        var text = "";
-        if (textDiv != null)
-            text = textDiv.innerHTML;
-        importer.toWrite.push({
-            type: "utf8",
-            path: "importtmp/index.html",
-            data: '<div id="text" contenteditable="true" style="height:100%;">\
-        <!-- be aware that THIS will be modified in java -->\
-        <!-- soft won\'t save note if contains -->' + text + '\
-    </div>\
-    <div id="floating">\
-    \
-    </div>'
-        })
-
-        console.log("text " + text)
-        var labels = container.getElementsByClassName("label");
-        var keywords = [];
-        var dateDiv = container.querySelector(".heading");
-        console.log(dateDiv.innerText.trim())
+    this.importingSpan.innerHTML = FileUtils.getFilename(keepNotePath) + " (" + this.notesToImport.length + " remaining)";
+    this.converter.convertNoteToSQD(this.currentZip, keepNotePath, destFolder, function (zip, metadata, fileName) {
+        console.log("filename " + fileName)
+        importer.sendNote(zip, metadata, fileName, callback)
+    })
+}
 
 
-        console.log(escape(dateDiv.innerText.trim()).replace("%E0%20", ""))
-        var date = dateDiv.innerText.trim();
-        //escape unescape only way I've found to replace the à which didn't work with simple replace("à ","")
-        var fixedDate = unescape(escape(date).replace("%E0%20", "").replace("%E9", "e").replace("%FB", "u")).replace("at ", "").replace("à ", "")
-            .replace("&agrave; ", "")
-            .replace("juin", "june")
-            .replace("juil.", "july")
-            .replace("mars", "march")
-            .replace("oct.", "october")
-            .replace("jan.", "january")
-            .replace("janv.", "january")
-            .replace("sept.", "september")
-            .replace("déc.", "december")
-            .replace("dec.", "december")
-            .replace("fevr.", "february")
-            .replace("avr.", "april")
-            .replace("nov.", "november")
-            .replace("mai", "may")
-            .replace("aout", "august");
-        console.log(fixedDate)
-        var time = getDateFromFormat(fixedDate, "dd MMM yyyy HH:mm:ss")
-        if (time == 0) //try different
-            time = getDateFromFormat(fixedDate, "d MMM yyyy HH:mm:ss")
-        if (time == 0) //try moment
-            time = moment(fixedDate).toDate().getTime()
-        if (time == 0)
-            throw new DateError()
-        var notePath = destFolder + "/" + (title == date ? "untitled" : "") + FileUtils.stripExtensionFromName(fileName) + ".sqd"
-        importer.timeStampedNotes.push({
-            action: "add",
-            time: time,
-            path: notePath.substring((importer.notePath + '/').length)
-        });
 
-        console.log(time)
-        if (labels != undefined) {
-            for (var label of labels) {
-                if (keywords.indexOf(label.innerText) >= 0)
-                    continue;
-                keywords.push(label.innerText)
-                console.log("label " + label.innerText)
-                importer.timeStampedKeywords.push({
-                    action: 'add',
-                    time: time,
-                    path: notePath.substring((importer.notePath + '/').length),
-                    keyword: label.innerText
-                })
+Importer.prototype.sendNote = function (zip, metadata, filename, callback) {
+    var self = this
+    zip.generateAsync({ type: "blob" }).then(function (blob) {
+        var files = []
 
-            }
-        }
-        var metadata = {
-            creation_date: time,
-            last_modification_date: time,
-            keywords: keywords
-        }
-        console.log("meta " + JSON.stringify(metadata))
-
-        importer.toWrite.push({
-            type: "utf8",
-            path: "importtmp/metadata.json",
-            data: JSON.stringify(metadata)
-        })
-        //attachments
-        var attachments = container.querySelector(".attachments");
-        var base64Files = []
-        if (attachments != undefined) {
-
-
-            var audioFiles = attachments.getElementsByClassName("audio");
-            if (audioFiles != undefined) {
-                for (var audioFile of audioFiles) {
-                    var data = audioFile.getAttribute("href")
-
-                    importer.toWrite.push({
-                        type: "base64",
-                        path: "importtmp/data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
-                        data: data.substr(data.indexOf(',') + 1)
-                    })
-                }
-            }
-
-            var imgFiles = attachments.getElementsByTagName("img");
-            if (imgFiles != undefined) {
-                for (var imageFile of imgFiles) {
-                    console.log("adding img1")
-
-                    var data = imageFile.getAttribute("src")
-                    console.log("adding img")
-                    importer.toWrite.push({
-                        type: "base64",
-                        path: "importtmp/data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
-                        data: data.substr(data.indexOf(',') + 1)
-                    })
-                }
-            }
-
-
-        }
-
-
-        FileUtils.deleteFolderRecursive("importtmp");
-
-        var mkdirp = require('mkdirp');
-        mkdirp.sync("importtmp");
-        importer.writeNext(function () {
-            console.log("callback, zip to " + notePath)
-            var archiver = require("archiver")
-            var archive = archiver.create('zip');
-            mkdirp(destFolder)
-
-            var output = fs.createWriteStream(notePath);
-            output.on('close', function () {
+        blob.name = filename
+        files.push(blob)
+        RequestBuilder.sRequestBuilder.postFiles("/note/import", {
+            add_to_recent: true,
+            path: "keep",
+            metadata: metadata
+        }, files, function (error, data) {
+            console.log("error " + error)
+            if (error) {
+                self.onError()
+            } else {
+                self.imported = self.imported + 1;
                 callback()
-            });
 
-            archive.pipe(output);
-
-
-            archive
-                .directory("importtmp", false)
-                .finalize();
-
+            }
         })
-
-
+    }, function (err) {
 
     });
-
 }
