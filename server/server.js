@@ -377,7 +377,7 @@ var handle = function (method, path, data, callback) {
                     console.logDebug("/note/import finished " + err)
                     if (!err) {
                         var kactions = []
-                        var time = new Date().getTime()
+                        var time = data.metadata.creation_date
                         if (data.metadata != undefined) {
                             for (var keyword of data.metadata.keywords) {
                                 kactions.push({
@@ -390,9 +390,10 @@ var handle = function (method, path, data, callback) {
                             }
                         }
                         new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).actionArray(kactions, function () {
+                            console.log(data.add_to_recent)
                             if (data.add_to_recent) {
                                 var dbactions = []
-                                kactions.push({
+                                dbactions.push({
                                     time: time,
                                     action: "add",
                                     path: relativeNotePath

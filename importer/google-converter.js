@@ -14,17 +14,11 @@ GoogleConverter.prototype.convertNoteToSQD = function (currentZip, keepNotePath,
 
 GoogleConverter.prototype.XMLConvertNoteToSQD = function (currentZip, keepNotePath, destFolder, callback) {
     var fileName = FileUtils.getFilename(keepNotePath);
-    var fs = require("fs");
-    console.log(keepNotePath)
-    var importer = this;
-    fs.readFile(keepNotePath, 'base64', function (err, data) {
-        if (err) {
-            console.log(err)
+    var zip = new JSZip();
+    var importer = this
+    var fileName = FileUtils.stripExtensionFromName(FileUtils.getFilename(keepNotePath)) + ".sqd";
+    currentZip.files["Takeout/Keep/" + keepNotePath].async('text').then(function (txt) {
 
-            callback()
-            return
-        }
-        importer.toWrite = []
         var buffer = new Buffer(data, 'base64');
         var content = buffer.toString()
         var container = document.createElement("div");
@@ -39,17 +33,14 @@ GoogleConverter.prototype.XMLConvertNoteToSQD = function (currentZip, keepNotePa
         if (textDiv != null)
             text = textDiv.innerHTML;
 
-        importer.toWrite.push({
-            type: "utf8",
-            path: "importtmp/index.html",
-            data: '<div id="text" contenteditable="true" style="height:100%;">\
+        var newNoteHTML = '<div id="text" contenteditable="true" style="height:100%;">\
         <!-- be aware that THIS will be modified in java -->\
         <!-- soft won\'t save note if contains -->' + text + '\
     </div>\
     <div id="floating">\
     \
     </div>'
-        })
+        zip.file("index.html", JSON.stringify(newNoteHTML));
 
         console.log("text " + text)
         var labels = container.getElementsByClassName("label");
@@ -86,11 +77,7 @@ GoogleConverter.prototype.XMLConvertNoteToSQD = function (currentZip, keepNotePa
         if (time == 0)
             throw new DateError()
         var notePath = destFolder + "/" + (title == date ? "untitled" : "") + FileUtils.stripExtensionFromName(fileName) + ".sqd"
-        importer.timeStampedNotes.push({
-            action: "add",
-            time: time,
-            path: notePath.substring((importer.notePath + '/').length)
-        });
+
 
         console.log(time)
         if (labels != undefined) {
@@ -115,27 +102,16 @@ GoogleConverter.prototype.XMLConvertNoteToSQD = function (currentZip, keepNotePa
         }
         console.log("meta " + JSON.stringify(metadata))
 
-        importer.toWrite.push({
-            type: "utf8",
-            path: "importtmp/metadata.json",
-            data: JSON.stringify(metadata)
-        })
+        zip.file("metadata.json", JSON.stringify(metadata));
         //attachments
         var attachments = container.querySelector(".attachments");
-        var base64Files = []
         if (attachments != undefined) {
-
-
             var audioFiles = attachments.getElementsByClassName("audio");
             if (audioFiles != undefined) {
                 for (var audioFile of audioFiles) {
                     var data = audioFile.getAttribute("href")
-
-                    importer.toWrite.push({
-                        type: "base64",
-                        path: "importtmp/data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
-                        data: data.substr(data.indexOf(',') + 1)
-                    })
+                    zip.file("data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
+                        data.substr(data.indexOf(',') + 1), { base64: true });
                 }
             }
 
@@ -143,53 +119,30 @@ GoogleConverter.prototype.XMLConvertNoteToSQD = function (currentZip, keepNotePa
             if (imgFiles != undefined) {
                 for (var imageFile of imgFiles) {
                     console.log("adding img1")
-
                     var data = imageFile.getAttribute("src")
                     console.log("adding img")
-                    importer.toWrite.push({
-                        type: "base64",
-                        path: "importtmp/data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
-                        data: data.substr(data.indexOf(',') + 1)
-                    })
+                    zip.file("data/" + generateUID() + "." + FileUtils.getExtensionFromMimetype(FileUtils.base64MimeType(data)),
+                        data.substr(data.indexOf(',') + 1), { base64: true });
                 }
             }
-
-
         }
-
-
-        FileUtils.deleteFolderRecursive("importtmp");
-
-        var mkdirp = require('mkdirp');
-        mkdirp.sync("importtmp");
-        importer.writeNext(function () {
-            console.log("callback, zip to " + notePath)
-            var archiver = require("archiver")
-            var archive = archiver.create('zip');
-            mkdirp(destFolder)
-
-            var output = fs.createWriteStream(notePath);
-            output.on('close', function () {
-                callback()
-            });
-
-            archive.pipe(output);
-
-
-            archive
-                .directory("importtmp", false)
-                .finalize();
-
-        })
-
-
-
+        callback(zip, metadata, fileName)
     });
+}
+
+GoogleConverter.prototype.getListOfNotesFromZip = function (zip, callback) {
+    var list = []
+    zip.folder("Takeout/Keep").forEach(function (relativePath, zipEntry) {  // 2) print entries
+        console.log("note " + relativePath)
+        if (relativePath.endsWith(".json"))
+            list.push(relativePath)
+    });
+    callback(list)
 }
 
 GoogleConverter.prototype.JsonConvertNoteToSQD = function (currentZip, keepNotePath, destFolder, callback) {
     var importer = this
-    var fileName = FileUtils.stripExtensionFromName(FileUtils.getFilename(keepNotePath)) + ".sqd";
+    var filename = FileUtils.stripExtensionFromName(FileUtils.getFilename(keepNotePath)) + ".sqd";
     currentZip.files["Takeout/Keep/" + keepNotePath].async('text').then(function (txt) {
         var json = JSON.parse(txt)
         console.log(json['title']);
@@ -201,21 +154,24 @@ GoogleConverter.prototype.JsonConvertNoteToSQD = function (currentZip, keepNoteP
         <div id="floating">\
         \
         </div>');
-        var filename = keepNotePath.substr(0, keepNotePath.length - 4) + "sqd"
-        if (json['title'] === "")
+        if (json['title'] == "" || json['title'] === undefined)
             filename = "untitled " + filename;
+        console.log("date " + json['userEditedTimestampUsec'])
         var metadata = {}
-        metadata['creation_date'] = json['userEditedTimestampUsec']
+        metadata['creation_date'] = Math.round(json['userEditedTimestampUsec'] / 1000)
         metadata['title'] = json['title']
-        metadata['last_modification_date'] = json['userEditedTimestampUsec']
+        metadata['last_modification_date'] = Math.round(json['userEditedTimestampUsec'] / 1000)
+        console.log("date " + metadata['last_modification_date'])
+
         metadata['keywords'] = []
         metadata['rating'] = -1
         metadata['color'] = "none"
         metadata['urls'] = {}
         metadata['todolists'] = []
         if (json['labels'] != undefined)
-            for (var label of json['labels'])
-                metadata['keywords'].push(label)
+            for (var label of json['labels']) {
+                metadata['keywords'].push(label.name)
+            }
         if (json['annotations'] != undefined) {
             for (var annotation of json['annotations']) {
                 if (annotation['url'] != undefined) {
@@ -228,9 +184,9 @@ GoogleConverter.prototype.JsonConvertNoteToSQD = function (currentZip, keepNoteP
         }
         zip.file("metadata.json", JSON.stringify(metadata));
 
-        importer.importNoteAttachments(zip, json['attachments'], function () {
+        importer.importNoteAttachments(currentZip, zip, json['attachments'], function () {
             console.log("generateAsync")
-            callback(zip, metadata, fileName)
+            callback(zip, metadata, filename)
 
         })
 
@@ -238,12 +194,12 @@ GoogleConverter.prototype.JsonConvertNoteToSQD = function (currentZip, keepNoteP
 }
 
 
-GoogleConverter.prototype.importNoteAttachments = function (destZip, attachments, callback) {
-    this.importNoteAttachment(destZip, attachments, callback)
+GoogleConverter.prototype.importNoteAttachments = function (currentZip, destZip, attachments, callback) {
+    this.importNoteAttachment(currentZip, destZip, attachments, callback)
 
 }
 
-GoogleConverter.prototype.importNoteAttachment = function (destZip, attachments, callback) {
+GoogleConverter.prototype.importNoteAttachment = function (currentZip, destZip, attachments, callback) {
     if (attachments == undefined || attachments.length <= 0) {
         callback()
         return;
@@ -255,7 +211,7 @@ GoogleConverter.prototype.importNoteAttachment = function (destZip, attachments,
         attachmentName = attachmentName.substr(0, attachmentName.length - 4) + "jpg"
     console.log("attachment " + "Takeout/Keep/" + attachmentName)
 
-    this.currentZip.files["Takeout/Keep/" + attachmentName].async("base64")
+    currentZip.files["Takeout/Keep/" + attachmentName].async("base64")
         .then(function (data) {
             destZip.file("data/" + attachmentName, data, { base64: true });
 
@@ -289,11 +245,11 @@ GoogleConverter.prototype.importNoteAttachment = function (destZip, attachments,
                     ctx.drawImage(this, 0, 0, imageWidth, imageHeight);
                     //console.log(canvas.toDataURL('image/jpeg').substr("data:image/jpeg;base64,".length));
                     destZip.file("data/" + "preview_" + attachmentName + ".jpg", canvas.toDataURL('image/jpeg').substr("data:image/jpeg;base64,".length), { base64: true });
-                    importer.importNoteAttachment(destZip, attachments, callback)
+                    importer.importNoteAttachment(currentZip, destZip, attachments, callback)
                 };
 
                 img.src = "data:" + attachment['mimetype'] + ";base64," + data;
             }
-            else importer.importNoteAttachment(destZip, attachments, callback)
+            else importer.importNoteAttachment(currentZip, destZip, attachments, callback)
         });
 }

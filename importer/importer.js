@@ -1,6 +1,5 @@
 new RequestBuilder();
 var Importer = function (destPath) {
-    this.converter = new GoogleConverter(this);
     this.elem = document.getElementById("table-container");
     this.progressView = document.getElementById("progress-view");
     this.destPath = destPath;
@@ -15,6 +14,9 @@ var Importer = function (destPath) {
     document.getElementById("select-folder-button").onclick = function () {
         document.getElementById("input_file").click();
 
+    }
+    document.getElementById("back_arrow").onclick = document.getElementById("exit-button").onclick = function () {
+        compatibility.exit()
     }
     this.webview.addEventListener('ipc-message', event => {
         // prints "ping"
@@ -118,20 +120,23 @@ Importer.prototype.importNext = function (callback) {
 
 Importer.prototype.onArchiveSelected = function (archive) {
     var importer = this
-    JSZip.loadAsync(archive).then(function (zip) {
-        var list = []
-        importer.currentZip = zip
-        // if you return a promise in a "then", you will chain the two promises
-        zip.folder("Takeout/Keep").forEach(function (relativePath, zipEntry) {  // 2) print entries
-            console.log("note " + relativePath)
-            if (relativePath.endsWith(".json"))
-                list.push(relativePath)
-        });
-        document.getElementById("folder-picker").style.display = "none"
-        $("#select-folder").hide()
-        $("#note-selection-view").show()
-        importer.fillNoteList(function () { }, list)
+    console.log("$(input[name='archive-type']:checked).val() " + $("input[name='archive-type']:checked").val())
+    switch (parseInt($("input[name='archive-type']:checked").val())) {
+        case 0:
+            importer.converter = new GoogleConverter(this);
+            break;
+        default:
+            importer.converter = undefined
 
+    }
+    JSZip.loadAsync(archive).then(function (zip) {
+        importer.currentZip = zip
+        importer.converter.getListOfNotesFromZip(zip, (list) => {
+            document.getElementById("folder-picker").style.display = "none"
+            $("#select-folder").hide()
+            $("#note-selection-view").show()
+            importer.fillNoteList(function () { }, list)
+        })
     })
 
 }
@@ -257,9 +262,9 @@ function DateError() { }
 
 Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
 
-    var fileName = FileUtils.getFilename(keepNotePath);
-    this.importingSpan.innerHTML = fileName + " (" + this.notesToImport.length + " remaining)";
+    this.importingSpan.innerHTML = FileUtils.getFilename(keepNotePath) + " (" + this.notesToImport.length + " remaining)";
     this.converter.convertNoteToSQD(this.currentZip, keepNotePath, destFolder, function (zip, metadata, fileName) {
+        console.log("filename " + fileName)
         importer.sendNote(zip, metadata, fileName, callback)
     })
 }

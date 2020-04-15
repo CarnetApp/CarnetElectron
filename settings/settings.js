@@ -198,9 +198,42 @@ $(document).ready(function () {
   if (compatibility.isElectron) {
     frame = document.getElementById("webview");
     console.log("frame " + frame)
+    frame.addEventListener('ipc-message', event => {
+      if (events[event.channel] !== undefined) {
+        for (var callback of events[event.channel])
+          callback();
+      }
+    });
   } else {
     frame = document.getElementById("iframe");
+
+    var eventMethod = window.addEventListener ?
+      "addEventListener" :
+      "attachEvent";
+    var eventer = window[eventMethod];
+    var messageEvent = eventMethod === "attachEvent" ?
+      "onmessage" :
+      "message";
+    eventer(messageEvent, function (e) {
+      if (events[e.data] !== undefined) {
+        for (var callback of events[e.data])
+          callback();
+      }
+    });
   }
-})
+  var events = []
+  function registerWriterEvent(event, callback) {
+    if (events[event] == null) {
+      events[event] = []
+    }
+    events[event].push(callback)
+  }
+
+
+  registerWriterEvent("exit", function () {
+    document.getElementById("frame-container").style.display = "none"
+  })
+}
+)
 
 
