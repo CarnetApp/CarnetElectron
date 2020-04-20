@@ -90,5 +90,7 @@
     "remove_todo_list": "To-do-Liste entfernen",
     "add_item": "Eintrag hinzufügen",
     "completed": "Abgeschlossen",
-    "todo": "Zu erledigen"
+    "todo": "Zu erledigen",
+    "display_more": "Mehr anzeigen",
+    "display_less": "Weniger anzeigen"
 }
