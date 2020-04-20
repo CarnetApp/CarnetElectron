@@ -89,5 +89,8 @@
     "remove_todo_list": "Supprimer la ToDo-List",
     "add_item": "Ajouter un élément",
     "completed": "Terminés",
-    "todo": "À faire"
+    "todo": "À faire",
+    "something_went_wrong_please_reload": "Une erreur est survenue... S'il vous plaît, rechargez la page.",
+    "display_more": "Afficher plus",
+    "display_less": "Afficher moins"
 }
