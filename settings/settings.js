@@ -159,9 +159,9 @@ $(document).ready(function () {
     }
     frame.src = url
     document.getElementById("frame-container").style.display = "block"
-    setTimeout(function () {
-      frame.openDevTools()
-    }, 1000)
+    /*setTimeout(function () {
+    frame.openDevTools()
+  }, 1000)*/
   }
   if (compatibility.isElectron) {
     document.getElementById("recent-button").href = "index.html"
