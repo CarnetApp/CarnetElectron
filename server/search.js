@@ -37,7 +37,9 @@ function getFilenameFromPath(path) {
 function stripExtensionFromName(name) {
     return name.replace(/\.[^/.]+$/, "")
 }
-function cleanText(text){
+function cleanText(text) {
+    if (text == undefined || typeof text != "string")
+        return "";
     return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")
 }
 Search.prototype.searchInFile = function (filePath, callback) {
@@ -53,9 +55,9 @@ Search.prototype.searchInFile = function (filePath, callback) {
             var fileName = stripExtensionFromName(getFilenameFromPath(filePath));
 
             var inKeywords = false
-            if(metadata !== undefined){
-                for (var keyword of metadata.keywords){
-                    if(cleanText(keyword).indexOf(search.keyword) >= 0){
+            if (metadata !== undefined) {
+                for (var keyword of metadata.keywords) {
+                    if (cleanText(keyword).indexOf(search.keyword) >= 0) {
                         inKeywords = true;
                         break;
                     }
