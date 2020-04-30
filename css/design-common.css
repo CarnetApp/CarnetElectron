@@ -23,6 +23,14 @@
     background: var(--scroll-bar-bg);
 }
 
+@media (max-width: 700px) {
+    ::-webkit-scrollbar {
+        height: 3px;
+        
+    }
+}
+
+
 ::-webkit-scrollbar-thumb {
     background: var(--scroll-bar-fg);
 }
