@@ -336,6 +336,10 @@ body{
     margin-right: 0;
 }
 
+.keyword {
+    color:var(--note-text-color);
+}
+
 .mdl-card__supporting-text [class^="card"], .folder-card-view .mdl-card__supporting-text, .mdl-card__supporting-text .keywords, .mdl-card__supporting-text .todo-list {
     margin-top: .5rem;
 }
