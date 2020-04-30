@@ -10,15 +10,16 @@ $(document).ready(function () {
       var dialog = remote.dialog;
       dialog.showOpenDialog({
         properties: ['openDirectory']
-      }, function (path) {
-        if (path != undefined) {
+      }).then(result => {
+        if (!result.canceled && result.filePaths != undefined) {
           RequestBuilder.sRequestBuilder.post("/settings/note_path", {
-            path: path
+            path: result.filePaths
           }, function (error, data) {
             window.location.reload(true)
           });
         }
-
+      }).catch(err => {
+        console.log(err)
       })
     } else {
       var newPath = window.prompt("Please enter a new path. Be aware that this won't move your notes, so be careful", currentPath);
