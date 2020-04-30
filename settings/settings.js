@@ -144,36 +144,24 @@ $(document).ready(function () {
 
   })
   document.getElementById("import").onclick = function () {
-    const url = require('url')
-    const path = require('path')
-    frame.src = url.format({
-      pathname: path.join(__dirname, 'importer/importer.html'),
-      protocol: 'file:',
-      slashes: true
-    })
+    var url = "";
+    if (compatibility.isElectron) {
+      const urlBuilder = require('url')
+      const path = require('path')
+      url = urlBuilder.format({
+        pathname: path.join(__dirname, 'importer/importer.html'),
+        protocol: 'file:',
+        slashes: true
+      })
+    } else {
+      url = "importer"
+
+    }
+    frame.src = url
     document.getElementById("frame-container").style.display = "block"
     setTimeout(function () {
       frame.openDevTools()
     }, 1000)
-    /* var {
-      remote
-    } = require('electron');
-    const BrowserWindow = remote.BrowserWindow;
-
-    var win = new BrowserWindow({
-      width: 600,
-      height: 700,
-      frame: true
-    });
-    const url = require('url')
-    const path = require('path')
-    win.loadURL(url.format({
-      pathname: path.join(__dirname, 'importer/importer.html'),
-      protocol: 'file:',
-      slashes: true
-    }))
-    win.setMenu(null)
-
   }
   if (compatibility.isElectron) {
     document.getElementById("recent-button").href = "index.html"
@@ -235,5 +223,3 @@ $(document).ready(function () {
   })
 }
 )
-
-

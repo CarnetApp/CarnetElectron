@@ -369,14 +369,16 @@ var handle = function (method, path, data, callback) {
             case "/note/import": {
                 console.logDebug("/note/import")
 
-                const path = require('path')
-                var relativeNotePath = data.files[0].name
-                var notepath = path.join(settingsHelper.getNotePath(), relativeNotePath)
+                const pathBuilder = require('path')
+                var relativeNotePath = (path == undefined || path == "" ? '' : (path + "/")) + data.files[0].name
+                var notepath = pathBuilder.join(settingsHelper.getNotePath(), relativeNotePath)
 
                 fs.writeFile(notepath, data.files[0].data, 'base64', function (err) {
                     console.logDebug("/note/import finished " + err)
                     if (!err) {
                         var kactions = []
+                        if (typeof data.metadata == "string")
+                            data.metadata = JSON.parse(data.metadata)
                         var time = data.metadata.creation_date
                         if (data.metadata != undefined) {
                             for (var keyword of data.metadata.keywords) {
@@ -398,6 +400,12 @@ var handle = function (method, path, data, callback) {
                                     action: "add",
                                     path: relativeNotePath
                                 })
+                                if (data.is_pinned)
+                                    dbactions.push({
+                                        time: time,
+                                        action: "pin",
+                                        path: relativeNotePath
+                                    })
                                 new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid()).actionArray(dbactions, function () {
                                     callback(false, "");
                                 })

@@ -10,7 +10,9 @@ var Importer = function (destPath) {
     $("#note-selection-view").hide();
     $("#importing-view").hide();
     $('#import-finished').hide();
-
+    document.getElementById("import-button1").onclick = document.getElementById("import-button2").onclick = function () {
+        importer.importNotes()
+    }
     document.getElementById("select-folder-button").onclick = function () {
         document.getElementById("input_file").click();
 
@@ -72,13 +74,14 @@ Importer.prototype.importNotes = function () {
     this.notesToImport = this.getSelectedNotes()
     this.timeStampedNotes = []
     this.timeStampedKeywords = []
+    this.error = []
     var importer = this;
     importer.imported = 0;
     this.importNext(function () {
         $('#import-finished').show();
         $('#importing-view').hide();
 
-        $('#import-report').html(importer.imported + " note(s) imported");
+        $('#import-report').html(importer.imported + " note(s) imported <br />" + importer.error.length + " failed");
         /*console.log(importer.timeStampedNotes.length + " note(s) imported " + document.getElementById("add-to-recent-cb").checked)
         if (document.getElementById("add-to-recent-cb").checked) {
             importer.timeStampedNotes.sort(keysrt('time'))
@@ -263,16 +266,19 @@ function DateError() { }
 Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
 
     this.importingSpan.innerHTML = FileUtils.getFilename(keepNotePath) + " (" + this.notesToImport.length + " remaining)";
-    this.converter.convertNoteToSQD(this.currentZip, keepNotePath, destFolder, function (zip, metadata, fileName) {
+    this.converter.convertNoteToSQD(this.currentZip, keepNotePath, destFolder, function (zip, metadata, fileName, isPinned) {
         console.log("filename " + fileName)
-        importer.sendNote(zip, metadata, fileName, callback)
+        importer.sendNote(zip, metadata, fileName, isPinned, callback)
     })
 }
 
+Importer.prototype.onError = function (filename) {
+    this.error.push(filename);
+}
 
-
-Importer.prototype.sendNote = function (zip, metadata, filename, callback) {
+Importer.prototype.sendNote = function (zip, metadata, filename, isPinned, callback) {
     var self = this
+    console.log("metadata " + metadata)
     zip.generateAsync({ type: "blob" }).then(function (blob) {
         var files = []
 
@@ -281,11 +287,13 @@ Importer.prototype.sendNote = function (zip, metadata, filename, callback) {
         RequestBuilder.sRequestBuilder.postFiles("/note/import", {
             add_to_recent: true,
             path: "keep",
+            is_pinned: isPinned,
             metadata: metadata
         }, files, function (error, data) {
             console.log("error " + error)
             if (error) {
-                self.onError()
+                self.onError(filename)
+                callback()
             } else {
                 self.imported = self.imported + 1;
                 callback()
@@ -296,3 +304,7 @@ Importer.prototype.sendNote = function (zip, metadata, filename, callback) {
 
     });
 }
+var importer;
+$(document).ready(function () {
+    importer = new Importer("/Keep");
+})

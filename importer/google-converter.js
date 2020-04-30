@@ -12,6 +12,38 @@ GoogleConverter.prototype.convertNoteToSQD = function (currentZip, keepNotePath,
         this.XMLConvertNoteToSQD(currentZip, keepNotePath, destFolder, callback)
 }
 
+GoogleConverter.prototype.extractDateFromXML = function (dateDiv) {
+    console.log(dateDiv.innerText.trim())
+
+
+    console.log(escape(dateDiv.innerText.trim()).replace("%E0%20", ""))
+    var date = dateDiv.innerText.trim();
+    //escape unescape only way I've found to replace the à which didn't work with simple replace("à ","")
+    var fixedDate = unescape(escape(date).replace("%E0%20", "").replace("%E9", "e").replace("%FB", "u")).replace("at ", "").replace("à ", "")
+        .replace("&agrave; ", "")
+        .replace("juin", "june")
+        .replace("juil.", "july")
+        .replace("mars", "march")
+        .replace("oct.", "october")
+        .replace("jan.", "january")
+        .replace("janv.", "january")
+        .replace("sept.", "september")
+        .replace("déc.", "december")
+        .replace("dec.", "december")
+        .replace("fevr.", "february")
+        .replace("avr.", "april")
+        .replace("nov.", "november")
+        .replace("mai", "may")
+        .replace("aout", "august");
+    console.log(fixedDate)
+    var time = getDateFromFormat(fixedDate, "dd MMM yyyy HH:mm:ss")
+    if (time == 0) //try different
+        time = getDateFromFormat(fixedDate, "d MMM yyyy HH:mm:ss")
+    if (time == 0) //try moment
+        time = moment(fixedDate).toDate().getTime()
+    return time;
+}
+
 GoogleConverter.prototype.XMLConvertNoteToSQD = function (currentZip, keepNotePath, destFolder, callback) {
     var fileName = FileUtils.getFilename(keepNotePath);
     var zip = new JSZip();
@@ -142,6 +174,7 @@ GoogleConverter.prototype.getListOfNotesFromZip = function (zip, callback) {
 
 GoogleConverter.prototype.JsonConvertNoteToSQD = function (currentZip, keepNotePath, destFolder, callback) {
     var importer = this
+    var originalFilename = FileUtils.stripExtensionFromName(FileUtils.getFilename(keepNotePath));
     var filename = FileUtils.stripExtensionFromName(FileUtils.getFilename(keepNotePath)) + ".sqd";
     currentZip.files["Takeout/Keep/" + keepNotePath].async('text').then(function (txt) {
         var json = JSON.parse(txt)
@@ -156,43 +189,68 @@ GoogleConverter.prototype.JsonConvertNoteToSQD = function (currentZip, keepNoteP
         </div>');
         if (json['title'] == "" || json['title'] === undefined)
             filename = "untitled " + filename;
-        console.log("date " + json['userEditedTimestampUsec'])
-        var metadata = {}
-        metadata['creation_date'] = Math.round(json['userEditedTimestampUsec'] / 1000)
-        metadata['title'] = json['title']
-        metadata['last_modification_date'] = Math.round(json['userEditedTimestampUsec'] / 1000)
-        console.log("date " + metadata['last_modification_date'])
+        var mdate = Math.round(json['userEditedTimestampUsec'] / 1000);
+        if (mdate <= 0) {
+            var dateStr = originalFilename
+            dateStr = dateStr.replace(/_/g, ":")
+            mdate = Date.parse(dateStr);
+            if (!(mdate > 0)) {
+                /*console.log("mdate " + mdate)
+                //try to retrieve from xml
+                var xmlContent = currentZip.files["Takeout/Keep/" + originalFilename + ".html"].async('text').then(function (txt) {
+                    var container = document.createElement("div");
+                    container.innerHTML = xmlContent
+                    var dateDiv = container.querySelector(".heading");
 
-        metadata['keywords'] = []
-        metadata['rating'] = -1
-        metadata['color'] = "none"
-        metadata['urls'] = {}
-        metadata['todolists'] = []
-        if (json['labels'] != undefined)
-            for (var label of json['labels']) {
-                metadata['keywords'].push(label.name)
-            }
-        if (json['annotations'] != undefined) {
-            for (var annotation of json['annotations']) {
-                if (annotation['url'] != undefined) {
-                    var url = {}
-                    url['title'] = annotation['title']
-                    url['description'] = annotation['description']
-                    metadata['urls'][annotation['url']] = url
-                }
-            }
-        }
-        zip.file("metadata.json", JSON.stringify(metadata));
+                    console.log("extracted date " + importer.extractDateFromXML(dateDiv))
+                })
 
-        importer.importNoteAttachments(currentZip, zip, json['attachments'], function () {
-            console.log("generateAsync")
-            callback(zip, metadata, filename)
+                return*/
+                importer.onDateAvailable(mdate, json, zip, filename, currentZip, keepNotePath, destFolder, callback)
 
-        })
+
+            } else importer.onDateAvailable(mdate, json, zip, filename, currentZip, keepNotePath, destFolder, callback)
+        } else importer.onDateAvailable(mdate, json, zip, filename, currentZip, keepNotePath, destFolder, callback)
+
 
     })
 }
 
+GoogleConverter.prototype.onDateAvailable = function (date, json, zip, filename, currentZip, keepNotePath, destFolder, callback) {
+    var importer = this
+    var metadata = {}
+    metadata['creation_date'] = date
+    metadata['title'] = json['title']
+    metadata['last_modification_date'] = date
+    console.log("date " + date)
+
+    metadata['keywords'] = []
+    metadata['rating'] = -1
+    metadata['color'] = "none"
+    metadata['urls'] = {}
+    metadata['todolists'] = []
+    if (json['labels'] != undefined)
+        for (var label of json['labels']) {
+            metadata['keywords'].push(label.name)
+        }
+    if (json['annotations'] != undefined) {
+        for (var annotation of json['annotations']) {
+            if (annotation['url'] != undefined) {
+                var url = {}
+                url['title'] = annotation['title']
+                url['description'] = annotation['description']
+                metadata['urls'][annotation['url']] = url
+            }
+        }
+    }
+    zip.file("metadata.json", JSON.stringify(metadata));
+
+    importer.importNoteAttachments(currentZip, zip, json['attachments'], function () {
+        console.log("json['isPinned'] " + json['isPinned'])
+        callback(zip, JSON.stringify(metadata), filename, json['isPinned'])
+
+    })
+}
 
 GoogleConverter.prototype.importNoteAttachments = function (currentZip, destZip, attachments, callback) {
     this.importNoteAttachment(currentZip, destZip, attachments, callback)
