@@ -18,7 +18,7 @@ class SearchEngine {
     }
     sendSearchQuery() {
         var self = this;
-        RequestBuilder.sRequestBuilder.get("/notes/search?path=." + "&query=" + encodeURIComponent(this.query) + "&from=" + this.from, function (error, data) {
+        lastListingRequestId = RequestBuilder.sRequestBuilder.get("/notes/search?path=." + "&query=" + encodeURIComponent(this.query) + "&from=" + this.from, function (error, data) {
             if (!error) {
                 if (data['end'] || data['files'].length > 0) {
                     document.getElementById("page-content").style.display = "block";
@@ -53,6 +53,9 @@ class SearchEngine {
         }
         if (refreshTimeout !== undefined)
             clearTimeout(refreshTimeout)
+        if (lastListingRequestId != undefined) {
+            RequestBuilder.sRequestBuilder.cancelRequest(lastListingRequestId)
+        }
         this.result = []
         oldFiles = []
         this.query = query;

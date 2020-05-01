@@ -3,25 +3,45 @@ var RequestBuilder = function (api_url = "./") {
         api_url += "/";
     this.api_url = api_url;
     RequestBuilder.sRequestBuilder = this;
+    this.canceledRequests = []
 }
 
 RequestBuilder.prototype.get = function (path, callback) {
+    var requestId = Utils.generateUID()
     path = this.cleanPath(path);
     $.ajax({
         url: this.api_url + path,
         type: "GET",
         success: function (data) {
-            callback(null, data);
+            if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
+                callback(null, data);
         },
         fail: function () {
-            callback("error", undefined);
+            if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
+                callback("error", undefined);
         },
         error: function (e) {
             console.log("post error " + e);
-            callback(e, undefined);
+            if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
+                callback(e, undefined);
         }
     });
+    return requestId;
 }
+
+RequestBuilder.prototype.isCanceled = function (id) {
+    var index = this.canceledRequests.indexOf(id)
+    if (index >= 0) {
+        this.canceledRequest.splice(index, 1);
+        return true;
+    }
+    return false;
+}
+
+RequestBuilder.prototype.cancelRequest = function (id) {
+    this.canceledRequests.push(id)
+}
+
 RequestBuilder.prototype.delete = function (path, callback) {
     path = this.cleanPath(path);
     $.ajax({

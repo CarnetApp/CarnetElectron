@@ -3,17 +3,17 @@ var RecentDBManager = function () {
 }
 
 RecentDBManager.prototype.getFullDB = function (callback) {
-    RequestBuilder.sRequestBuilder.get("/recentdb", callback)
+    return RequestBuilder.sRequestBuilder.get("/recentdb", callback)
 }
 
 RecentDBManager.prototype.getFlatenDB = function (callback, trial = 0) {
     var dbManager = this
-    this.getFullDB(function (err, data) {
-        if(data == null){
+    return this.getFullDB(function (err, data) {
+        if (data == null) {
             //error, let's retry
-            if(trial < 2)
-                setTimeout(function(){
-                    dbManager.getFlatenDB(callback, trial+1);
+            if (trial < 2)
+                setTimeout(function () {
+                    dbManager.getFlatenDB(callback, trial + 1);
                 }, 1000);
             else
                 callback(true)

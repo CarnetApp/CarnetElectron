@@ -4,11 +4,11 @@ var KeywordsDBManager = function (path) {
 
 KeywordsDBManager.prototype.getFullDB = function (callback) {
     console.log("getFullDB")
-    RequestBuilder.sRequestBuilder.get("/keywordsdb", callback)
+    return RequestBuilder.sRequestBuilder.get("/keywordsdb", callback)
 }
 
 KeywordsDBManager.prototype.getFlatenDB = function (callback) {
-    this.getFullDB(function (err, data) {
+    return this.getFullDB(function (err, data) {
         console.log(data)
         var fullDB = data["data"];
         var flaten = {};
@@ -93,7 +93,7 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
         wait: 10000
     }, function (er) {
         console.log(er)
-        lockFile.unlock('keyword.lock', function (er) {})
+        lockFile.unlock('keyword.lock', function (er) { })
         db.getFullDB(function (err, data) {
             var otherDB = new KeywordsDBManager(path)
             otherDB.getFullDB(function (err, dataBis) {
@@ -126,7 +126,7 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
                                 console.log(err);
                                 callback(hasChanged);
                             });
-                            lockFile.unlock('keyword.lock', function (er) {})
+                            lockFile.unlock('keyword.lock', function (er) { })
 
                         })
                     })

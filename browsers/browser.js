@@ -340,7 +340,7 @@ var mNoteContextualDialog = new NoteContextualDialog()
 var mNewFolderDialog = new NewFolderDialog()
 
 var refreshTimeout = undefined;
-
+var lastListingRequestId = undefined;
 function sortBy(sortBy, reversed, discret) {
     notePath = []
     var sorter = Utils.sortByDefault
@@ -371,6 +371,7 @@ function sortBy(sortBy, reversed, discret) {
 }
 
 function onListEnd(pathToList, files, metadatas, discret, force) {
+    lastListingRequestId = undefined;
     if (!_.isEqual(files, oldFiles) || force) {
         var scroll = resetGrid(discret);
         oldFiles = files;
@@ -477,6 +478,9 @@ var notes = [];
 function list(pathToList, discret) {
     if (refreshTimeout !== undefined)
         clearTimeout(refreshTimeout)
+    if (lastListingRequestId != undefined) {
+        RequestBuilder.sRequestBuilder.cancelRequest(lastListingRequestId)
+    }
     if (pathToList == undefined)
         pathToList = currentPath;
     console.log("listing path " + pathToList);
@@ -502,7 +506,7 @@ function list(pathToList, discret) {
 
     }
     var fb = new FileBrowser(pathToList);
-    fb.list(function (error, files, endOfSearch, metadatas) {
+    lastListingRequestId = fb.list(function (error, files, endOfSearch, metadatas) {
         if (error || endOfSearch || files.length > 0) {
             document.getElementById("page-content").style.display = "block";
             document.getElementById("note-loading-view").style.display = "none";

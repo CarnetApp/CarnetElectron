@@ -14,7 +14,8 @@ class ElectronRequestBuilder extends RequestBuilder {
                 } catch (e) {
                 }
             }
-            callback(err, data)
+            if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
+                callback(err, data)
         });
     }
     post(path, data, callback) {
@@ -26,7 +27,8 @@ class ElectronRequestBuilder extends RequestBuilder {
                 } catch (e) {
                 }
             }
-            callback(err, data)
+            if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
+                callback(err, data)
         });
 
     }
@@ -47,7 +49,8 @@ class ElectronRequestBuilder extends RequestBuilder {
                         } catch (e) {
                         }
                     }
-                    callback(err, data)
+                    if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
+                        callback(err, data)
                 });
                 return;
             }
@@ -77,7 +80,8 @@ class ElectronRequestBuilder extends RequestBuilder {
                 } catch (e) {
                 }
             }
-            callback(err, data)
+            if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
+                callback(err, data)
         });
     }
 
