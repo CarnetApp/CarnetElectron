@@ -9,6 +9,14 @@ class Compatibility {
             RequestBuilder = ElectronRequestBuilder;
             console.log("set resquest builder")
         }
+        if (this.isAndroid) {
+            $(document).on('ajaxSend', function (elm, xhr, settings) {
+                if (settings.crossDomain === false) {
+                    xhr.setRequestHeader('requesttoken', app.getRequestToken());
+                    xhr.setRequestHeader('OCS-APIREQUEST', 'true');
+                }
+            });
+        }
     }
     openUrl(url) {
         if (compatibility.isElectron) {

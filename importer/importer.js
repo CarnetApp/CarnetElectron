@@ -1,4 +1,4 @@
-new RequestBuilder();
+new RequestBuilder(Utils.getParameterByName("api_path"));
 var Importer = function (destPath) {
     this.elem = document.getElementById("table-container");
     this.progressView = document.getElementById("progress-view");
