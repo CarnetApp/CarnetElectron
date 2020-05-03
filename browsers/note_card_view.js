@@ -139,7 +139,10 @@ NoteCardView.prototype.setNote = function (note) {
     if (note.previews != undefined)
         for (let preview of note.previews) {
             var img = document.createElement('img');
-            img.src = (!preview.startsWith("data:") && note.path != "untitleddonotedit.sqd" ? api_url : '') + preview; //fake notes don't need api
+            if (!preview.startsWith("data:") && note.path != "untitleddonotedit.sqd")//fake notes don't need api
+                img.src = compatibility.addRequestToken(api_url + preview);
+            else
+                img.src = preview
             this.cardMedias.appendChild(img);
         }
     this.cardUrls.innerHTML = "";
@@ -199,7 +202,7 @@ NoteCardView.prototype.setNote = function (note) {
                 audioplayer.onplay = function () {
                     playpause.innerHTML = "<i class=\"material-icons\">pause</i>"
                 };
-                audioplayer.src = api_url + url;
+                audioplayer.src = compatibility.addRequestToken(api_url + url);
                 audioplayer.rawurl = api_url + url;
                 audioplayer.play();
 

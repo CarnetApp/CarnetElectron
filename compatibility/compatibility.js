@@ -18,6 +18,15 @@ class Compatibility {
             });
         }
     }
+    addRequestToken(url) {
+        if (this.isAndroid) {
+            if (url.indexOf("?") > -1)
+                url += "&"
+            else url += "?"
+            url += "requesttoken=" + app.getRequestToken()
+        }
+        return url;
+    }
     openUrl(url) {
         if (compatibility.isElectron) {
             var {
