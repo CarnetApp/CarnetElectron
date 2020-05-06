@@ -1,4 +1,4 @@
-# Version 0.20.1
+# Version 0.21.0
 
 Translations:
 Piotr Jezusek (Polish), Mac Guffin (Russian), Christian Scholz (German), Alberto Cañete (Spanish), Raphaël Legouix (Hebrew)
