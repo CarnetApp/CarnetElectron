@@ -5,6 +5,7 @@ class ElectronRequestBuilder extends RequestBuilder {
         this.main = remote.require("./main.js");
     }
     get(path, callback) {
+        var requestId = Utils.generateUID()
         path = this.buildUrl(this.cleanPath(path));
         console.log("getting " + path)
         this.main.sendRequestToServer("GET", path, undefined, function (err, data) {
@@ -17,8 +18,10 @@ class ElectronRequestBuilder extends RequestBuilder {
             if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
                 callback(err, data)
         });
+        return requestId;
     }
     post(path, data, callback) {
+        var requestId = Utils.generateUID()
         path = this.buildUrl(this.cleanPath(path));
         this.main.sendRequestToServer("POST", path, data, function (err, data) {
             if (data != undefined) {
@@ -30,10 +33,12 @@ class ElectronRequestBuilder extends RequestBuilder {
             if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
                 callback(err, data)
         });
+        return requestId;
 
     }
 
     postFiles(path, data, files, callback) {
+        var requestId = Utils.generateUID()
         path = this.buildUrl(this.cleanPath(path));
         if (data == undefined)
             data = {}
@@ -68,10 +73,12 @@ class ElectronRequestBuilder extends RequestBuilder {
             };
         }
         readNext();
+        return requestId;
 
     }
 
     delete(path, callback) {
+        var requestId = Utils.generateUID()
         path = this.buildUrl(this.cleanPath(path));
         this.main.sendRequestToServer("DELETE", path, undefined, function (err, data) {
             if (data != undefined) {
@@ -83,6 +90,7 @@ class ElectronRequestBuilder extends RequestBuilder {
             if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
                 callback(err, data)
         });
+        return requestId;
     }
 
     buildUrl(path) {
