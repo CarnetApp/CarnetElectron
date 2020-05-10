@@ -1,6 +1,8 @@
 # Version 0.21.1
 
 Fix sync dialog
+Translations:
+Christian Scholz (German)
 
 # Version 0.21.0
 
