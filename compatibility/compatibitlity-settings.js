@@ -22,24 +22,7 @@ class SettingsCompatibility extends Compatibility {
                     window.location.reload(true)
                 }
                 document.getElementById("connect").onclick = function () {
-                    var {
-                        remote
-                    } = require('electron');
-                    const BrowserWindow = remote.BrowserWindow;
-
-                    var win = new BrowserWindow({
-                        width: 500,
-                        height: 500,
-                        frame: true
-                    });
-                    const url = require('url')
-                    const path = require('path')
-                    win.loadURL(url.format({
-                        pathname: path.join(__dirname, 'settings/webdav_dialog.html'),
-                        protocol: 'file:',
-                        slashes: true
-                    }))
-                    win.setMenu(null)
+                    compatibility.openElectronSyncDialog()
 
                 }
 

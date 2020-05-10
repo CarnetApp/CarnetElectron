@@ -55,5 +55,30 @@ class Compatibility {
         else
             return NextcloudStore;
     }
+
+    openElectronSyncDialog() {
+        var {
+            remote
+        } = require('electron');
+        const BrowserWindow = remote.BrowserWindow;
+
+        var win = new BrowserWindow({
+            width: 500,
+            height: 500,
+            frame: true,
+            webPreferences: {
+                nodeIntegration: true,
+                webviewTag: true
+            }
+        });
+        const url = require('url')
+        const path = require('path')
+        win.loadURL(url.format({
+            pathname: path.join(__dirname, 'settings/webdav_dialog.html'),
+            protocol: 'file:',
+            slashes: true
+        }))
+        win.setMenu(null)
+    }
 }
 

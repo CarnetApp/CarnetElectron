@@ -68,28 +68,7 @@ class BrowserCompatibility extends Compatibility {
                 }
                 syncButton.onclick = function () {
                     if (!main.startSync()) {
-                        var {
-                            remote
-                        } = require('electron');
-                        const BrowserWindow = remote.BrowserWindow;
-
-                        var win = new BrowserWindow({
-                            width: 500,
-                            height: 500,
-                            frame: true,
-                            webPreferences: {
-                                nodeIntegration: true,
-                                webviewTag: true
-                            }
-                        });
-                        const url = require('url')
-                        const path = require('path')
-                        win.loadURL(url.format({
-                            pathname: path.join(__dirname, 'settings/webdav_dialog.html'),
-                            protocol: 'file:',
-                            slashes: true
-                        }))
-                        win.setMenu(null)
+                        compatibility.openElectronSyncDialog()
                     }
                 }
                 var SettingsHelper = require("./server/settings_helper").SettingsHelper;
@@ -160,24 +139,7 @@ class BrowserCompatibility extends Compatibility {
 
     onFirstrunEnds() {
         if (this.isElectron) {
-            var {
-                remote
-            } = require('electron');
-            const BrowserWindow = remote.BrowserWindow;
-
-            var win = new BrowserWindow({
-                width: 500,
-                height: 500,
-                frame: true
-            });
-            const url = require('url')
-            const path = require('path')
-            win.loadURL(url.format({
-                pathname: path.join(__dirname, 'settings/webdav_dialog.html'),
-                protocol: 'file:',
-                slashes: true
-            }))
-            win.setMenu(null)
+            this.openElectronSyncDialog()
         }
     }
     getEditorUrl() {
