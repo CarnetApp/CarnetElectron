@@ -138,6 +138,7 @@ function refreshKeywords() {
         for (let key of dataArray) {
 
             var keywordElem = document.createElement("a");
+            keywordElem.dir = "auto"
             keywordElem.classList.add("mdl-navigation__link")
             keywordElem.innerHTML = key;
             keywordElem.setAttribute("href", "");
