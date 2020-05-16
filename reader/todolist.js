@@ -321,6 +321,7 @@ TodoList.prototype.createItem = function (text, ischecked, after, scroll, itemId
 
     label.appendChild(input)
     var span = document.createElement("textarea");
+    span.dir = "auto"
     span.rows = 1
     span.classList.add("mdl-checkbox__label")
     span.classList.add("todo-item-text")
