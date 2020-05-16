@@ -422,6 +422,12 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     })
     this.oDoc = document.getElementById("text");
     this.oDoc.contentEditable = false
+    $(this.oDoc).on('DOMNodeInserted', function (e) {
+        console.log("new element " + e.target.tagName)
+        if (e.target.tagName == "DIV") {
+            e.target.dir = "auto"
+        }
+    });
     if (this.oDoc.getElementsByClassName("edit-zone").length == 0) { //old note...
         var toCopy = this.oDoc.innerHTML;
         this.oDoc.innerHTML = "";
@@ -431,6 +437,9 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     for (var editable of this.oDoc.getElementsByClassName("edit-zone")) {
         editable.onclick = function (event) {
             writer.onEditableClick(event);
+        }
+        for (var insideDiv of editable.getElementsByTagName("div")) {
+            insideDiv.dir = "auto"
         }
     }
     this.oDoc.onclick = function (event) {
