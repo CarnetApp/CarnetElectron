@@ -99,11 +99,19 @@ NoteCardView.prototype.setNote = function (note) {
         dateStamp = note.metadata.last_modification_date;
     var date = new Date(dateStamp).toLocaleDateString();
     var text = ""
-    if (note.text != undefined)
+    if (note.text != undefined) {
+        var startDiv = "<div dir='auto'>"
+        note.text = startDiv + note.text
+        note.text = note.text.replace(/<br\s*\/?>/gi, "</div>" + startDiv)
+        if (note.text.startsWith("</div>"))
+            note.text = note.text.substr(6)
+        if (note.text.endsWith(startDiv))
+            note.text = note.text.substr(0, note.text.length - startDiv.length)
         if (note.metadata.urls != undefined && note.metadata.urls.length > 0) {
             text = note.text.replace(Utils.httpReg, "")
         } else
             text = note.text //avoid empty note for old notes
+    }
     this.cardText.innerHTML = text;
     this.cardText.classList.remove("big-text")
     this.cardText.classList.remove("medium-text")
@@ -253,6 +261,7 @@ NoteCardView.prototype.init = function () {
     this.cardTodoLists = document.createElement('div');
     this.cardTodoLists.classList.add("todo-lists")
     this.cardTitleText = document.createElement('h2');
+    this.cardTitleText.dir = "auto"
     this.cardTitleText.classList.add("card-title");
     this.cardContent.appendChild(this.cardTitleText)
     this.cardContent.appendChild(this.cardText)
