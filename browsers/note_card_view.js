@@ -19,6 +19,7 @@ NoteCardView.prototype.refreshTodoList = function () {
             label.classList.add("mdl-checkbox")
             label.classList.add("mdl-js-checkbox")
             label.classList.add("mdl-js-ripple-effect")
+            label.dir = "auto"
             label.for = id;
             var input = document.createElement("input");
             input.type = "checkbox"
