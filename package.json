@@ -9,6 +9,7 @@
     "pack": "electron-builder --dir",
     "distapp": "electron-builder --x64 --ia32  --linux AppImage",
     "distmac": "electron-builder --x64  --mac zip",
+    "distmac": "electron-builder --x64  --mac dmg",
     "distsnap": "electron-builder --x64  --linux snap",
     "dist": "electron-builder"
   },
@@ -36,6 +37,7 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
+        "dmg",
         "zip"
       ]
     },
