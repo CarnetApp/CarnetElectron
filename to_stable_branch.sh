@@ -12,3 +12,4 @@ git push origin stable
 git checkout -b stable-$version
 git push origin stable-$version
 git checkout master
+git push

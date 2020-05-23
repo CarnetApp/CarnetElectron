@@ -1,5 +1,6 @@
 #!/bin/bash
 git checkout stable
+git pull --rebase
 version=$(sed -n -e 's/.*\"version\": \"\(.*\)\".*/\1/p' package.json)
 yarn run distdmg
 scp dist/Carnet-${version}.dmg phie@qn.phie.ovh:/var/www/html/quicknote/binaries/desktop/daily/
