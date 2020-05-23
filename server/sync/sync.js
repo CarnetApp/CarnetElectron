@@ -198,12 +198,12 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
                     }
                 }
                 if (notePath.endsWith(".sqd")) {
-                    sync.addToCache(notePath, sync.correctLocalPath(sync.settingsHelper.getNotePath(), notePath), stat);
+                    sync.addToCache(notePath, correctLocalPath(sync.settingsHelper.getNotePath(), notePath), stat);
 
                 }
                 callback();
             }).catch(function (err) {
-                console.logDebug(err);
+                console.log(err);
                 sync.exit();
             });
     }
