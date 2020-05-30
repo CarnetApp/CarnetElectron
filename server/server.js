@@ -2,6 +2,7 @@
 var RecentDBManager = require('./recent/local_recent_db_manager').LocalRecentDBManager;
 var KeywordsDBManager = require('./keywords/keywords_db_manager').KeywordsDBManager;
 var CacheManager = require('./cache_manager').CacheManager;
+var SyncDBManager = require("./sync/sync_db_manager").SyncDBManager
 
 var SettingsHelper = require("./settings_helper").SettingsHelper;
 var settingsHelper = new SettingsHelper();
@@ -586,6 +587,12 @@ var saveFilesInNote = function (modifiedFiles, path, callback) {
             currentcache.last_file_modification = CacheManager.getMTimeFromStat(stats)
             CacheManager.getInstance().put(cleanPath(path), currentcache)
             CacheManager.getInstance().write();
+            var dbItem = SyncDBManager.getInstance().getItem(cleanPath(path))
+            if (dbItem !== undefined) {
+                dbItem.lastSavedModification = currentcache.last_file_modification
+                SyncDBManager.getInstance().addItem(dbItem)
+            }
+
         })
     })
 

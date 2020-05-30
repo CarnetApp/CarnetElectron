@@ -4,6 +4,8 @@ var SettingsHelper = function () {
 const Store = require('electron-store');
 const store = new Store();
 SettingsHelper.prototype.getNotePath = function () {
+    if (this.notePath != undefined)
+        return this.notePath
     var path = String(store.get("root_path"))
     if (path == null || path == "undefined") {
         var {
@@ -25,10 +27,12 @@ SettingsHelper.prototype.getNotePath = function () {
         main = remote.require("./main.js");
     else
         main = require("../main.js");
-    return path + (main.isDebug ? "Debug" : "");
+    this.notePath = path + (main.isDebug ? "Debug" : "");
+    return this.notePath
 }
 
 SettingsHelper.prototype.setNotePath = function (path) {
+    this.notePath = path
     store.set("root_path", path);
 }
 

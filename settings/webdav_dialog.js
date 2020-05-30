@@ -64,14 +64,14 @@ function connect() {
                 settingsHelper.setRemoteWebdavUsername(document.getElementById("username").value)
                 settingsHelper.setRemoteWebdavPassword(document.getElementById("password").value)
                 settingsHelper.setRemoteWebdavPath(document.getElementById("path").value)
-                const Store = require('electron-store');
-                const store = new Store();
-                store.set("nextcloud_db", "{}");
 
+                var SyncDBManager = require("../server/sync/sync_db_manager").SyncDBManager
+                SyncDBManager.getInstance().reset()
                 const remote = require('electron').remote;
                 const window = remote.getCurrentWindow();
                 window.close();
             }).catch(function (e) {
+                console.log(e)
                 document.getElementById("loading-view").style.display = "none"
                 document.getElementById("error").style.display = "block"
             });
