@@ -638,7 +638,7 @@ Sync.prototype.visitRemote = function (path, callback) {
                 callback()
         }).catch(function (err) {
             console.logDebug(err);
-            SyncDBManager.getInstance().setVisitStatus("failed")
+            SyncDBManager.getInstance().setVisitStatusForItemAndParent(correctPath(sync.nextcloudRoot, path), "failed")
             sync.exit();
         });
 }

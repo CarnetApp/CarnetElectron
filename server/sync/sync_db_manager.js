@@ -67,6 +67,25 @@ class SyncDBManager {
 
     }
 
+    setVisitStatusForItemAndParent(path, status) {
+        if (this.visitedDb[path] != undefined) {
+            this.visitedDb[path].status = status
+            console.log("setting status for " + path)
+        }
+
+        const FileUtils = require('../../utils/file_utils').FileUtils;
+        var parentPath = FileUtils.getParentFolderFromPath(path)
+        while (parentPath != undefined && parentPath != path) {
+            path = parentPath;
+            if (this.visitedDb[path] != undefined)
+                this.visitedDb[path].status = status
+            parentPath = FileUtils.getParentFolderFromPath(path)
+            console.log("setting status parent for " + path)
+        }
+        this.store.set("nextcloud_visited_db", JSON.stringify(this.visitedDb));
+
+    }
+
     static getInstance() {
         if (SyncDBManager.staticManager == undefined) {
             SyncDBManager.staticManager = new SyncDBManager();
