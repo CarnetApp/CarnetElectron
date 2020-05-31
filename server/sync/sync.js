@@ -411,7 +411,7 @@ Sync.prototype.handleLocalItems = function (localDBItem, callback) {
         }
     } else { //has already been synced
         if (remoteDbItem == undefined) { //is not on server
-            if (localDBItem.lastSavedModification === inDBItem.lastSavedModification) { // was already sent
+            if (localDBItem.lastSavedModification === inDBItem.locallastmod) { // was already sent
                 //delete local...
                 sync.deleteLocalAndSave(localDBItem, cb)
 
@@ -574,9 +574,12 @@ Sync.prototype.statFiles = function (fpath, callback) {
                 return;
             }
             var newDBItem = DBItem.fromFS(sync.settingsHelper.getNotePath(), fpath, stat);
+            newDBItem.locallastmod = undefined
             if (dbItem != undefined) {
-                newDBItem.locallastmod = dbItem.remotelastmod;
+                newDBItem.locallastmod = dbItem.locallastmod;
                 newDBItem.remotelastmod = dbItem.remotelastmod
+            } else {
+                newDBItem.locallastmod = undefined
             }
             SyncDBManager.getInstance().addItem(newDBItem)
             sync.onLocalDBItemOK(newDBItem, stat, fpath, callback)
