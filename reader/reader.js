@@ -1596,6 +1596,7 @@ $(document).ready(function () {
     rootpath = document.getElementById("root-url").innerHTML.trim();
     api_url = document.getElementById("api-url").innerHTML.trim();
 
+    clippy.BASE_PATH = rootpath + clippy.BASE_PATH
     new RequestBuilder(api_url);
     RequestBuilder.sRequestBuilder.get("/settings/editor_css", function (error, data) {
         if (!error && data != null && data != undefined) {
@@ -1638,6 +1639,10 @@ $(document).ready(function () {
         $('body').i18n();
     })
     $.i18n().locale = navigator.language;
+    clippy.load('Clippy', function (agent) {
+        // Do anything with the loaded agent
+        agent.show();
+    });
 
 });
 $(window).on('touchstart', function (e) {
