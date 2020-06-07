@@ -582,7 +582,9 @@ Sync.prototype.statFiles = function (fpath, callback) {
                 newDBItem.locallastmod = undefined
             }
             SyncDBManager.getInstance().addItem(newDBItem)
-            sync.onLocalDBItemOK(newDBItem, stat, fpath, callback)
+            setTimeout(function () {
+                sync.onLocalDBItemOK(newDBItem, stat, fpath, callback)
+            }, 10)
         })
     }
 
