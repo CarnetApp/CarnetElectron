@@ -178,7 +178,7 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
             else {
                 console.logDebug("error " + err)
 
-                sync.exit()
+                callback();
             }
         })
     } else {
@@ -203,7 +203,7 @@ Sync.prototype.downloadAndSave = function (remoteDBItem, callback) {
                 callback();
             }).catch(function (err) {
                 console.logDebug(err);
-                sync.exit();
+                callback();
             });
     }
 }
