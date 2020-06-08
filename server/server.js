@@ -229,7 +229,7 @@ var handle = function (method, path, data, callback) {
                             return;
                         }
                         fs.stat(settingsHelper.getNotePath() + "/" + folder + f, (err, stat) => {
-                            if (f.endsWith(".sqd") || f.isDirectory()) {
+                            if (f.endsWith(".sqd") || stat.isDirectory()) {
                                 const file = {};
                                 file['name'] = f;
                                 file['path'] = folder + f;
