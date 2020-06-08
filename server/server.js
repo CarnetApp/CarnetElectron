@@ -229,12 +229,14 @@ var handle = function (method, path, data, callback) {
                             return;
                         }
                         fs.stat(settingsHelper.getNotePath() + "/" + folder + f, (err, stat) => {
-                            const file = {};
-                            file['name'] = f;
-                            file['path'] = folder + f;
-                            file['isDir'] = !f.endsWith(".sqd");
-                            file['mtime'] = stat.mtime;
-                            arrayResult.push(file)
+                            if (f.endsWith(".sqd") || f.isDirectory()) {
+                                const file = {};
+                                file['name'] = f;
+                                file['path'] = folder + f;
+                                file['isDir'] = !f.endsWith(".sqd");
+                                file['mtime'] = stat.mtime;
+                                arrayResult.push(file)
+                            }
                             arrayH.next()
                         }
                         )
