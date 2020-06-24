@@ -109,6 +109,7 @@ CarnetRecorder.prototype.init = function () {
         carnetRecorder.audioplayer.pause()
         carnetRecorder.audioplayer.currentTime = 0
       }
+      carnetRecorder.refreshButtons();
     };
     start.onclick = function () {
       if (recorder.state === "recording") {
