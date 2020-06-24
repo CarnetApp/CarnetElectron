@@ -26,15 +26,16 @@ CarnetRecorder.prototype.init = function () {
     var totalTime = document.getElementById("total-time")
     var progressBar = document.getElementById("audio-progress");
     var stopButton = document.getElementById("stopButton")
+    this.stopButton = stopButton
     var start = document.getElementById("start")
+    this.start = start
     this.saveButton = document.getElementById("save-button")
     this.deleteButton = document.getElementById("delete-button")
     this.canvas = document.getElementById("analyser");
     var canvasWidth;
     var canvasHeight;
     var analyserContext;
-
-    this.deleteButton.onclick = function () {
+    var deleteFunction = function(){
       if (carnetRecorder.hasRecorded) {
         console.log("url " + carnetRecorder.currentUrl)
         var test = carnetRecorder.currentUrl
@@ -43,6 +44,26 @@ CarnetRecorder.prototype.init = function () {
         writer.deleteMedia(carnetRecorder.name)
       }
       writer.recorderDialog.close()
+    }
+    this.deleteButton.onclick = function () {
+      if (carnetRecorder.hasRecorded) {
+        console.log("click remove")
+        writer.genericDialog.querySelector(".action").onclick = function () {
+          deleteFunction()
+          writer.genericDialog.close()
+        }
+        writer.genericDialog.querySelector(".cancel").onclick = function () {
+            writer.genericDialog.close()
+        }
+        writer.genericDialog.querySelector(".action").innerHTML = $.i18n("ok")
+        writer.genericDialog.querySelector(".content").innerHTML = $.i18n("delete_recording_confirmation")
+        writer.genericDialog.showModal()
+      }
+      else {
+        deleteFunction()
+      }
+        return true;
+      
     }
     this.saveButton.onclick = function () {
 
@@ -82,7 +103,12 @@ CarnetRecorder.prototype.init = function () {
     var recorder = compatibility.getRecorder(options);
     this.recorder = recorder
     stopButton.onclick = function () {
-      recorder.stop();
+      if(!carnetRecorder.hasRecorded)
+        recorder.stop();
+      else{
+        carnetRecorder.audioplayer.pause()
+        carnetRecorder.audioplayer.currentTime = 0
+      }
     };
     start.onclick = function () {
       if (recorder.state === "recording") {
@@ -308,8 +334,13 @@ CarnetRecorder.prototype.new = function () {
 }
 CarnetRecorder.prototype.refreshButtons = function () {
   this.saveButton.disabled = !this.hasRecorded
+  if(this.hasRecorded){
+    this.stopButton.disabled = false
+  }
+  this.start.disabled = this.recorder.state === "recording"&&(this.recorder.cantPause || true)
   if (this.recorder.state === "recording") {
-    this.startIcon.innerHTML = "pause"
+    if(!this.recorder.cantPause)
+      this.startIcon.innerHTML = "pause"
   } else if (this.recorder.state === "paused" || !this.hasRecorded) {
     this.startIcon.innerHTML = "mic"
   } else if (this.displayWaves) {

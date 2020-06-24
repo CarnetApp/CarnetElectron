@@ -5,6 +5,7 @@ class AndroidRecorder {
         AndroidRecorder.instance = this;
         this.options = options;
         this.state = "none";
+        this.cantPause = true;
     }
 
     setState(state) {
@@ -18,9 +19,10 @@ class AndroidRecorder {
         AndroidRecorderJava.start(this.options.channels, this.options.encoderBitRate, this.options.encoderSampleRate);
     }
     stop() {
-        this.state = "none";
+        this.setState("none");
         AndroidRecorderJava.stop();
     }
+
     pause() {
         this.state = "paused";
         AndroidRecorderJava.pause();
