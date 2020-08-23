@@ -71,10 +71,41 @@ class SingleExporter {
         }
     }
 
-    exportAsHtml() {
+    exportAsPDF(callback) {
+        var exporter = this
+        this.exportAsHtml(false, false, (html, metadata, attachments) => {
+            var doc = new jspdf.jsPDF({ orientation: 'p', format: 'a4' });
+            var specialElementHandlers = {
+                '#editor': function (element, renderer) {
+                    return true;
+                }
+            };
+            html.id = "editor"
+            var elementHTML = $(html).html();
+            document.body.appendChild(html)
+            doc.html(html, {
+                callback: function (doc) {
+                    //   doc.addImage(attachments[0].data)
+                    doc.output('datauri');
+                    download(FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + ".pdf", undefined, undefined, doc.output('datauri'))
+
+                }
+            });
+        })
+
+    }
+
+    exportAndDownloadAsHtml() {
+        var exporter = this;
+        this.exportAsHtml(false, (htmlElem, metadata, attachments) => {
+            exporter.download(FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + ".html", "<!DOCTYPE html>\n<html>" + htmlElem.innerHTML + '</html>', "text/html")
+
+        })
+    }
+
+    exportAsHtml(noImages, callback) {
         var exporter = this
         this.retrieveNote(data => {
-            console.log("blabla " + JSZipUtils)
             JSZip.loadAsync(data).then(function (zip) {
 
 
@@ -82,33 +113,57 @@ class SingleExporter {
                     var htmlElem = document.createElement("html")
                     var head = document.createElement("head")
                     head.innerHTML = ""
+                    if (!noImages) {
+                        head.innerHTML += "<style>body{max-width:500px;}#media-list{white-space: nowrap; overflow-x: auto;}#media-list img{max-height:300px;margin-right:5px;} </style>"
+                    }
                     htmlElem.appendChild(head)
                     var body = document.createElement("body")
-                    body.innerHTML = html
+                    if (attachments.length > 0) {
+                        if (!noImages) {
+                            var mediaList = document.createElement("div")
+                            mediaList.id = "media-list"
+                            for (var attachment of attachments) {
+                                var a = document.createElement("a")
+                                var base64ref = "data:" + FileUtils.geMimetypeFromExtension(FileUtils.getExtensionFromPath(attachment.name)) + ";base64," + attachment.data
+                                a.href = base64ref
+                                if (FileUtils.isFileImage(attachment.name)) {
+                                    var img = document.createElement("img")
+                                    img.src = base64ref
+                                    a.appendChild(img)
+                                }
+                                mediaList.appendChild(a)
+                            }
+                            body.appendChild(mediaList)
+                        }
+                    }
+                    var text = document.createElement("div")
+                    text.id = "text"
+                    text.innerHTML = html
+                    body.appendChild(text)
+
                     htmlElem.appendChild(body)
-                    download(FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + ".html", htmlElem.innerHTML, "text/html")
+                    callback(htmlElem, metadata, attachments)
                 })
-
-
-
             })
-
             console.log("SingleExporter retrieving: success")
-
 
         });
     }
+    download(filename, text, mimetype, datauri) {
+        var element = document.createElement('a');
+        if (datauri == undefined)
+            element.setAttribute('href', 'data:' + mimetype + ';charset=utf-8,' + encodeURIComponent(text));
+        else
+            element.setAttribute('href', datauri);
+
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
 }
 
-function download(filename, text, mimetype) {
-    var element = document.createElement('a');
-    element.setAttribute('href', 'data:' + mimetype + ';charset=utf-8,' + encodeURIComponent(text));
-    element.setAttribute('download', filename);
-
-    element.style.display = 'none';
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
-}
