@@ -371,7 +371,7 @@ function sortBy(sortBy, reversed, discret) {
 
 }
 
-function onListEnd(pathToList, files, metadatas, discret, force) {
+function onListEnd(pathToList, files, metadatas, discret, force, fromCache) {
     lastListingRequestId = undefined;
     if (!_.isEqual(files, oldFiles) || force) {
         var scroll = resetGrid(discret);
@@ -886,7 +886,7 @@ console.oldlog = console.log;
 
 function loadCachedRecentDB() {
     if (cachedRecentDB != undefined)
-        onListEnd("recentdb://", cachedRecentDB, cachedMetadata)
+        onListEnd("recentdb://", cachedRecentDB, cachedMetadata, false, false, true)
 
 }
 

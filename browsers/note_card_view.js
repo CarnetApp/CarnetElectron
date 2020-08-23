@@ -145,13 +145,18 @@ NoteCardView.prototype.setNote = function (note) {
     } else
         this.cardKeywords.style.display = "none"
     this.cardMedias.innerHTML = "";
-    if (note.previews != undefined)
+    var noteView = this;
+    if (note.previews != undefined && !note.fromCache)
         for (let preview of note.previews) {
             var img = document.createElement('img');
             if (!preview.startsWith("data:") && note.path != "untitleddonotedit.sqd")//fake notes don't need api
                 img.src = compatibility.addRequestToken(api_url + preview);
             else
                 img.src = preview
+            img.onload = function () {
+                browser.noteCardViewGrid.msnry.layout();
+                noteView.toggleDisplayMore()
+            }
             this.cardMedias.appendChild(img);
         }
     this.cardUrls.innerHTML = "";
