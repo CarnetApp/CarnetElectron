@@ -1,3 +1,4 @@
+var writer = undefined
 class SingleExporter {
 
     constructor(notepath, listener) {
@@ -95,15 +96,22 @@ class SingleExporter {
 
     }
 
-    exportAndDownloadAsHtml() {
+    exportAndDownloadAsHtml(config) {
         var exporter = this;
-        this.exportAsHtml(false, (htmlElem, metadata, attachments) => {
+        this.exportAsHtml(config, false, (htmlElem, metadata, attachments) => {
             exporter.download(FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + ".html", "<!DOCTYPE html>\n<html>" + htmlElem.innerHTML + '</html>', "text/html")
 
         })
     }
 
-    exportAsHtml(noImages, callback) {
+    print(config){
+        this.exportAsHtml(config,false, (htmlElem, metadata, attachments) => {
+            compatibility.print(htmlElem)
+        }
+        )
+    }
+
+    exportAsHtml(config, noImages, callback) {
         var exporter = this
         this.retrieveNote(data => {
             JSZip.loadAsync(data).then(function (zip) {
@@ -114,33 +122,81 @@ class SingleExporter {
                     var head = document.createElement("head")
                     head.innerHTML = ""
                     if (!noImages) {
-                        head.innerHTML += "<style>body{max-width:500px;}#media-list{white-space: nowrap; overflow-x: auto;}#media-list img{max-height:300px;margin-right:5px;} </style>"
+                        head.innerHTML += "<style>body{max-width:1000px; margin:auto; }#media-list{white-space: nowrap; overflow-x: auto;}#media-list img{max-height:300px;margin-right:5px;} #full-media-list img{max-width:100%;} </style>"
                     }
+                    var todolistStyle = "<style></style>";
+                   
+                    head.innerHTML+=todolistStyle
                     htmlElem.appendChild(head)
                     var body = document.createElement("body")
                     if (attachments.length > 0) {
-                        if (!noImages) {
+                        if (config.displayImages) {
                             var mediaList = document.createElement("div")
-                            mediaList.id = "media-list"
+                            if (!config.displayCompleteImages) {
+                                mediaList.id = "media-list"
+                                console.log("small iamges")
+                            } else {
+                                mediaList.id = "full-media-list"
+                            }
+
                             for (var attachment of attachments) {
                                 var a = document.createElement("a")
                                 var base64ref = "data:" + FileUtils.geMimetypeFromExtension(FileUtils.getExtensionFromPath(attachment.name)) + ";base64," + attachment.data
-                                a.href = base64ref
+                                
                                 if (FileUtils.isFileImage(attachment.name)) {
                                     var img = document.createElement("img")
                                     img.src = base64ref
+                                    a.classList.add("img-link")
                                     a.appendChild(img)
+                                    
+                                   
+                                } else {
+                                    a.href = base64ref
+
                                 }
+                               
                                 mediaList.appendChild(a)
                             }
                             body.appendChild(mediaList)
                         }
                     }
+                    var dateC = new Date(metadata.creation_date)
+                    var dateM = new Date(metadata.last_modification_date)
+                    if(config.displayTitle)
+                        body.innerHTML += "<h3>" + FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + "<h3>"
+                    if (config.displayCreationDate)
+                        body.innerHTML += "<span> Created: " + dateC.toLocaleDateString() + " " + dateC.toLocaleTimeString() + "</span><br />";
+                    if (config.displayModificationDate)
+                        body.innerHTML += "<span> Modified: " + dateM.toLocaleDateString() + " " + dateM.toLocaleTimeString() + "</span><br />";
+            
                     var text = document.createElement("div")
-                    text.id = "text"
-                    text.innerHTML = html
+                    text.id = "whole-text"
+                   
+                    text.innerHTML = "<br /><br />"+html
+                    for(var todolist of metadata.todolists){
+                        var todolistContainer = text.querySelector("#"+todolist.id)
+                        if(todolistContainer == undefined){
+                            todolistContainer = document.createElement("div")
+                            text.querySelector("#text").appendChild(todolistContainer)
+                        }
+                        todolistContainer.innerHTML +="<h3>Todo</h3> "
+                        for(var todo of todolist.todo){ 
+                            todolistContainer.innerHTML +=todo+"<br />"  
+                        }
+                        todolistContainer.innerHTML +="<h3>Done</h3>"
+                        for(var done of todolist.done){ 
+                            todolistContainer.innerHTML +=done+"<br />"  
+                        }
+                    }
                     body.appendChild(text)
-
+                    body.innerHTML += "<script> \
+                    for(var link of document.getElementsByClassName('img-link')){\
+                     link.onclick=function(event){\
+                        alert('right click on the image to download it');\
+                     }\
+                    }\
+                    </script>\
+                    "
                     htmlElem.appendChild(body)
                     callback(htmlElem, metadata, attachments)
                 })
@@ -165,5 +221,76 @@ class SingleExporter {
 
         document.body.removeChild(element);
     }
+}
+
+function css(a) {
+    var sheets = document.styleSheets, o = {};
+    for (var i in sheets) {
+        var rules = sheets[i].rules || sheets[i].cssRules;
+        for (var r in rules) {
+            if (a.is(rules[r].selectorText)) {
+                o = $.extend(o, css2json(rules[r].style), css2json(a.attr('style')));
+            }
+        }
+    }
+    return o;
+}
+function css2json(css) {
+    var s = {};
+    if (!css) return s;
+    if (css instanceof CSSStyleDeclaration) {
+        for (var i in css) {
+            if ((css[i]).toLowerCase) {
+                s[(css[i]).toLowerCase()] = (css[css[i]]);
+            }
+        }
+    } else if (typeof css == "string") {
+        css = css.split("; ");
+        for (var i in css) {
+            var l = css[i].split(": ");
+            s[l[0].toLowerCase()] = (l[1]);
+        }
+    }
+    return s;
+}
+var exporterListener = {}
+exporterListener.onError = function (error) {
+    console.log("error " + error)
+
+}
+exporterListener.onRetrievingNote = function () {
+    console.log("retrieving")
+
+}
+new RequestBuilder(Utils.getParameterByName("api_path"));
+
+var path = Utils.getParameterByName("path");
+var exporter = new SingleExporter(path, exporterListener)
+
+function getConfig(){
+    var config = {}
+    config.displayTitle = document.getElementById("title-checkbox").checked
+    config.displayModificationDate = document.getElementById("mod-checkbox").checked
+    config.displayCreationDate = document.getElementById("creation-checkbox").checked
+    config.displayImages = document.getElementById("photos-checkbox").checked
+    return config
+    
+}
+var downloadButton = document.getElementById("download")
+downloadButton.onclick = function () {
+    console.log("download")
+    var config = getConfig();
+    exporter.exportAndDownloadAsHtml(config)
+
+}
+var printButton = document.getElementById("print")
+printButton.onclick = function () {
+    var config = getConfig();
+    config.displayCompleteImages = true
+    exporter.print(config)
+
+}
+if (!compatibility.isAndroid) {
+    document.getElementById("send").style.display = "none"
 }
 

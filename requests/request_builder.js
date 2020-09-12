@@ -6,12 +6,13 @@ var RequestBuilder = function (api_url = "./") {
     this.canceledRequests = []
 }
 
-RequestBuilder.prototype.get = function (path, callback) {
+RequestBuilder.prototype.get = function (path, callback, xhr) {
     var requestId = Utils.generateUID()
     path = this.cleanPath(path);
     $.ajax({
         url: this.api_url + path,
         type: "GET",
+        xhr: xhr,
         success: function (data) {
             if (!RequestBuilder.sRequestBuilder.isCanceled(requestId))
                 callback(null, data);

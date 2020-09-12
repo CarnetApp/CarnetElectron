@@ -25,8 +25,8 @@ class CompatibilityEditor extends Compatibility {
         }
     }
 
-    print(printTitle, printMod, printCreation, note) {
-        var dateC = new Date(note.metadata.creation_date)
+    print(htmlElement/*printTitle, printMod, printCreation, note*/) {
+        /*var dateC = new Date(note.metadata.creation_date)
         var dateM = new Date(note.metadata.last_modification_date)
         var tmpDiv = document.createElement('div');
         if (printTitle)
@@ -37,7 +37,7 @@ class CompatibilityEditor extends Compatibility {
             tmpDiv.innerHTML += "<span> Modified: " + dateM.toLocaleDateString() + " " + dateM.toLocaleTimeString() + "</span><br />";
         if (printMod || printCreation)
             tmpDiv.innerHTML += "<br />";
-        tmpDiv.innerHTML += writer.oDoc.innerHTML
+        tmpDiv.innerHTML += writer.oDoc.innerHTML*/
         if (this.isAndroid) {
             app.print(tmpDiv.innerHTML)
         } else {
@@ -45,7 +45,7 @@ class CompatibilityEditor extends Compatibility {
             ifr.style = 'height: 0px; width: 0px; position: absolute'
             document.body.appendChild(ifr);
 
-            $(tmpDiv).clone().appendTo(ifr.contentDocument.body);
+            $(htmlElement).clone().appendTo(ifr.contentDocument.body);
             ifr.contentWindow.print();
 
             ifr.parentElement.removeChild(ifr);

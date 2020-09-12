@@ -947,6 +947,10 @@ Writer.prototype.init = function () {
         writer.openRemindersDialog()
         return false;
     }
+
+    document.getElementById("share-button").onclick = function(){
+        writer.openInFrame("./exporter?path=" + writer.note.path + "&api_path=" + api_url)
+    }
     document.getElementById("note-color-button").onclick = function () {
         document.getElementById("note-color-picker-dialog").showModal()
         document.getElementById("note-color-picker-dialog").getElementsByClassName("ok")[0].onclick = function () {
@@ -1016,6 +1020,35 @@ Writer.prototype.askToExit = function () {
     }
     return false;
 }
+
+var currentFrame = undefined;
+Writer.prototype.openInFrame = function (url) {
+    var iframeContainer = document.getElementById('frame-container');
+    var wholeFrameContainer = document.getElementById('whole-frame-container');
+    document.getElementById('frame-loading-view').style.display="block"
+
+    var onFrameLoaded = function(){
+        document.getElementById('frame-loading-view').style.display="none"
+    }
+    if (currentFrame == undefined) {
+        if (compatibility.isElectron) {
+
+        } else {
+            currentFrame = document.createElement('iframe');
+            currentFrame.classList.add("frame")
+            currentFrame.onload = onFrameLoaded
+        }
+        iframeContainer.appendChild(currentFrame)
+        document.getElementById("iframe-back-button").onclick = function(){
+            wholeFrameContainer.style.display="none"
+        }
+
+    }
+    currentFrame.src = url
+    wholeFrameContainer.style.display = "inline-flex"
+
+}
+
 
 Writer.prototype.copy = function () {
     document.execCommand('copy');
@@ -1132,6 +1165,7 @@ Writer.prototype.reset = function () {
     this.exitOnSaved = false
     this.putDefaultHTML()
     this.setMediaList([])
+    document.getElementById("whole-frame-container").style.display = "none"
     document.getElementById("toolbar").classList.remove("more")
     var dias = document.getElementsByClassName("mdl-dialog")
     for (var i = 0; i < dias.length; i++) {
@@ -1586,7 +1620,10 @@ function loadPath(path, action) {
     writer.extractNote(function () {
         writer.handleAction(action, undefined)
     });
+    
 }
+
+
 if (loaded == undefined)
     var loaded = false; //don't know why, loaded twice on android
 
