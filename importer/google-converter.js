@@ -11,6 +11,15 @@ GoogleConverter.prototype.convertNoteToSQD = function (currentZip, keepNotePath,
     else
         this.XMLConvertNoteToSQD(currentZip, keepNotePath, destFolder, callback)
 }
+GoogleConverter.prototype.convertToBlob = function (zip, metadata, fileName, isPinned, callback) {
+    zip.generateAsync({ type: "blob" }).then(function (blob) {
+        callback(blob, metadata, fileName, isPinned, "/Keep")
+    })
+}
+
+GoogleConverter.prototype.getDestPath = function () {
+    return "/Keep";
+}
 
 GoogleConverter.prototype.extractDateFromXML = function (dateDiv) {
     console.log(dateDiv.innerText.trim())
@@ -158,7 +167,7 @@ GoogleConverter.prototype.XMLConvertNoteToSQD = function (currentZip, keepNotePa
                 }
             }
         }
-        callback(zip, metadata, fileName)
+        importer.convertToBlob(zip, metadata, fileName, undefined, callback)
     });
 }
 
@@ -247,7 +256,8 @@ GoogleConverter.prototype.onDateAvailable = function (date, json, zip, filename,
 
     importer.importNoteAttachments(currentZip, zip, json['attachments'], function () {
         console.log("json['isPinned'] " + json['isPinned'])
-        callback(zip, JSON.stringify(metadata), filename, json['isPinned'])
+        importer.convertToBlob(zip, JSON.stringify(metadata), filename, json['isPinned'], callback)
+
 
     })
 }

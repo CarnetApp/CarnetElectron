@@ -1,4 +1,4 @@
-new RequestBuilder(Utils.getParameterByName("api_path"));
+new RequestBuilder(Utils.getParameterByName("api_path") != null ? Utils.getParameterByName("api_path") : undefined);
 var Importer = function (destPath) {
     this.elem = document.getElementById("table-container");
     this.progressView = document.getElementById("progress-view");
@@ -21,7 +21,6 @@ var Importer = function (destPath) {
         compatibility.exit()
     }
     this.webview.addEventListener('ipc-message', event => {
-        // prints "ping"
         if (event.channel == "pathSelected") {
             importer.path = event.args[0]
             console.log("event.channel " + event.args[0])
@@ -123,15 +122,17 @@ Importer.prototype.importNext = function (callback) {
 
 Importer.prototype.onArchiveSelected = function (archive) {
     var importer = this
+    importer.archiveName = archive.name;
     console.log("$(input[name='archive-type']:checked).val() " + $("input[name='archive-type']:checked").val())
     switch (parseInt($("input[name='archive-type']:checked").val())) {
         case 0:
             importer.converter = new GoogleConverter(this);
             break;
         default:
-            importer.converter = undefined
+            importer.converter = new CarnetConverter(this);
 
     }
+    importer.destPath = importer.converter.getDestPath()
     JSZip.loadAsync(archive).then(function (zip) {
         importer.currentZip = zip
         importer.converter.getListOfNotesFromZip(zip, (list) => {
@@ -266,9 +267,9 @@ function DateError() { }
 Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
 
     this.importingSpan.innerHTML = FileUtils.getFilename(keepNotePath) + " (" + this.notesToImport.length + " remaining)";
-    this.converter.convertNoteToSQD(this.currentZip, keepNotePath, destFolder, function (zip, metadata, fileName, isPinned) {
-        console.log("filename " + fileName)
-        importer.sendNote(zip, metadata, fileName, isPinned, callback)
+    this.converter.convertNoteToSQD(this.currentZip, keepNotePath, destFolder, function (zip, metadata, fileName, isPinned, path) {
+        console.log("path " + path)
+        importer.sendNote(zip, metadata, fileName, isPinned, path, callback)
     })
 }
 
@@ -276,33 +277,31 @@ Importer.prototype.onError = function (filename) {
     this.error.push(filename);
 }
 
-Importer.prototype.sendNote = function (zip, metadata, filename, isPinned, callback) {
+Importer.prototype.sendNote = function (blob, metadata, filename, isPinned, path, callback) {
     var self = this
     console.log("metadata " + metadata)
-    zip.generateAsync({ type: "blob" }).then(function (blob) {
-        var files = []
+    var files = []
 
-        blob.name = filename
-        files.push(blob)
-        RequestBuilder.sRequestBuilder.postFiles("/note/import", {
-            add_to_recent: true,
-            path: "keep",
-            is_pinned: isPinned,
-            metadata: metadata
-        }, files, function (error, data) {
-            console.log("error " + error)
-            if (error) {
-                self.onError(filename)
-                callback()
-            } else {
-                self.imported = self.imported + 1;
-                callback()
+    blob.name = filename
+    files.push(blob)
+    console.log("document.getElementById().checked " + document.getElementById("add-to-recent-cb").checked)
+    RequestBuilder.sRequestBuilder.postFiles("/note/import", {
+        add_to_recent: document.getElementById("add-to-recent-cb").checked,
+        path: path,
+        is_pinned: isPinned,
+        metadata: metadata
+    }, files, function (error, data) {
+        console.log("error " + error)
+        if (error) {
+            self.onError(filename)
+            callback()
+        } else {
+            self.imported = self.imported + 1;
+            callback()
 
-            }
-        })
-    }, function (err) {
+        }
+    })
 
-    });
 }
 var importer;
 $(document).ready(function () {
