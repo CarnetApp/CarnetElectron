@@ -120,7 +120,8 @@ class SingleExporter {
                 exporter.loadZipContent(zip, (html, metadata, attachments) => {
                     var htmlElem = document.createElement("html")
                     var head = document.createElement("head")
-                    head.innerHTML = ""
+                    head.innerHTML = "<meta charset=\"UTF-8\">\
+                    <meta name=\"viewport\" content=\"width=device-width, height=device-height, user-scalable=no\" />"
                     if (!noImages) {
                         head.innerHTML += "<style>body{max-width:1000px; margin:auto; }#media-list{white-space: nowrap; overflow-x: auto;}#media-list img{max-height:300px;margin-right:5px;} #full-media-list img{max-width:100%;} </style>"
                     }
@@ -181,11 +182,11 @@ class SingleExporter {
                         }
                         todolistContainer.innerHTML +="<h3>Todo</h3> "
                         for(var todo of todolist.todo){ 
-                            todolistContainer.innerHTML +=todo+"<br />"  
+                            todolistContainer.innerHTML +="✗ "+todo+"<br />"  
                         }
                         todolistContainer.innerHTML +="<h3>Done</h3>"
                         for(var done of todolist.done){ 
-                            todolistContainer.innerHTML +=done+"<br />"  
+                            todolistContainer.innerHTML +="✓ "+done+"<br />"  
                         }
                     }
                     body.appendChild(text)

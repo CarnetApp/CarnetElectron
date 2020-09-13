@@ -14,16 +14,15 @@ class CompatibilityExporter extends Compatibility {
 
     }
 
-    print(html) {
+    print(htmlElement) {
 
         if (this.isAndroid) {
-            app.print(html.innerHTML)
+            app.print(tmpDiv.innerHTML)
         } else {
             var ifr = document.createElement('iframe');
             ifr.style = 'height: 0px; width: 0px; position: absolute'
             document.body.appendChild(ifr);
-
-            $(html).clone().appendTo(ifr.contentDocument.body);
+            ifr.contentDocument.body.appendChild(htmlElement)
             ifr.contentWindow.print();
 
             ifr.parentElement.removeChild(ifr);

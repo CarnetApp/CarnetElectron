@@ -25,33 +25,6 @@ class CompatibilityEditor extends Compatibility {
         }
     }
 
-    print(htmlElement/*printTitle, printMod, printCreation, note*/) {
-        /*var dateC = new Date(note.metadata.creation_date)
-        var dateM = new Date(note.metadata.last_modification_date)
-        var tmpDiv = document.createElement('div');
-        if (printTitle)
-            tmpDiv.innerHTML += "<h3>" + FileUtils.stripExtensionFromName(FileUtils.getFilename(note.path)) + "<h3>";
-        if (printCreation)
-            tmpDiv.innerHTML += "<span> Created: " + dateC.toLocaleDateString() + " " + dateC.toLocaleTimeString() + "</span><br />";
-        if (printMod)
-            tmpDiv.innerHTML += "<span> Modified: " + dateM.toLocaleDateString() + " " + dateM.toLocaleTimeString() + "</span><br />";
-        if (printMod || printCreation)
-            tmpDiv.innerHTML += "<br />";
-        tmpDiv.innerHTML += writer.oDoc.innerHTML*/
-        if (this.isAndroid) {
-            app.print(tmpDiv.innerHTML)
-        } else {
-            var ifr = document.createElement('iframe');
-            ifr.style = 'height: 0px; width: 0px; position: absolute'
-            document.body.appendChild(ifr);
-
-            $(htmlElement).clone().appendTo(ifr.contentDocument.body);
-            ifr.contentWindow.print();
-
-            ifr.parentElement.removeChild(ifr);
-        }
-    }
-
     exit() {
         if (this.isGtk) {
             window.parent.document.title = "msgtopython:::exit"
