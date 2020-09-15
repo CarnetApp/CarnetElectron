@@ -948,8 +948,8 @@ Writer.prototype.init = function () {
         return false;
     }
 
-    document.getElementById("share-button").onclick = function(){
-        writer.openInFrame("./exporter?path=" + writer.note.path + "&api_path=" + api_url)
+    document.getElementById("share-button").onclick = function () {
+        writer.openInFrame(rootpath + "exporter/exporter.html?path=" + writer.note.path + "&api_path=" + api_url)
     }
     document.getElementById("note-color-button").onclick = function () {
         document.getElementById("note-color-picker-dialog").showModal()
@@ -1025,10 +1025,10 @@ var currentFrame = undefined;
 Writer.prototype.openInFrame = function (url) {
     var iframeContainer = document.getElementById('frame-container');
     var wholeFrameContainer = document.getElementById('whole-frame-container');
-    document.getElementById('frame-loading-view').style.display="block"
+    document.getElementById('frame-loading-view').style.display = "block"
 
-    var onFrameLoaded = function(){
-        document.getElementById('frame-loading-view').style.display="none"
+    var onFrameLoaded = function () {
+        document.getElementById('frame-loading-view').style.display = "none"
     }
     if (currentFrame == undefined) {
         if (compatibility.isElectron) {
@@ -1039,8 +1039,8 @@ Writer.prototype.openInFrame = function (url) {
             currentFrame.onload = onFrameLoaded
         }
         iframeContainer.appendChild(currentFrame)
-        document.getElementById("iframe-back-button").onclick = function(){
-            wholeFrameContainer.style.display="none"
+        document.getElementById("iframe-back-button").onclick = function () {
+            wholeFrameContainer.style.display = "none"
         }
 
     }

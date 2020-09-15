@@ -12,7 +12,7 @@ class SingleExporter {
         this.listener.onRetrievingNote();
 
         var oReq = new XMLHttpRequest();
-        oReq.open("GET", RequestBuilder.sRequestBuilder.api_url + RequestBuilder.sRequestBuilder.cleanPath("note/get_note?path=" + encodeURIComponent(this.notepath)), true);
+        oReq.open("GET", compatibility.addRequestToken(RequestBuilder.sRequestBuilder.api_url + RequestBuilder.sRequestBuilder.cleanPath("note/get_note?path=" + encodeURIComponent(this.notepath))), true);
         oReq.responseType = "arraybuffer";
 
         oReq.onload = function (oEvent) {
@@ -104,8 +104,8 @@ class SingleExporter {
         })
     }
 
-    print(config){
-        this.exportAsHtml(config,false, (htmlElem, metadata, attachments) => {
+    print(config) {
+        this.exportAsHtml(config, false, (htmlElem, metadata, attachments) => {
             compatibility.print(htmlElem)
         }
         )
@@ -126,8 +126,8 @@ class SingleExporter {
                         head.innerHTML += "<style>body{max-width:1000px; margin:auto; }#media-list{white-space: nowrap; overflow-x: auto;}#media-list img{max-height:300px;margin-right:5px;} #full-media-list img{max-width:100%;} </style>"
                     }
                     var todolistStyle = "<style></style>";
-                   
-                    head.innerHTML+=todolistStyle
+
+                    head.innerHTML += todolistStyle
                     htmlElem.appendChild(head)
                     var body = document.createElement("body")
                     if (attachments.length > 0) {
@@ -163,30 +163,30 @@ class SingleExporter {
                     }
                     var dateC = new Date(metadata.creation_date)
                     var dateM = new Date(metadata.last_modification_date)
-                    if(config.displayTitle)
+                    if (config.displayTitle)
                         body.innerHTML += "<h3>" + FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + "<h3>"
                     if (config.displayCreationDate)
                         body.innerHTML += "<span> Created: " + dateC.toLocaleDateString() + " " + dateC.toLocaleTimeString() + "</span><br />";
                     if (config.displayModificationDate)
                         body.innerHTML += "<span> Modified: " + dateM.toLocaleDateString() + " " + dateM.toLocaleTimeString() + "</span><br />";
-            
+
                     var text = document.createElement("div")
                     text.id = "whole-text"
-                   
-                    text.innerHTML = "<br /><br />"+html
-                    for(var todolist of metadata.todolists){
-                        var todolistContainer = text.querySelector("#"+todolist.id)
-                        if(todolistContainer == undefined){
+
+                    text.innerHTML = "<br /><br />" + html
+                    for (var todolist of metadata.todolists) {
+                        var todolistContainer = text.querySelector("#" + todolist.id)
+                        if (todolistContainer == undefined) {
                             todolistContainer = document.createElement("div")
                             text.querySelector("#text").appendChild(todolistContainer)
                         }
-                        todolistContainer.innerHTML +="<h3>Todo</h3> "
-                        for(var todo of todolist.todo){ 
-                            todolistContainer.innerHTML +="✗ "+todo+"<br />"  
+                        todolistContainer.innerHTML += "<h3>Todo</h3> "
+                        for (var todo of todolist.todo) {
+                            todolistContainer.innerHTML += "✗ " + todo + "<br />"
                         }
-                        todolistContainer.innerHTML +="<h3>Done</h3>"
-                        for(var done of todolist.done){ 
-                            todolistContainer.innerHTML +="✓ "+done+"<br />"  
+                        todolistContainer.innerHTML += "<h3>Done</h3>"
+                        for (var done of todolist.done) {
+                            todolistContainer.innerHTML += "✓ " + done + "<br />"
                         }
                     }
                     body.appendChild(text)
@@ -263,19 +263,18 @@ exporterListener.onRetrievingNote = function () {
     console.log("retrieving")
 
 }
-new RequestBuilder(Utils.getParameterByName("api_path"));
-
+new RequestBuilder((compatibility.isAndroid ? "../" : "") + Utils.getParameterByName("api_path"));
 var path = Utils.getParameterByName("path");
 var exporter = new SingleExporter(path, exporterListener)
 
-function getConfig(){
+function getConfig() {
     var config = {}
     config.displayTitle = document.getElementById("title-checkbox").checked
     config.displayModificationDate = document.getElementById("mod-checkbox").checked
     config.displayCreationDate = document.getElementById("creation-checkbox").checked
     config.displayImages = document.getElementById("photos-checkbox").checked
     return config
-    
+
 }
 var downloadButton = document.getElementById("download")
 downloadButton.onclick = function () {

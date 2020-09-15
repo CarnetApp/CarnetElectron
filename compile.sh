@@ -32,6 +32,7 @@ if [ "$1" == "android" ]; then
     
     cp reader dist/build/ -R
     cp importer dist/build/ -R
+    cp exporter dist/build/ -R
     cp fonts dist/build/ -R
     cp compatibility dist/build/ -R
     cp browsers dist/build/ -R

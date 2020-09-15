@@ -17,7 +17,7 @@ class CompatibilityExporter extends Compatibility {
     print(htmlElement) {
 
         if (this.isAndroid) {
-            app.print(tmpDiv.innerHTML)
+            app.print(htmlElement.innerHTML)
         } else {
             var ifr = document.createElement('iframe');
             ifr.style = 'height: 0px; width: 0px; position: absolute'
