@@ -24,15 +24,28 @@ class SearchEngine {
                     document.getElementById("page-content").style.display = "block";
                     document.getElementById("note-loading-view").style.display = "none";
                     if (data['files'].length > 0) {
+                        var hasChanged = false;
                         for (let node of data['files']) {
                             if (node.path == "quickdoc")
                                 continue;
                             file = new File(node.path, !node.isDir, node.name);
-                            self.result.push(file)
+                            var isIn = false
+                            for (let fileIn of self.result) {
+                                if (fileIn.path == node.path) {
+                                    isIn = true;
+                                    break;
+                                }
+
+                            }
+                            if (!isIn) {
+                                self.result.push(file)
+                                hasChanged = true;
+                            }
                         }
                         var callbackFiles = []
                         callbackFiles = callbackFiles.concat(self.result)
-                        onListEnd("search://", callbackFiles, undefined, true);
+                        if (hasChanged)
+                            onListEnd("search://", callbackFiles, undefined, true);
 
                     }
                 }
