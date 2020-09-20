@@ -9,6 +9,8 @@ class CarnetConverter {
     }
 
     convertNoteToSQD(currentZip, notePath, destFolder, callback) {
+        console.log("convertNoteToSQD " + notePath)
+
         var fileName = FileUtils.getFilename(notePath);
         var converter = this;
         var dest = FileUtils.getParentFolderFromPath(notePath)
@@ -53,13 +55,24 @@ class CarnetConverter {
             }
         }
         currentZip.files[notePath].async('blob').then(function (noteBlob) {
+            console.log("blob loaded " + noteBlob)
+
             noteBlob.arrayBuffer().then(buffer => {
+                console.log("buffer loaded " + buffer)
+
                 JSZip.loadAsync(buffer).then(function (noteZip) {
+                    console.log("noteZip loaded " + noteZip)
+
                     noteZip.files["metadata.json"].async('string').then(function (metadata) {
+                        console.log("metadata loaded ")
+
                         callback(noteBlob, metadata, fileName, metadata.isPinned, dest)
                     })
 
                 }, function (e) {
+                    console.log("error " + e)
+                    callback(undefined)
+
                 });
             });
 

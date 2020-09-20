@@ -269,7 +269,12 @@ Importer.prototype.importNote = function (keepNotePath, destFolder, callback) {
     this.importingSpan.innerHTML = FileUtils.getFilename(keepNotePath) + " (" + this.notesToImport.length + " remaining)";
     this.converter.convertNoteToSQD(this.currentZip, keepNotePath, destFolder, function (zip, metadata, fileName, isPinned, path) {
         console.log("path " + path)
-        importer.sendNote(zip, metadata, fileName, isPinned, path, callback)
+        if (zip != undefined)
+            importer.sendNote(zip, metadata, fileName, isPinned, path, callback)
+        else {
+            importer.error.push(keepNotePath)
+            callback()
+        }
     })
 }
 
