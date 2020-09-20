@@ -81,30 +81,6 @@ Importer.prototype.importNotes = function () {
         $('#importing-view').hide();
 
         $('#import-report').html(importer.imported + " note(s) imported <br />" + importer.error.length + " failed");
-        /*console.log(importer.timeStampedNotes.length + " note(s) imported " + document.getElementById("add-to-recent-cb").checked)
-        if (document.getElementById("add-to-recent-cb").checked) {
-            importer.timeStampedNotes.sort(keysrt('time'))
-            importer.timeStampedKeywords.sort(keysrt('time'))
-            var paths = []
-            for (var er of importer.timeStampedNotes) {
-                paths.push(er.path)
-            }
-            var RecentDBManager = require("../server/recent/local_recent_db_manager").LocalRecentDBManager
-            var db = new RecentDBManager(SettingsHelper.getNotePath() + "/quickdoc/recentdb/" + SettingsHelper.getAppUid())
-            db.actionArray(importer.timeStampedNotes, function () {
-                importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
-
-            })
-        } else {
-            importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
-
-        }
-        var KeywordsDBManager = require("../server/keywords/keywords_db_manager").KeywordsDBManager
-        var db = new KeywordsDBManager(SettingsHelper.getNotePath() + "/quickdoc/keywords/" + SettingsHelper.getAppUid())
-        db.actionArray(importer.timeStampedKeywords, function () {
-            importer.importingSpan.innerHTML = importer.timeStampedNotes.length + " note(s) imported";
-
-        })*/
     })
 }
 
