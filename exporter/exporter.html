@@ -16,7 +16,6 @@
     <script src="../compatibility/compatibility.js"></script>
     <script src="../compatibility/compatibility-exporter.js"></script>
 
-    <link rel="stylesheet" href="../browsers/design.css">
     <script src="../libs/polyfill.js"></script>
     <script src="../libs/dialog-polyfill.js"></script>
     <script src="../libs/material.js"></script>
@@ -25,6 +24,8 @@
     <script src="../utils/utils.js"></script>
     <script src="../utils/file_utils.js"></script>
     <link rel="stylesheet" href="../reader/css/todolist.css">
+    <link rel="stylesheet" href="../exporter/exporter.css">
+
     <script src="../reader/todolist.js"></script>
     <link rel="stylesheet" href="../libs/material.indigo-pink.min.css">
     <link rel="stylesheet" href="../libs/polyfill.css">
@@ -51,19 +52,7 @@
 
 <body>
     <style>
-        body {}
 
-        #inside {
-            background: white;
-            padding: 20px;
-
-        }
-
-        #button-container {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-        }
     </style>
     <div id="inside">
         <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="title-checkbox">
@@ -79,23 +68,28 @@
             <span class="mdl-checkbox__label" data-i18n="print_creation_date">Include creation date</span>
         </label>
         <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="photos-checkbox">
-            <input type="checkbox" id="photos-checkbox" class="mdl-checkbox__input" checked>
-            <span class="mdl-checkbox__label" data-i18n="print_creation_date">Include Photos</span>
+            <input type="checkbox" id="photos-checkbox" class="mdl-checkbox__input">
+            <span class="mdl-checkbox__label" data-i18n="print_photos">Include Photos</span>
         </label>
 
 
 
     </div>
     <div id="button-container">
-        <button class="mdl-button mdl-js-button" id="download">
+        <button class="mdl-button mdl-js-button" id="download" data-i18n="download">
             Download
         </button>
-        <button class="mdl-button mdl-js-button" id="send">
+        <button class="mdl-button mdl-js-button" id="send" data-i18n="send">
             Send
         </button>
-        <button class="mdl-button mdl-js-button" id="print">
+        <button class="mdl-button mdl-js-button" id="print" data-i18n="print">
             Print
         </button>
+    </div>
+    <div id="loading">
+        <div class="mdl-spinner mdl-js-spinner is-active"
+            style="width:200px; height:200px; top:50%; left:50%; margin-top:-150px; margin-left:-100px;"></div>
+
     </div>
     <script src="../exporter/exporter.js"></script>
 

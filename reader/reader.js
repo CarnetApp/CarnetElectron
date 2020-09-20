@@ -1620,7 +1620,7 @@ function loadPath(path, action) {
     writer.extractNote(function () {
         writer.handleAction(action, undefined)
     });
-    
+
 }
 
 

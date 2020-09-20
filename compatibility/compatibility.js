@@ -80,5 +80,26 @@ class Compatibility {
         }))
         win.setMenu(null)
     }
+
+    sendNextLargeDownload() {
+        if (this.largeDownload == undefined) {
+            if (currentFrame != undefined) {
+                currentFrame.contentWindow.compatibility.sendNextLargeDownload()
+                return
+            }
+            return
+        }
+        if (this.largeDownload.length <= 0) {
+            app.onLargeDownloadEnd()
+            this.largeDownload = undefined
+        } else {
+            var nextSize = this.largeDownload.length > 200000 ? 200000 : this.largeDownload.length
+            var next = this.largeDownload.substring(0, nextSize)
+            this.largeDownload = this.largeDownload.substring(nextSize)
+
+            app.onNextLargeDownload(next)
+
+        }
+    }
 }
 

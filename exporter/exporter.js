@@ -96,10 +96,10 @@ class SingleExporter {
 
     }
 
-    exportAndDownloadAsHtml(config) {
+    exportAndDownloadAsHtml(config, share) {
         var exporter = this;
         this.exportAsHtml(config, false, (htmlElem, metadata, attachments) => {
-            exporter.download(FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + ".html", "<!DOCTYPE html>\n<html>" + htmlElem.innerHTML + '</html>', "text/html")
+            exporter.download(FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + ".html", "<!DOCTYPE html>\n<html>" + htmlElem.innerHTML + '</html>', "text/html", undefined, share)
 
         })
     }
@@ -113,6 +113,7 @@ class SingleExporter {
 
     exportAsHtml(config, noImages, callback) {
         var exporter = this
+        exporter.listener.onExportStarts();
         this.retrieveNote(data => {
             JSZip.loadAsync(data).then(function (zip) {
 
@@ -143,19 +144,19 @@ class SingleExporter {
                             for (var attachment of attachments) {
                                 var a = document.createElement("a")
                                 var base64ref = "data:" + FileUtils.geMimetypeFromExtension(FileUtils.getExtensionFromPath(attachment.name)) + ";base64," + attachment.data
-                                
+
                                 if (FileUtils.isFileImage(attachment.name)) {
                                     var img = document.createElement("img")
                                     img.src = base64ref
                                     a.classList.add("img-link")
                                     a.appendChild(img)
-                                    
-                                   
+
+
                                 } else {
                                     a.href = base64ref
 
                                 }
-                               
+
                                 mediaList.appendChild(a)
                             }
                             body.appendChild(mediaList)
@@ -166,9 +167,9 @@ class SingleExporter {
                     if (config.displayTitle)
                         body.innerHTML += "<h3>" + FileUtils.stripExtensionFromName(FileUtils.getFilename(exporter.notepath)) + "<h3>"
                     if (config.displayCreationDate)
-                        body.innerHTML += "<span> Created: " + dateC.toLocaleDateString() + " " + dateC.toLocaleTimeString() + "</span><br />";
+                        body.innerHTML += "<span>" + $.i18n('created') + ": " + dateC.toLocaleDateString() + " " + dateC.toLocaleTimeString() + "</span><br />";
                     if (config.displayModificationDate)
-                        body.innerHTML += "<span> Modified: " + dateM.toLocaleDateString() + " " + dateM.toLocaleTimeString() + "</span><br />";
+                        body.innerHTML += "<span>" + $.i18n('modified') + ": " + dateM.toLocaleDateString() + " " + dateM.toLocaleTimeString() + "</span><br />";
 
                     var text = document.createElement("div")
                     text.id = "whole-text"
@@ -180,13 +181,13 @@ class SingleExporter {
                             todolistContainer = document.createElement("div")
                             text.querySelector("#text").appendChild(todolistContainer)
                         }
-                        todolistContainer.innerHTML += "<h3>Todo</h3> "
+                        todolistContainer.innerHTML += "<h3>" + $.i18n('todo') + "</h3>"
                         for (var todo of todolist.todo) {
-                            todolistContainer.innerHTML += "✗ " + todo + "<br />"
+                            todolistContainer.innerHTML += "☐ " + todo + "<br />"
                         }
-                        todolistContainer.innerHTML += "<h3>Done</h3>"
+                        todolistContainer.innerHTML += "<h3>" + $.i18n('completed') + "</h3>"
                         for (var done of todolist.done) {
-                            todolistContainer.innerHTML += "✓ " + done + "<br />"
+                            todolistContainer.innerHTML += "☑ " + done + "<br />"
                         }
                     }
                     body.appendChild(text)
@@ -199,6 +200,7 @@ class SingleExporter {
                     </script>\
                     "
                     htmlElem.appendChild(body)
+                    exporter.listener.onExportFinished();
                     callback(htmlElem, metadata, attachments)
                 })
             })
@@ -206,21 +208,30 @@ class SingleExporter {
 
         });
     }
-    download(filename, text, mimetype, datauri) {
-        var element = document.createElement('a');
-        if (datauri == undefined)
-            element.setAttribute('href', 'data:' + mimetype + ';charset=utf-8,' + encodeURIComponent(text));
-        else
-            element.setAttribute('href', datauri);
+    download(filename, text, mimetype, datauri, share) {
+        this.listener.onDownloadStarts()
+        if (compatibility.isAndroid) {
+            compatibility.largeDownload = text
+            compatibility.onDownloadFinished = this.listener.onDownloadFinished
+            app.startLargeDownload(filename, mimetype, share)
+        }
+        else {
+            var element = document.createElement('a');
+            if (datauri == undefined)
+                element.setAttribute('href', 'data:' + mimetype + ';charset=utf-8,' + encodeURIComponent(text));
+            else
+                element.setAttribute('href', datauri);
 
-        element.setAttribute('download', filename);
+            element.setAttribute('download', filename);
 
-        element.style.display = 'none';
-        document.body.appendChild(element);
+            element.style.display = 'none';
+            document.body.appendChild(element);
 
-        element.click();
+            element.click();
 
-        document.body.removeChild(element);
+            document.body.removeChild(element);
+            this.listener.onDownloadFinished()
+        }
     }
 }
 
@@ -254,43 +265,107 @@ function css2json(css) {
     }
     return s;
 }
-var exporterListener = {}
-exporterListener.onError = function (error) {
-    console.log("error " + error)
 
-}
-exporterListener.onRetrievingNote = function () {
-    console.log("retrieving")
+class ExporterUI {
 
+    constructor() {
+        var exporterUI = this;
+        var path = Utils.getParameterByName("path");
+        this.exporter = new SingleExporter(path, this)
+        this.downloadButton = document.getElementById("download")
+        this.sendButton = document.getElementById("send");
+        this.printButton = document.getElementById("print")
+        this.loadingView = document.getElementById("loading")
+        document.getElementById("photos-checkbox").onchange = function () {
+            exporterUI.sendButton.disabled = document.getElementById("photos-checkbox").checked
+
+        }
+        this.downloadButton.onclick = function () {
+            console.log("download")
+            exporterUI.setButtonDisable(true);
+            var config = exporterUI.getConfig();
+            exporterUI.exporter.exportAndDownloadAsHtml(config, false)
+
+        }
+        this.printButton.onclick = function () {
+            var config = exporterUI.getConfig();
+            config.displayCompleteImages = true
+            exporterUI.setButtonDisable(true);
+            exporterUI.exporter.print(config)
+
+        }
+
+        this.sendButton.onclick = function () {
+            console.log("download")
+            exporterUI.setButtonDisable(true);
+            var config = exporterUI.getConfig();
+            exporterUI.exporter.exportAndDownloadAsHtml(config, true)
+
+        }
+        if (!compatibility.isAndroid) {
+            // this.sendButton.style.display = "none"
+        }
+        compatibility.loadLang(function () {
+            $('body').i18n();
+        })
+        $.i18n().locale = navigator.language;
+    }
+
+    setLoadingViewVisibility(show) {
+        if (show)
+            $(this.loadingView).show()
+        else
+            $(this.loadingView).hide()
+    }
+
+    setButtonDisable(disabled) {
+        this.downloadButton.disabled = disabled;
+        this.printButton.disabled = disabled;
+        if (!disabled)
+            this.sendButton.disabled = document.getElementById("photos-checkbox").checked
+        else
+            this.sendButton.disabled = disabled;
+    }
+
+    getConfig() {
+        var config = {}
+        config.displayTitle = document.getElementById("title-checkbox").checked
+        config.displayModificationDate = document.getElementById("mod-checkbox").checked
+        config.displayCreationDate = document.getElementById("creation-checkbox").checked
+        config.displayImages = document.getElementById("photos-checkbox").checked
+        return config
+
+    }
+
+    onError(error) {
+        this.setLoadingViewVisibility(false)
+
+
+    }
+
+    onRetrievingNote() {
+        this.setLoadingViewVisibility(true)
+    }
+
+    onDownloadStarts() {
+        //this.setLoadingViewVisibility(true)
+    }
+
+    onDownloadFinished() {
+        this.setLoadingViewVisibility(false)
+    }
+
+    onExportFinished() {
+        this.setLoadingViewVisibility(false)
+        this.setButtonDisable(false)
+    }
+
+    onExportStarts() {
+        this.setLoadingViewVisibility(true)
+
+    }
 }
+
 new RequestBuilder((compatibility.isAndroid ? "../" : "") + Utils.getParameterByName("api_path"));
-var path = Utils.getParameterByName("path");
-var exporter = new SingleExporter(path, exporterListener)
-
-function getConfig() {
-    var config = {}
-    config.displayTitle = document.getElementById("title-checkbox").checked
-    config.displayModificationDate = document.getElementById("mod-checkbox").checked
-    config.displayCreationDate = document.getElementById("creation-checkbox").checked
-    config.displayImages = document.getElementById("photos-checkbox").checked
-    return config
-
-}
-var downloadButton = document.getElementById("download")
-downloadButton.onclick = function () {
-    console.log("download")
-    var config = getConfig();
-    exporter.exportAndDownloadAsHtml(config)
-
-}
-var printButton = document.getElementById("print")
-printButton.onclick = function () {
-    var config = getConfig();
-    config.displayCompleteImages = true
-    exporter.print(config)
-
-}
-if (!compatibility.isAndroid) {
-    document.getElementById("send").style.display = "none"
-}
+new ExporterUI()
 
