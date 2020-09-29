@@ -62,12 +62,13 @@ class CarnetConverter {
 
                 JSZip.loadAsync(buffer).then(function (noteZip) {
                     console.log("noteZip loaded " + noteZip)
+                    if (noteZip.files["metadata.json"] != undefined)
+                        noteZip.files["metadata.json"].async('string').then(function (metadata) {
+                            console.log("metadata loaded ")
 
-                    noteZip.files["metadata.json"].async('string').then(function (metadata) {
-                        console.log("metadata loaded ")
-
-                        callback(noteBlob, metadata, fileName, metadata.isPinned, dest)
-                    })
+                            callback(noteBlob, metadata, fileName, metadata.isPinned, dest)
+                        })
+                    else callback(undefined)
 
                 }, function (e) {
                     console.log("error " + e)
