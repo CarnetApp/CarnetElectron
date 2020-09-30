@@ -1,9 +1,18 @@
+var compatRequire = undefined
 class Compatibility {
     constructor() {
-        this.isElectron = typeof require === "function";
+        this.isElectron = typeof require === "function" || typeof parent.require === "function";
+        console.log("this.isElectron  " + this.isElectron)
+        if (this.isElectron) {
+            if (typeof require !== "function") {
+                compatRequire = parent.require
+            }
+            else compatRequire = require
+        }
         this.isAndroid = typeof app === "object";
+
         this.isGtk = false;
-        console.log("is electron ?" + this.isElectron)
+        console.log("isAndroid" + this.isAndroid)
 
         if (this.isElectron) {
             RequestBuilder = ElectronRequestBuilder;

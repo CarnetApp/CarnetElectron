@@ -124,6 +124,12 @@ var handle = function (method, path, data, callback) {
             case "/note/open/0/listMedia":
                 getMediaList(callback)
                 return;
+            case "/note/get_note":
+                console.log("get note " + settingsHelper.getNotePath() + "/" + args['path'])
+                fs.readFile(settingsHelper.getNotePath() + "/" + args['path'], "base64", function (err, dataZ) {
+                    callback(err, dataZ)
+                })
+                return;
         }
         if (path.startsWith("/metadata?")) {
             console.logDebug("get metadata")
@@ -475,6 +481,16 @@ var handle = function (method, path, data, callback) {
     }
 
 }
+
+function toArrayBuffer(buf) {
+    var ab = new ArrayBuffer(buf.length);
+    var view = new Uint8Array(ab);
+    for (var i = 0; i < buf.length; ++i) {
+        view[i] = buf[i];
+    }
+    return ab;
+}
+
 var getMediaList = function (callback) {
     var tmppath = getTmpPath() + "/note/data/";
     media = [];

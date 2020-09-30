@@ -74,7 +74,9 @@ function createWindow() {
             icon: path.join(__dirname, 'img/512x512.png'),
             webPreferences: {
                 nodeIntegration: true,
-                webviewTag: true
+                webviewTag: true,
+                enableRemoteModule: true
+
             }
         })
         win.setMenuBarVisibility(false)

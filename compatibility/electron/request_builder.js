@@ -1,7 +1,7 @@
 class ElectronRequestBuilder extends RequestBuilder {
     constructor() {
         super("./");
-        var remote = require('electron').remote;
+        var remote = compatRequire('electron').remote;
         this.main = remote.require("./main.js");
     }
     get(path, callback) {

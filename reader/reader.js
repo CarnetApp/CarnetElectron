@@ -1031,13 +1031,11 @@ Writer.prototype.openInFrame = function (url) {
         document.getElementById('frame-loading-view').style.display = "none"
     }
     if (currentFrame == undefined) {
-        if (compatibility.isElectron) {
 
-        } else {
-            currentFrame = document.createElement('iframe');
-            currentFrame.classList.add("frame")
-            currentFrame.onload = onFrameLoaded
-        }
+        currentFrame = document.createElement('iframe');
+        currentFrame.classList.add("frame")
+        currentFrame.onload = onFrameLoaded
+
         iframeContainer.appendChild(currentFrame)
         document.getElementById("iframe-back-button").onclick = function () {
             wholeFrameContainer.style.display = "none"

@@ -10,17 +10,23 @@ class SingleExporter {
         console.log("SingleExporter retrieveNote")
 
         this.listener.onRetrievingNote();
+        if (!compatibility.isElectron) {
+            var oReq = new XMLHttpRequest();
+            oReq.open("GET", compatibility.addRequestToken(RequestBuilder.sRequestBuilder.api_url + RequestBuilder.sRequestBuilder.cleanPath("note/get_note?path=" + encodeURIComponent(this.notepath))), true);
+            oReq.responseType = "arraybuffer";
 
-        var oReq = new XMLHttpRequest();
-        oReq.open("GET", compatibility.addRequestToken(RequestBuilder.sRequestBuilder.api_url + RequestBuilder.sRequestBuilder.cleanPath("note/get_note?path=" + encodeURIComponent(this.notepath))), true);
-        oReq.responseType = "arraybuffer";
+            oReq.onload = function (oEvent) {
+                var arrayBuffer = oReq.response; // Note: not oReq.responseText
+                callback(arrayBuffer, false)
+            };
 
-        oReq.onload = function (oEvent) {
-            var arrayBuffer = oReq.response; // Note: not oReq.responseText
-            callback(arrayBuffer)
-        };
+            oReq.send(null);
+        } else {
+            RequestBuilder.sRequestBuilder.get("note/get_note?path=" + encodeURIComponent(this.notepath), (error, data) => {
+                callback(data, true)
+            })
 
-        oReq.send(null);
+        }
 
     }
 
@@ -114,8 +120,8 @@ class SingleExporter {
     exportAsHtml(config, noImages, callback) {
         var exporter = this
         exporter.listener.onExportStarts();
-        this.retrieveNote(data => {
-            JSZip.loadAsync(data).then(function (zip) {
+        this.retrieveNote((data, base64) => {
+            JSZip.loadAsync(data, { base64: base64 }).then(function (zip) {
 
 
                 exporter.loadZipContent(zip, (html, metadata, attachments) => {
@@ -303,7 +309,7 @@ class ExporterUI {
 
         }
         if (!compatibility.isAndroid) {
-            // this.sendButton.style.display = "none"
+            this.sendButton.style.display = "none"
         }
         compatibility.loadLang(function () {
             $('body').i18n();
