@@ -19,6 +19,7 @@ if (noteCacheStr == "undefined")
 var cachedMetadata = JSON.parse(noteCacheStr);
 var recentCacheStr = String(store.get("recent_cache"))
 var cachedRecentDB = undefined
+var isFirstLoad = true // used to preopen editor
 if (recentCacheStr != "undefined")
     cachedRecentDB = JSON.parse(recentCacheStr);
 
@@ -47,13 +48,13 @@ TextGetterTask.prototype.getNext = function () {
         this.current = i + 1
         if (!(this.list[i] instanceof Note) || !this.list[i].needsRefresh)
             continue;
-        paths += this.list[i].path + ",";
+        paths += "paths[]=" + encodeURIComponent(this.list[i].path) + "&";
         if (cachedMetadata[this.list[i].path] == undefined)
             cachedMetadata[this.list[i].path] = this.list[i];
     }
     var myTask = this;
     if (paths.length > 0) {
-        RequestBuilder.sRequestBuilder.get("/metadata?paths=" + encodeURIComponent(paths), function (error, data) {
+        RequestBuilder.sRequestBuilder.get("/metadata?" + paths, function (error, data) {
             for (var meta in data) {
                 var note = new Note(Utils.cleanNoteName(getFilenameFromPath(meta)), data[meta].shorttext, meta, data[meta].metadata, data[meta].previews, false, data[meta].media)
                 cachedMetadata[meta] = note
