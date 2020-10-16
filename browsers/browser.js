@@ -559,7 +559,6 @@ function list(pathToList, discret) {
     });
 
 }
-refreshKeywords();
 
 function minimize() {
     remote.BrowserWindow.getFocusedWindow().minimize();
@@ -678,8 +677,7 @@ RequestBuilder.sRequestBuilder.get("/recentdb/merge", function (error, data) {
 })
 
 RequestBuilder.sRequestBuilder.get("/keywordsdb/merge", function (error, data) {
-    if (data == true)
-        refreshKeywords()
+    refreshKeywords()
 })
 
 
