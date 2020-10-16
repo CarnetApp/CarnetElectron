@@ -85,12 +85,16 @@ function openNote(notePath, action) {
                 window.open("writer?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : ""), "_blank");
             }
             else {
-                $("#editor-container").show()
-                $(loadingView).fadeIn(function () {
-                    writerFrame.src = data + "?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : "");
-                    writerFrame.style.display = "inline-flex"
+                writerFrame.src = data + "?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : "");
+                if (notePath !== undefined) {
+                    $("#editor-container").show()
+                    console.log("notePath " + notePath)
+                    $(loadingView).fadeIn(function () {
 
-                })
+                        writerFrame.style.display = "inline-flex"
+
+                    })
+                }
             }
             /*setTimeout(function () {
                 writerFrame.openDevTools()
@@ -471,6 +475,10 @@ function onListEnd(pathToList, files, metadatas, discret, force, fromCache) {
             document.getElementById("grid-container").scrollTop = scroll;
             console.log("scroll : " + scroll)
 
+        }
+        if (!fromCache && isFirstLoad) {
+            openNote(undefined, undefined)
+            isFirstLoad = false
         }
 
     }
