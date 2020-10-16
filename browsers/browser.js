@@ -391,7 +391,14 @@ function onListEnd(pathToList, files, metadatas, discret, force, fromCache) {
         for (let file of files) {
             var filename = getFilenameFromPath(file.path);
             if (filename.endsWith(".sqd")) {
-                let metadata = metadatas != undefined ? metadatas[file.path] : undefined;
+                var metadata = undefined;
+                if (metadatas != undefined) {
+                    metadata = metadatas[file.path];
+                    //bad fix for paths starting with / but having not metadata... Need to find out why
+                    if (metadata == undefined && file.path.startsWith("/")) {
+                        metadata = metadatas[file.path.substr(1)]
+                    }
+                }
                 let needsRefresh = metadata == undefined;
                 if (metadata == undefined) {
                     metadata = cachedMetadata[file.path]
