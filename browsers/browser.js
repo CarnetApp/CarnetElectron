@@ -73,48 +73,54 @@ String.prototype.replaceAll = function (search, replacement) {
     return target.replace(new RegExp(search, 'g'), replacement);
 };
 
+function onPrepared(error, data, notePath, action) {
+    if (error)
+        return;
+
+    if (writerFrame.src == "") {
+        if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1) {//open in new tab for firefox android
+            window.open("writer?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : ""), "_blank");
+        }
+        else {
+            writerFrame.src = data + (notePath != undefined ? ("?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : "")) : "");
+            if (notePath !== undefined) {
+                $("#editor-container").show()
+                $(loadingView).fadeIn(function () {
+                    writerFrame.style.display = "inline-flex"
+                })
+            }
+        }
+        /*setTimeout(function () {
+            writerFrame.openDevTools()
+        }, 1000)*/
+    }
+    else {
+        console.log("reuse old iframe");
+        $("#editor-container").show()
+        $(loadingView).fadeIn(function () {
+            if (compatibility.isElectron) {
+                writerFrame.send('loadnote', notePath);
+                writerFrame.send('action', action);
+            }
+            else
+                writerFrame.contentWindow.loadPath(notePath, action);
+            writerFrame.style.display = "inline-flex"
+
+        })
+    }
+}
+
 function openNote(notePath, action) {
     isLoadCanceled = false;
     currentNotePath = notePath
-    RequestBuilder.sRequestBuilder.get("/note/open/prepare", function (error, data) {
-        console.log("opening " + data)
-        if (error)
-            return;
-        if (writerFrame.src == "") {
-            if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1) {//open in new tab for firefox android
-                window.open("writer?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : ""), "_blank");
-            }
-            else {
-                writerFrame.src = data + "?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : "");
-                if (notePath !== undefined) {
-                    $("#editor-container").show()
-                    console.log("notePath " + notePath)
-                    $(loadingView).fadeIn(function () {
-
-                        writerFrame.style.display = "inline-flex"
-
-                    })
-                }
-            }
-            /*setTimeout(function () {
-                writerFrame.openDevTools()
-            }, 1000)*/
-        }
-        else {
-            console.log("reuse old iframe");
-            $("#editor-container").show()
-            $(loadingView).fadeIn(function () {
-                if (compatibility.isElectron) {
-                    writerFrame.send('loadnote', notePath);
-                    writerFrame.send('action', action);
-                }
-                else
-                    writerFrame.contentWindow.loadPath(notePath, action);
-                writerFrame.style.display = "inline-flex"
-
-            })
-        }
-    })
+    if (compatibility.isElectron) {
+        RequestBuilder.sRequestBuilder.get("/note/open/prepare", function (error, url) {
+            onPrepared(error, url, notePath, action)
+        })
+    }
+    else {//no need to call, always the same on nextcloud
+        onPrepared(undefined, "./writer", notePath, action)
+    }
 }
 
 var displaySnack = function (data) {
