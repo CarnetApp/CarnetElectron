@@ -279,9 +279,25 @@ Writer.prototype.extractNote = function (callback) {
         }
         console.log(data)
         writer.saveID = data.id;
-        RequestBuilder.sRequestBuilder.get("/note/extract?path=" + encodeURIComponent(writer.note.path) + "&id=" + data.id, function (error, data) {
+        var onExtracted = function () {
             writer.refreshKeywords()
             writer.refreshMedia();
+        }
+        RequestBuilder.sRequestBuilder.get("/note/extract?path=" + encodeURIComponent(writer.note.path) + "&id=" + data.id, function (error, data2) {
+            if (error) {
+                console.log("extraction failed...")
+                RequestBuilder.sRequestBuilder.get("/note/extract?path=" + encodeURIComponent(writer.note.path) + "&id=" + data.id, function (error, data2) {
+                    if (error) {
+                        writer.displaySnack({
+                            message: $.i18n("error_save"),
+                            timeout: 60000 * 300,
+                        })
+                        writer.setDoNotEdit(true)
+                    } else
+                        onExtracted()
+                })
+            } else
+                onExtracted()
         })
         writer.fillWriter(data.html)
         if (data.metadata == null) {
