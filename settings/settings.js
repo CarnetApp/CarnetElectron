@@ -134,6 +134,15 @@ $(document).ready(function () {
       UISettingsHelper.getInstance().set("start_page", "recent");
     UISettingsHelper.getInstance().postSettings()
   }
+
+  document.getElementById("preload_editor").onchange = function (value) {
+    if (value.target.checked)
+      UISettingsHelper.getInstance().set("should_preload_editor", true);
+    else
+      UISettingsHelper.getInstance().set("should_preload_editor", false);
+    UISettingsHelper.getInstance().postSettings()
+  }
+
   UISettingsHelper.getInstance().loadSettings(function (settings) {
     if (settings['start_page'] == "browser") {
       document.getElementById("browser_default_view").checked = true
@@ -141,6 +150,11 @@ $(document).ready(function () {
     } else {
       document.getElementById("browser_default_view").checked = false
       document.getElementById("browser_default_view").parentNode.classList.remove("is-checked")
+    }
+
+    if (settings['should_preload_editor']) {
+      document.getElementById("preload_editor").checked = true
+      document.getElementById("preload_editor").parentNode.classList.add("is-checked")
     }
 
   })

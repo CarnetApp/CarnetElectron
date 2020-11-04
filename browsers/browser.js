@@ -19,7 +19,7 @@ if (noteCacheStr == "undefined")
 var cachedMetadata = JSON.parse(noteCacheStr);
 var recentCacheStr = String(store.get("recent_cache"))
 var cachedRecentDB = undefined
-var isFirstLoad = true // used to preopen editor
+var shouldPreloadEditor = false // used to preopen editor
 if (recentCacheStr != "undefined")
     cachedRecentDB = JSON.parse(recentCacheStr);
 
@@ -489,9 +489,10 @@ function onListEnd(pathToList, files, metadatas, discret, force, fromCache) {
             console.log("scroll : " + scroll)
 
         }
-        if (!fromCache && isFirstLoad) {
+        if (!fromCache && shouldPreloadEditor) {
             openNote(undefined, undefined)
-            isFirstLoad = false
+            console.log("preloading")
+            shouldPreloadEditor = false
         }
 
     }
@@ -912,6 +913,7 @@ function loadCachedRecentDB() {
 
 UISettingsHelper.getInstance().loadSettings(function (settings, fromCache) {
     console.oldlog("settings from cache " + fromCache + " order " + settings["sort_by"])
+    shouldPreloadEditor = settings['should_preload_editor'];
     if (settings['start_page'] == 'recent')
         initPath = "recentdb://"
     if (settings['start_page'] == 'browser') {

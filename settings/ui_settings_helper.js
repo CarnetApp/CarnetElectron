@@ -47,6 +47,7 @@ class UISettingsHelper {
         this.setDefaultSetting('reversed', false)
         this.setDefaultSetting('start_page', 'recent')
         this.setDefaultSetting('in_line', false)
+        this.setDefaultSetting('should_preload_editor', true)
 
     }
 
