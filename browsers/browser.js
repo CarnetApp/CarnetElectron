@@ -97,13 +97,14 @@ function onPrepared(error, data, notePath, action) {
     else {
         console.log("reuse old iframe");
         $("#editor-container").show()
+        if (compatibility.isElectron) {
+            writerFrame.send('loadnote', notePath);
+            writerFrame.send('action', action);
+        }
+        else
+            writerFrame.contentWindow.loadPath(notePath, action);
         $(loadingView).fadeIn(function () {
-            if (compatibility.isElectron) {
-                writerFrame.send('loadnote', notePath);
-                writerFrame.send('action', action);
-            }
-            else
-                writerFrame.contentWindow.loadPath(notePath, action);
+
             writerFrame.style.display = "inline-flex"
 
         })
