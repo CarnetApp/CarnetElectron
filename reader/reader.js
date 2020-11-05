@@ -412,6 +412,8 @@ Writer.prototype.placeCaretAtEnd = function (el) {
         range.selectNodeContents(el);
         range.collapse(false);
         var sel = window.getSelection();
+        if (sel == null)
+            return
         sel.removeAllRanges();
         sel.addRange(range);
     } else if (typeof document.body.createTextRange != "undefined") {
