@@ -110,5 +110,7 @@
     "loading_notes_list": "Loading notes list",
     "importing_notes": "Importing notes",
     "import_finished": "Import finished",
-    "preload_editor": "Preload editor for faster load"
+    "preload_editor": "Preload editor for faster load",
+    "import_error": "An error occurred while importing",
+    "import_success": "Import success"
 }

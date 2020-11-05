@@ -131,6 +131,13 @@ Importer.prototype.displayChooseWholeArchiveOrSelectNotes = function () {
         }, files, function (error, data) {
             console.log("send " + error)
 
+            $('#import-finished').show();
+            $('#importing-view').hide();
+            if (error)
+                $('#import-report').html($.i18n("import_error"));
+            else
+                $('#import-report').html($.i18n("import_success"));
+
         }, function (percentComplete) {
 
             progressBar.classList.remove("mdl-progress__indeterminate")
@@ -138,7 +145,9 @@ Importer.prototype.displayChooseWholeArchiveOrSelectNotes = function () {
             $("#archive-or-notes-selection").hide()
             console.log("sending " + percentComplete)
             $("#importing-view").show();
-            document.getElementById("importing").innerHTML = percentComplete + "%"
+            document.getElementById("importing").innerHTML = Math.trunc(percentComplete) + "%<br /> Please wait"
+            if (percentComplete == 100)
+                progressBar.classList.add("mdl-progress__indeterminate")
 
         })
     }
