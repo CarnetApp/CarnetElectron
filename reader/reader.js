@@ -280,9 +280,11 @@ Writer.prototype.extractNote = function (callback) {
         console.log(data)
         writer.saveID = data.id;
         var onExtracted = function () {
+            $("#media-loading").fadeOut()
             writer.refreshKeywords()
             writer.refreshMedia();
         }
+        $("#media-loading").show()
         RequestBuilder.sRequestBuilder.get("/note/extract?path=" + encodeURIComponent(writer.note.path) + "&id=" + data.id, function (error, data2) {
             if (error) {
                 console.log("extraction failed...")
