@@ -101,6 +101,8 @@ RequestBuilder.prototype.postFiles = function (path, data, files, callback, uplo
         type: "POST",
         xhr: function () {
             var xhr = new window.XMLHttpRequest();
+            if (uploadProgress == undefined)
+                return xhr;
             xhr.upload.addEventListener("progress", function (evt) {
                 if (evt.lengthComputable) {
                     var percentComplete = (evt.loaded / evt.total) * 100;
