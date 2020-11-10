@@ -271,6 +271,7 @@ Writer.prototype.displayErrorLarge = function (error) {
 Writer.prototype.extractNote = function (callback) {
     console.log("Writer.prototype.extractNote")
     const writer = this;
+    $("#media-loading").show()
     RequestBuilder.sRequestBuilder.get("/note/open?path=" + encodeURIComponent(this.note.path), function (error, data) {
         if (error) {
             writer.setDoNotEdit(true);
@@ -284,7 +285,7 @@ Writer.prototype.extractNote = function (callback) {
             writer.refreshKeywords()
             writer.refreshMedia();
         }
-        $("#media-loading").show()
+
         RequestBuilder.sRequestBuilder.get("/note/extract?path=" + encodeURIComponent(writer.note.path) + "&id=" + data.id, function (error, data2) {
             if (error) {
                 console.log("extraction failed...")
