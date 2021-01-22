@@ -8,10 +8,27 @@ class CarnetConverter {
         return "/";
     }
 
+
+    importFilesToZip = function (notePath, currentZip, destZip, files, callback) {
+        if (files == undefined || files.length <= 0) {
+            callback()
+            return;
+        }
+        var importer = this;
+        var file = files.pop()
+        console.log("importing " + file)
+
+        currentZip.files[notePath + file].async("base64")
+            .then(function (data) {
+                destZip.file(file, data, { base64: true });
+                importer.importFilesToZip(notePath, currentZip, destZip, files, callback)
+            })
+    }
+
     convertNoteToSQD(currentZip, notePath, destFolder, callback) {
         console.log("convertNoteToSQD " + notePath)
 
-        var fileName = FileUtils.getFilename(notePath);
+        var fileName = notePath.endsWith("/") ? FileUtils.getFilename(notePath.substring(0, notePath.length - 1)) : FileUtils.getFilename(notePath);
         var converter = this;
         var dest = FileUtils.getParentFolderFromPath(notePath)
 
@@ -54,30 +71,51 @@ class CarnetConverter {
                 dest = dest.substring(toRemove)
             }
         }
-        currentZip.files[notePath].async('blob').then(function (noteBlob) {
-            console.log("blob loaded " + noteBlob)
+        if (notePath.endsWith("/")) { // is folder note, need to create a directory
+            var filesToImportToZip = []
+            var zip = new JSZip();
 
-            noteBlob.arrayBuffer().then(buffer => {
-                console.log("buffer loaded " + buffer)
+            currentZip.folder(notePath).forEach(function (relativePath, zipEntry) {
+                console.log(relativePath)
+                filesToImportToZip.push(relativePath)
+            })
+            converter.importFilesToZip(notePath, currentZip, zip, filesToImportToZip, function () {
+                zip.generateAsync({ type: "blob" }).then(function (noteBlob) {
+                    currentZip.files[notePath + "metadata.json"].async('string').then(function (metadata) {
+                        callback(noteBlob, metadata, fileName, metadata.isPinned, dest)
+                    });
 
-                JSZip.loadAsync(buffer).then(function (noteZip) {
-                    console.log("noteZip loaded " + noteZip)
-                    if (noteZip.files["metadata.json"] != undefined)
-                        noteZip.files["metadata.json"].async('string').then(function (metadata) {
-                            console.log("metadata loaded ")
 
-                            callback(noteBlob, metadata, fileName, metadata.isPinned, dest)
-                        })
-                    else callback(undefined)
+                })
+            })
 
-                }, function (e) {
-                    console.log("error " + e)
-                    callback(undefined)
+        }
+        else {
+            currentZip.files[notePath].async('blob').then(function (noteBlob) {
+                console.log("blob loaded " + noteBlob)
 
+                noteBlob.arrayBuffer().then(buffer => {
+                    console.log("buffer loaded " + buffer)
+
+                    JSZip.loadAsync(buffer).then(function (noteZip) {
+                        console.log("noteZip loaded " + noteZip)
+                        if (noteZip.files["metadata.json"] != undefined)
+                            noteZip.files["metadata.json"].async('string').then(function (metadata) {
+                                console.log("metadata loaded ")
+
+                                callback(noteBlob, metadata, fileName, metadata.isPinned, dest)
+                            })
+                        else callback(undefined)
+
+                    }, function (e) {
+                        console.log("error " + e)
+                        callback(undefined)
+
+                    });
                 });
-            });
 
-        })
+            })
+        }
 
     }
 
@@ -85,7 +123,7 @@ class CarnetConverter {
         var list = []
         zip.forEach(function (relativePath, zipEntry) {
             console.log("note " + relativePath)
-            if (relativePath.endsWith(".sqd")) {
+            if (relativePath.endsWith(".sqd") || relativePath.endsWith(".sqd/")) {
                 list.push(relativePath)
 
             }
