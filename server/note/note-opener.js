@@ -1,6 +1,8 @@
 var fs = require('fs-extra');
 var FolderNoteOpener = require("./folder-note-opener").FolderNoteOpener;
 var ZipNoteOpener = require("./zip-note-opener").ZipNoteOpener;
+var SettingsHelper = require("../settings_helper").SettingsHelper;
+var settingsHelper = new SettingsHelper();
 var NoteOpener = function (note, relativeNotePath) {
   this.note = note;
   this.folderNoteOpener = new FolderNoteOpener(note, relativeNotePath)
@@ -77,7 +79,7 @@ NoteOpener.prototype.openTo = function (path, callback) {
 NoteOpener.prototype.saveFrom = function (fromPath, modifiedFiles, deletedFiles, callback) {
   var opener = this;
   this.isNoteFile((isFile) => {
-    if (isFile == undefined || isFile) {
+    if (isFile == undefined && !settingsHelper.getUseNoteFolder() || isFile) {
       opener.zipNoteOpener.saveFrom(fromPath, modifiedFiles, deletedFiles, callback)
     }
     else {
