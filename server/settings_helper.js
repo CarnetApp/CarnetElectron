@@ -36,6 +36,14 @@ SettingsHelper.prototype.setNotePath = function (path) {
     store.set("root_path", path);
 }
 
+SettingsHelper.prototype.setUseNoteFolder = function (useNoteFolder) {
+    store.set("use_note_folder", useNoteFolder);
+}
+
+SettingsHelper.prototype.getUseNoteFolder = function (useNoteFolder) {
+    return store.get("use_note_folder");
+}
+
 SettingsHelper.prototype.setAppUid = function (uid) {
     store.set("appuid", uid);
 }

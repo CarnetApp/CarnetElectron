@@ -135,6 +135,25 @@ $(document).ready(function () {
     UISettingsHelper.getInstance().postSettings()
   }
 
+
+  document.getElementById("use_note_folders").onchange = function (value) {
+
+    RequestBuilder.sRequestBuilder.post("/settings/note_folder", {
+      useFolder: value.target.checked
+    }, function (error, data) {
+    })
+  }
+
+  RequestBuilder.sRequestBuilder.get("/settings/note_folder", function (error, data) {
+    if (data == "true" || data == true) {
+
+      document.getElementById("use_note_folders").checked = true
+      document.getElementById("use_note_folders").parentNode.classList.add("is-checked")
+    } else {
+      document.getElementById("use_note_folders").checked = false
+      document.getElementById("use_note_folders").parentNode.classList.remove("is-checked")
+    }
+  })
   document.getElementById("preload_editor").onchange = function (value) {
     if (value.target.checked)
       UISettingsHelper.getInstance().set("should_preload_editor", true);

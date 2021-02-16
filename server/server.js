@@ -127,6 +127,10 @@ var handle = function (method, path, data, callback) {
             case "/note/open/0/listMedia":
                 getMediaList(callback)
                 return;
+            case "/settings/note_folder":
+                console.log("settingsHelper.getUseNoteFolder() " + settingsHelper.getUseNoteFolder())
+                callback(false, settingsHelper.getUseNoteFolder() + "")
+                return;
             case "/note/get_note":
                 console.log("get note " + settingsHelper.getNotePath() + "/" + args['path'])
                 fs.readFile(settingsHelper.getNotePath() + "/" + args['path'], "base64", function (err, dataZ) {
@@ -288,6 +292,11 @@ var handle = function (method, path, data, callback) {
                     } else callback(true)
                 });
                 break;
+            case "/settings/note_folder":
+                settingsHelper.setUseNoteFolder(data.useFolder)
+                callback(false, undefined)
+                console.log("useFolder " + data.useFolder)
+                return;
             case "/settings/note_path":
                 settingsHelper.setNotePath(data.path)
                 callback(false, undefined)
