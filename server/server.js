@@ -21,9 +21,12 @@ var handle = function (method, path, data, callback) {
     var splitPath = path.split("?")
     var pathBeforeArgs = splitPath[0]
     var args = {}
+    var qs = require('qs');
+    var argsParsed = qs.parse(path);
 
     if (splitPath[1] != undefined) {
         var argsStr = path.split("?")[1]
+        argsParsed = qs.parse(argsStr);
         argsSplit = argsStr.split("&");
         for (var arg of argsSplit) {
             argSplit = arg.split("=");
@@ -132,10 +135,8 @@ var handle = function (method, path, data, callback) {
                 return;
         }
         if (path.startsWith("/metadata?")) {
-            console.logDebug("get metadata")
 
-            var params = path.split("?")[1].split("=")[1].split("%2C");
-
+            var params = argsParsed['paths'];
             var handler = new ArrayHandler(params, function (step) {
                 step = decodeURIComponent(step);
                 if (step == "" || step == undefined || step.indexOf("../") >= 0) {
