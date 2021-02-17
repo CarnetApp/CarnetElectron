@@ -133,9 +133,43 @@ var handle = function (method, path, data, callback) {
                 return;
             case "/note/get_note":
                 console.log("get note " + settingsHelper.getNotePath() + "/" + args['path'])
-                fs.readFile(settingsHelper.getNotePath() + "/" + args['path'], "base64", function (err, dataZ) {
-                    callback(err, dataZ)
+                fs.stat(settingsHelper.getNotePath() + "/" + args['path'], (err, stat) => {
+                    console.log("get note stat " + err)
+
+                    if (err) {
+                        callback(undefined)
+                        return
+                    }
+                    if (stat.isFile()) {
+                        console.log("get note file")
+
+                        fs.readFile(settingsHelper.getNotePath() + "/" + args['path'], "base64", function (err, dataZ) {
+                            callback(err, dataZ)
+                        })
+                    } else {
+                        console.log("get note folder")
+                        require('mkdirp').sync(getTmpPath() + "/exported");
+                        const tmppath = getTmpPath() + "/exported/note.sqd";
+
+                        var fs = require('fs');
+                        var archiver = require('archiver');
+                        console.logDebug("start")
+                        var archive = archiver.create('zip');
+                        var output = fs.createWriteStream(tmppath);
+                        output.on('close', function () {
+                            fs.readFile(tmppath, "base64", function (err, dataZ) {
+                                callback(err, dataZ)
+                            })
+                        });
+                        archive.pipe(output);
+                        var compressor = this;
+                        archive
+                            .directory(settingsHelper.getNotePath() + "/" + args['path'], false)
+                            .finalize();
+                    }
+
                 })
+
                 return;
         }
         if (path.startsWith("/metadata?")) {
