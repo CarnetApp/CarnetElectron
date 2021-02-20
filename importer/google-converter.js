@@ -252,6 +252,26 @@ GoogleConverter.prototype.onDateAvailable = function (date, json, zip, filename,
             }
         }
     }
+   if (json['listContent'] != undefined) {
+        var todoList = {"id": "todolist" + generateUID()}
+        todoList.todo = []
+        todoList.done = []
+        todoList.todoIds = []
+        todoList.doneIds = []
+        todoList.stats = []
+        for (var todos of json['listContent']) {
+            if (todos['text'] != undefined) {
+                if (todos['text'] != undefined && !todos['isChecked']) {
+                   todoList.todo.push(todos['text'])
+                   todoList.todoIds.push(generateUID())
+                }else{
+                   todoList.done.push(todos['text'])
+                   todoList.doneIds.push(generateUID())
+                }
+            }
+        }
+        metadata['todolists'].push(todoList)
+    }
     zip.file("metadata.json", JSON.stringify(metadata));
 
     importer.importNoteAttachments(currentZip, zip, json['attachments'], function () {
