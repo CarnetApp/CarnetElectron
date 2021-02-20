@@ -91,10 +91,10 @@ Search.prototype.recursiveVisit = function (path, callback) {
                 filePath = path + "/" + filePath;
                 var stat = fs.statSync(filePath);
 
-                if (!stat.isFile()) {
-                    search.toVisit.push(filePath)
-                } else if (filePath.endsWith(".sqd")) {
+                if (filePath.endsWith(".sqd")) {
                     search.fileList.push(filePath)
+                } else if (!stat.isFile()) {
+                    search.toVisit.push(filePath)
                 }
             }
         if (search.toVisit.length > 0) {
