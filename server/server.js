@@ -483,9 +483,10 @@ var handle = function (method, path, data, callback) {
                     callback(true, "")
                     return;
                 }
-                fs.unlink(settingsHelper.getNotePath() + toDelete, function () {
+                NoteUtils.deleteNote(toDelete, function () {
                     callback(false)
                 })
+
                 return;
             case "/note/open/0/media":
                 console.logDebug("deleting " + args["media"])

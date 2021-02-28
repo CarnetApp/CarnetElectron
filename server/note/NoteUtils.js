@@ -11,10 +11,15 @@ NoteUtils.getNoteRelativePath = function (rootPath, notePath) {
 }
 NoteUtils.deleteNote = function (notePath, callback) {
     console.log("delete " + notePath)
-    var fs = require('fs');
-    fs.unlink(ettingsHelper.getNotePath() + "/" + notePath, function () {
-        var db = new RecentDBManager(settingsHelper.getNotePath() + "/quickdoc/recentdb/" + settingsHelper.getAppUid())
-        db.removeFromDB(notePath, callback);
+    if (!notePath.endsWith("sqd")) {
+        callback(true, undefined)
+        return;
+    }
+    console.log("delete " + notePath)
+
+    var rimraf = require("rimraf");
+    rimraf(settingsHelper.getNotePath() + "/" + notePath, function () {
+        callback(false, undefined)
     })
 }
 
