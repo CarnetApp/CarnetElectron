@@ -53,7 +53,7 @@ CarnetRecorder.prototype.init = function () {
           writer.genericDialog.close()
         }
         writer.genericDialog.querySelector(".cancel").onclick = function () {
-            writer.genericDialog.close()
+          writer.genericDialog.close()
         }
         writer.genericDialog.querySelector(".action").innerHTML = $.i18n("ok")
         writer.genericDialog.querySelector(".content").innerHTML = $.i18n("delete_recording_confirmation")
@@ -62,8 +62,8 @@ CarnetRecorder.prototype.init = function () {
       else {
         deleteFunction()
       }
-        return true;
-      
+      return true;
+
     }
     this.saveButton.onclick = function () {
 
@@ -103,9 +103,9 @@ CarnetRecorder.prototype.init = function () {
     var recorder = compatibility.getRecorder(options);
     this.recorder = recorder
     stopButton.onclick = function () {
-      if(!carnetRecorder.hasRecorded)
+      if (!carnetRecorder.hasRecorded)
         recorder.stop();
-      else{
+      else {
         carnetRecorder.audioplayer.pause()
         carnetRecorder.audioplayer.currentTime = 0
       }

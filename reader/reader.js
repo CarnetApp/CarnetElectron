@@ -427,6 +427,22 @@ Writer.prototype.placeCaretAtEnd = function (el) {
     }
 }
 
+Writer.prototype.saveCaretPosition = function (context) {
+    var selection = window.getSelection();
+    var range = selection.getRangeAt(0);
+    range.setStart(context, 0);
+    var len = range.toString().length;
+
+    return function restore() {
+        var pos = getTextNodeAtPosition(context, len);
+        selection.removeAllRanges();
+        var range = new Range();
+        range.setStart(pos.node, pos.position);
+        selection.addRange(range);
+
+    }
+}
+
 Writer.prototype.isBigNote = function () {
     return this.oCenter.scrollHeight > this.oCenter.clientHeight + 200
 }
@@ -458,6 +474,9 @@ Writer.prototype.fillWriter = function (extractedHTML) {
     for (var editable of this.oDoc.getElementsByClassName("edit-zone")) {
         editable.onclick = function (event) {
             writer.onEditableClick(event);
+        }
+        editable.onfocus = function () {
+            writer.focusedEditZone = this;
         }
         for (var insideDiv of editable.getElementsByTagName("div")) {
             insideDiv.dir = "auto"
@@ -918,6 +937,10 @@ Writer.prototype.init = function () {
                 case "options-button":
                     document.getElementById("options-dialog").showModal()
                     break;
+                case "link-to-note-button":
+                    writer.savePosition()
+                    compatibility.requestLinkToNote()
+                    break;
                 case "open-second-toolbar":
                     document.getElementById("toolbar").classList.add("more")
                     $("#toolbar").scrollLeft(0)
@@ -1371,6 +1394,25 @@ Writer.prototype.handleAction = function (type, value) {
     else if (type === "add-media") {
 
     }
+    else if (type === "link-note") {
+        alert(type + " " + value)
+        var writer = this
+        setTimeout(function () {
+            writer.restorePosition()
+            document.execCommand('insertHTML', false, value);
+
+        }, 1000)
+    }
+}
+
+Writer.prototype.restorePosition = function () {
+    var sel = document.getSelection();
+    sel.collapse(saved[0], saved[1]);
+}
+
+Writer.prototype.savePosition = function () {
+    var sel = document.getSelection();
+    saved = [sel.focusNode, sel.focusOffset];
 }
 
 Writer.prototype.handleActions = function (actions) {

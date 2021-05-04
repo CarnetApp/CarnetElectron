@@ -20,6 +20,7 @@ var cachedMetadata = JSON.parse(noteCacheStr);
 var recentCacheStr = String(store.get("recent_cache"))
 var cachedRecentDB = undefined
 var shouldPreloadEditor = false // used to preopen editor
+var linkToNote = false;
 if (recentCacheStr != "undefined")
     cachedRecentDB = JSON.parse(recentCacheStr);
 
@@ -99,7 +100,7 @@ function onPrepared(error, data, notePath, action) {
         $("#editor-container").show()
         if (compatibility.isElectron) {
             writerFrame.send('loadnote', notePath);
-            writerFrame.send('action', action);
+            writerFrame.send('action', { action: action, value: undefined });
         }
         else
             writerFrame.contentWindow.loadPath(notePath, action);
@@ -187,8 +188,16 @@ function resetGrid(discret) {
     }
     noteCardViewGrid.onNoteClick(function (note) {
         if (!dontOpen) {
-            if (note.path != "untitleddonotedit.sqd")
-                openNote(note.path)
+            if (note.path != "untitleddonotedit.sqd") {
+                if (linkToNote) {
+                    showEditor()
+                    compatibility.actionToEditor("link-note", note.path)
+                }
+                else {
+                    openNote(note.path)
+                }
+
+            }
             else
                 displaySnack({
                     message: $.i18n("fake_notes_warning"),
@@ -776,6 +785,12 @@ registerWriterEvent("error", function () {
     hideEditor()
 })
 
+registerWriterEvent("link_a_note", function () {
+    linkToNote = true;
+    hideEditor()
+
+})
+
 function setDraggable(draggable) {
     if (draggable)
         $(document.getElementsByClassName("mdl-layout__header")[0]).css("-webkit-app-region", "drag");
@@ -790,6 +805,13 @@ function hideEditor() {
     $("#editor-container").hide()
     $("#drag-bar").show()
     setDraggable(true)
+}
+
+function showEditor() {
+    $(writerFrame).fadeIn();
+    $("#editor-container").show()
+    $("#drag-bar").hide()
+    setDraggable(false)
 }
 
 

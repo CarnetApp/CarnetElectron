@@ -18,7 +18,7 @@ class CompatibilityEditor extends Compatibility {
                 loadPath(path)
             });
             ipcRenderer.on('action', function (event, action) {
-                writer.handleAction(action)
+                writer.handleAction(action.action, action.value)
             });
         } else {
             var exports = function () { }
@@ -62,6 +62,16 @@ class CompatibilityEditor extends Compatibility {
             app.hideProgress();
         } else {
             parent.postMessage("loaded", "*")
+        }
+    }
+
+    requestLinkToNote() {
+        if (this.isAndroid) {
+
+        } else if (this.isElectron) {
+
+        } else {
+            parent.postMessage("link_a_note", "*")
         }
     }
 }

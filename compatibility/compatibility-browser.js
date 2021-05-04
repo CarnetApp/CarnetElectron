@@ -137,6 +137,14 @@ class BrowserCompatibility extends Compatibility {
 
     }
 
+    actionToEditor(action, value) {
+        if (compatibility.isElectron) {
+            writerFrame.send('action', { action: action, value: value });
+        }
+        else
+            writerFrame.contentWindow.writer.handleAction(action, value);
+    }
+
     onFirstrunEnds() {
         if (this.isElectron) {
             this.openElectronSyncDialog()
