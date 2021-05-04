@@ -23,3 +23,9 @@ sudo npm install
 You can help with translations on the dedicated platform
 
 [weblate](https://weblate.lostpod.me)
+
+
+
+## Reminder
+
+Path to note shouldn't start with a /

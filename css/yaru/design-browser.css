@@ -13,6 +13,22 @@
     --grid-button-shadow: 0 0px 0px 2px  #893346;
 
 }
+html{
+    margin: 20px;
+    background: inherit;
+    max-width: calc(100% - 40px);
+    max-height: calc(100% - 40px);
+    box-shadow: 0 0 30px black;
+    border-radius: 10px;
+}
+
+body {
+    background: unset;
+}
+
+#browser {
+    border-radius: 10px;
+}
 
 #close-button, #minus-button, #size-button {
     color:#34343400;
