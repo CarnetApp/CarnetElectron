@@ -845,7 +845,7 @@ class CarnetHttpServer {
             if (request.method == 'GET') {
                 var media = current_url.searchParams.get('media');
                 var note = current_url.searchParams.get('note');
-                if (note.endsWith(".sqd") && note.indexOf("../") == -1) {
+                if (note!= undefined &&note.endsWith(".sqd") && note.indexOf("../") == -1) {
                     console.log("get " + media)
                     console.log("from note " + note)
 
