@@ -77,7 +77,9 @@ class Compatibility {
             frame: true,
             webPreferences: {
                 nodeIntegration: true,
-                webviewTag: true
+                webviewTag: true,
+                enableRemoteModule: true,
+                contextIsolation: false,
             }
         });
         const url = require('url')
