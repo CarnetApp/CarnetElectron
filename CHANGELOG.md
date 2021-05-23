@@ -1,3 +1,25 @@
+# Version 0.24.0
+
+Option to create note as folder (beta for dev)
+Yaru theme
+import todolist from google keep (thanks to yohan-b)
+
+Fix:
+Nextcloud 21
+Export all notes (by Yamanq)
+Metadata (by hobbsecky)
+Search in folder notes
+
+Translations:
+
+Galician (Xosé M)
+German (Christien Scholz)
+Polish (Przemek Poland)
+Spanish (Maira Belmonte)
+Chinese (Lurenjia)
+Russian (Mac Guffin)
+French (Aznörth)
+
 # Version 0.22.0
 
 Better handle right to left languages
