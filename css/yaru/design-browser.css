@@ -14,12 +14,8 @@
 
 }
 html{
-    margin: 20px;
     background: inherit;
-    max-width: calc(100% - 40px);
-    max-height: calc(100% - 40px);
-    box-shadow: 0 0 30px black;
-    border-radius: 10px;
+
 }
 
 body {
@@ -27,7 +23,6 @@ body {
 }
 
 #browser {
-    border-radius: 10px;
 }
 
 #close-button, #minus-button, #size-button {

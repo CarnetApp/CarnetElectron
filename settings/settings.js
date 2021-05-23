@@ -77,31 +77,19 @@ $(document).ready(function () {
     var id = Math.random().toString(36).substring(7);
     var selector = document.createElement("div");
     selector.classList.add("theme-selector")
-    var label = document.createElement("label");
-    label.classList.add("mdl-radio")
-    label.classList.add("mdl-js-radio")
-    label.classList.add("mdl-js-ripple-effect")
-    label.for = id;
-    selector.appendChild(label)
-    var input = document.createElement("input");
-    input.type = "radio"
-    input.id = id
-    input.classList.add("mdl-radio__button")
-    input.name = "theme"
-    input.value = url;
 
-    label.appendChild(input)
+
+   
     var span = document.createElement("span");
     span.classList.add("mdl-radio__label")
     span.innerHTML = name
-    label.appendChild(span)
+    selector.appendChild(span)
     var img = document.createElement("img")
     img.src = preview;
     selector.appendChild(img)
     document.getElementById("theme-list").appendChild(selector)
-    var mat = new window['MaterialRadio'](label)
-    input.onchange = function () {
-      if (input.checked) {
+    selector.onclick = function () {
+    
         console.log(name)
         RequestBuilder.sRequestBuilder.post("/settings/app_theme", {
           url: url
@@ -109,9 +97,8 @@ $(document).ready(function () {
           document.getElementById("theme-dialog").close()
           window.location.reload(true)
         })
-      }
+      
     }
-    label['MaterialRadio'] = mat
   }
 
   RequestBuilder.sRequestBuilder.get("/settings/themes", function (error, data) {

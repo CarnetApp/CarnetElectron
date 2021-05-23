@@ -42,7 +42,7 @@ var handle = function (method, path, data, callback) {
                 callback(false, "");
                 return;
             case "/settings/themes":
-                callback(false, '[{"name":"Carnet", "path":"css/carnet", "preview":"css/carnet/preview.png"}, {"name":"Dark", "path":"css/dark", "preview":"css/dark/preview.png"}, {"name":"Yaru", "path":"css/yaru", "preview":"css/yaru/preview.png"}]');
+                callback(false, '[{"name":"Carnet", "path":"css/carnet", "preview":"css/carnet/preview.png"}, {"name":"Dark", "path":"css/dark", "preview":"css/dark/preview.png"}, {"name":"Black", "path":"css/black", "preview":"css/black/preview.png"}, {"name":"Yaru", "path":"css/yaru", "preview":"css/yaru/preview.png"}]');
                 return;
             case "/settings/browser_css":
                 callback(false, settingsHelper.getBrowserCss())
