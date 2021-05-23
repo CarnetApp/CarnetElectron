@@ -108,7 +108,12 @@ Importer.prototype.onArchiveSelected = function (archive) {
             break;
         default:
             importer.converter = new CarnetConverter(this);
-            importer.displayChooseWholeArchiveOrSelectNotes()
+            if(!compatibility.isElectron)
+                importer.displayChooseWholeArchiveOrSelectNotes()
+            else{
+                $("#archive-or-notes-selection").hide()
+                this.loadNoteList()
+            }
 
     }
     importer.destPath = importer.converter.getDestPath()
