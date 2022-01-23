@@ -188,8 +188,8 @@ $(document).ready(function () {
     document.getElementById("recent-button").href = "index.html"
     document.getElementById("browser-button").href = "index.html"
   } else {
-    document.getElementById("recent-button").href = "./"
-    document.getElementById("browser-button").href = "./"
+    document.getElementById("recent-button").href = "./browser"
+    document.getElementById("browser-button").href = "./browser"
   }
 
   RequestBuilder.sRequestBuilder.get("/settings/settings_css", function (error, data) {
