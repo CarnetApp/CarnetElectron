@@ -1,7 +1,7 @@
 var JSZip = require('jszip');
 var mkdirp = require('mkdirp');
 var fs = require('fs-extra');
-const intoStream = require('into-stream');
+const intoStream = import('into-stream');
 var NoteUtils = require("./NoteUtils").NoteUtils;
 
 var getParentFolderFromPath = require("../../utils/file_utils").FileUtils.getParentFolderFromPath
