@@ -100,7 +100,7 @@ KeywordsDBManager.prototype.mergeDB = function (path, callback) {
                 }
                 if (hasChanged) {
                     dataJson["data"].sort(keysrt('time'))
-                    require("mkdirp")(getParentFolderFromPath(db.path), function () {
+                    require("mkdirp")(getParentFolderFromPath(db.path)).then(made => {
                         lockFile.lock('recent.lock', {
                             wait: 10000
                         }, function (er) {
@@ -135,7 +135,7 @@ KeywordsDBManager.prototype.actionArray = function (items, callback) {
                 };
                 fullDB["data"].push(item);
             }
-            require("mkdirp")(getParentFolderFromPath(db.path), function () {
+            require("mkdirp")(getParentFolderFromPath(db.path)).then(made => {
                 // opts is optional, and defaults to {} 
 
                 console.logDebug("writing")

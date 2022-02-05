@@ -1,11 +1,13 @@
 const {
     app,
     BrowserWindow,
-    ipcMain
+    ipcMain,
+    webContents
 } = require('electron');
 const path = require('path')
 const url = require('url')
-
+// In the main process:
+require('@electron/remote/main').initialize()
 const Store = require('electron-store');
 const store = new Store();
 var SettingsHelper = require("./server/settings_helper").SettingsHelper;
@@ -75,9 +77,7 @@ function createWindow() {
             webPreferences: {
                 nodeIntegration: true,
                 webviewTag: true,
-                enableRemoteModule: true,
                 contextIsolation: false,
-                enableRemoteModule: true
 
             }
         })
@@ -90,9 +90,9 @@ function createWindow() {
             protocol: 'file:',
             slashes: true
         }) + '?api_url=' + server.carnetHttpServer.getAddress())
-
+        require("@electron/remote/main").enable(win.webContents);
         // Open the DevTools.
-        //win.webContents.openDevTools()
+        win.webContents.openDevTools()
         console.log("app uid " + uid)
 
         // Emitted when the window is closed.
@@ -178,6 +178,13 @@ exports.displayMainWindow = (size, pos) => {
     win.setSize(size[0], size[1]);
     win.setPosition(pos[0], pos[1]);
     win.show();
+}
+
+exports.enableEditorWebContent = (webContentsId) => {
+    console.log("calling enableEditorWebContent "+webContentsId)
+    require("@electron/remote/main").enable(webContents.fromId(webContentsId));
+    console.log("called enableEditorWebContent"+webContents.fromId(webContentsId))
+
 }
 
 exports.hideMainWindow = () => {

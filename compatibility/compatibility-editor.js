@@ -65,6 +65,16 @@ class CompatibilityEditor extends Compatibility {
         }
     }
 }
-
-var compatibility = new CompatibilityEditor();
-var isElectron = compatibility.isElectron;
+var isElectron = typeof require === "function" || typeof parent.require === "function";
+if(!isElectron){
+    $(document).ready(function(){
+        init()
+    })
+}
+else{
+    console.log("isDefinitivetyelectron")
+    var ipcRenderer = require('electron').ipcRenderer;
+            ipcRenderer.on('remote_ready', function (event, path) {
+                init()
+            });
+}

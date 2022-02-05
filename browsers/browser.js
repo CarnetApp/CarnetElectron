@@ -78,21 +78,26 @@ function onPrepared(error, data, notePath, action) {
         return;
 
     if (writerFrame.src == "") {
-        if (navigator.userAgent.toLowerCase().indexOf('firefox') > -1 && navigator.userAgent.toLowerCase().indexOf("android") > -1) {//open in new tab for firefox android
-            window.open("writer?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : ""), "_blank");
-        }
-        else {
-            writerFrame.src = data + (notePath != undefined ? ("?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : "")) : "");
             if (notePath !== undefined) {
                 $("#editor-container").show()
                 $(loadingView).fadeIn(function () {
                     writerFrame.style.display = "inline-flex"
+                    if(compatibility.isElectron){
+                        writerFrame.addEventListener("dom-ready", () => {
+                            const remote = require('@electron/remote');
+                            var main = remote.require("./main");
+                            main.enableEditorWebContent(document.getElementById("writer-webview").getWebContentsId())
+                            writerFrame.openDevTools()
+                            writerFrame.send('remote_ready', undefined);
+                        })
+                    }
+                    writerFrame.src = data + (notePath != undefined ? ("?path=" + encodeURIComponent(notePath) + (action != undefined ? "&action=" + action : "")) : "");
+
+                    
+
                 })
             }
-        }
-        /*setTimeout(function () {
-            writerFrame.openDevTools()
-        }, 1000)*/
+    
     }
     else {
         console.log("reuse old iframe");

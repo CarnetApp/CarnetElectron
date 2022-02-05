@@ -16,15 +16,21 @@ var Sync = function (onSyncStart, onSyncEnd) {
 
 }
 Sync.prototype.connect = function () {
-    var createClient = require("webdav");
+    const { AuthType, createClient }  = require("webdav");
+       
     var sync = this;
     console.logDebug("connecting with " + sync.settingsHelper.getRemoteWebdavUsername())
-
+    const username = sync.settingsHelper.getRemoteWebdavUsername()
+    const password = sync.settingsHelper.getRemoteWebdavPassword()
     this.client = createClient(
         sync.settingsHelper.getRemoteWebdavAddr(),
-        sync.settingsHelper.getRemoteWebdavUsername(),
-        sync.settingsHelper.getRemoteWebdavPassword()
-    );
+        {
+            username,
+            password
+        }
+        
+    )
+   
 
 
 }

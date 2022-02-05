@@ -1,8 +1,8 @@
 class ElectronRequestBuilder extends RequestBuilder {
     constructor() {
         super("./");
-        var remote = compatRequire('electron').remote;
-        this.main = remote.require("./main.js");
+        var remote = require('@electron/remote');
+        this.main = remote.require("./main");
     }
     get(path, callback) {
         var requestId = Utils.generateUID()

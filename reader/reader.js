@@ -1647,8 +1647,12 @@ if (loaded == undefined)
     var loaded = false; //don't know why, loaded twice on android
 
 var writer = undefined;
-
-$(document).ready(function () {
+var isElectron = false;
+var compatibility = undefined;
+function init () {
+    compatibility = new CompatibilityEditor();
+    isElectron = compatibility.isElectron;
+    console.log("isElectron "+isElectron)
     rootpath = document.getElementById("root-url").innerHTML.trim();
     api_url = document.getElementById("api-url").innerHTML.trim();
 
@@ -1695,7 +1699,7 @@ $(document).ready(function () {
     })
     $.i18n().locale = navigator.language;
 
-});
+}
 $(window).on('touchstart', function (e) {
     if ($(e.target).closest('.block-scroll').length >= 1) {
         writer.oCenter.style.overflowY = "hidden";
