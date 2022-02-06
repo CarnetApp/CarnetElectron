@@ -29,7 +29,7 @@ const path = require('path')
 
 NoteOpener.prototype.isNoteFile = function (callback) {
   var opener = this
-  console.log("isFile " + opener.isFile)
+  console.logDebug("isFile " + opener.isFile)
 
   if (this.isFile != undefined)
     callback(this.isFile)
@@ -40,7 +40,6 @@ NoteOpener.prototype.isNoteFile = function (callback) {
         return
       }
       opener.isFile = stat.isFile()
-      console.log("isFile " + opener.isNeFile)
       callback(opener.isFile)
     })
   }
