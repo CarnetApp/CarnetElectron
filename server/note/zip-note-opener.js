@@ -1,10 +1,10 @@
-var JSZip = require('jszip');
-var mkdirp = require('mkdirp');
-var fs = require('fs-extra');
-const intoStream = import('into-stream');
-var NoteUtils = require("./NoteUtils").NoteUtils;
+const JSZip = require('jszip');
+const mkdirp = require('mkdirp');
+const fs = require('fs-extra');
+const intoStream = require('into-stream');
+const NoteUtils = require("./NoteUtils").NoteUtils;
+const getParentFolderFromPath = require("../../utils/file_utils").FileUtils.getParentFolderFromPath
 
-var getParentFolderFromPath = require("../../utils/file_utils").FileUtils.getParentFolderFromPath
 var ZipNoteOpener = function (note) {
     this.note = note;
 
