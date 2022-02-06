@@ -744,11 +744,10 @@ var getTmpPath = function () {
 var prepareEditor = function (callback) {
     console.logDebug("prepareEditor");
     var rimraf = require('rimraf');
-    const tmp = getTmpPath();
+    const tmp = "../";
 
-    rimraf(tmp, function (e) {
+    
         var fs = require('fs');
-        console.logDebug("rm " + e)
         fs.mkdir(tmp, function (e) {
             console.logDebug("mkdir " + e)
 
@@ -758,7 +757,7 @@ var prepareEditor = function (callback) {
                     console.logDebug("error ")
                     return console.logDebug(err);
                 }
-                const index = path.join(tmp, 'reader.html');
+                const index = 'reader.html';
                 data = data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/../');
                 data = data.replace(new RegExp('<!ROOTURL>', 'g'), __dirname + '/../');
                 data = data.replace(new RegExp('<!APIURL>', 'g'), '')
@@ -771,7 +770,7 @@ var prepareEditor = function (callback) {
 
         });
 
-    })
+    
 }
 var NewNoteCreationTask = function (folder, callback) {
     console.logDebug("NewNoteCreationTask " + path)
