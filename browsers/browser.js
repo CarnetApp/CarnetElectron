@@ -87,7 +87,7 @@ function onPrepared(error, data, notePath, action) {
                             const remote = require('@electron/remote');
                             var main = remote.require("./main");
                             main.enableEditorWebContent(document.getElementById("writer-webview").getWebContentsId())
-                            writerFrame.openDevTools()
+                           // writerFrame.openDevTools()
                             writerFrame.send('remote_ready', undefined);
                         })
                     }
