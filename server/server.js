@@ -747,29 +747,26 @@ var prepareEditor = function (callback) {
     const tmp = "../";
 
     
-        var fs = require('fs');
-        fs.mkdir(tmp, function (e) {
-            console.logDebug("mkdir " + e)
+    var fs = require('fs');
 
-            fs.readFile(__dirname + '/../reader/reader.html', 'utf8', function (err, data) {
-                if (err) {
-                    fs.rea
-                    console.logDebug("error ")
-                    return console.logDebug(err);
-                }
-                const index = 'reader.html';
-                data = data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/../');
-                data = data.replace(new RegExp('<!ROOTURL>', 'g'), __dirname + '/../');
-                data = data.replace(new RegExp('<!APIURL>', 'g'), '')
+    fs.readFile(__dirname + '/../reader/reader.html', 'utf8', function (err, data) {
+        if (err) {
+            fs.rea
+            console.logDebug("error ")
+            return console.logDebug(err);
+        }
+        const index = 'reader.html';
+        data = data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/../');
+        data = data.replace(new RegExp('<!ROOTURL>', 'g'), __dirname + '/../');
+        data = data.replace(new RegExp('<!APIURL>', 'g'), '')
 
-                fs.writeFileSync(index, data);
-                console.logDebug("index " + index)
-                callback(false, index)
-            });
+        fs.writeFileSync(index, data);
+        console.logDebug("index " + index)
+        callback(false, index)
+    });
 
 
-        });
-
+        
     
 }
 var NewNoteCreationTask = function (folder, callback) {
