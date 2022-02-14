@@ -89,7 +89,6 @@ class Compatibility {
             slashes: true
         }))
         win.setMenu(null)
-        win.webContents.openDevTools()
         var main = remote.require("./main");
         main.enableEditorWebContent(win.webContents.id)
     }
