@@ -17,7 +17,7 @@ var currentcache = {}
 var media = []
 var openedNotePath = undefined
 var handle = function (method, path, data, callback) {
-    console.log(method + " " + path)
+    console.logDebug(method + " " + path)
     var splitPath = path.split("?")
     var pathBeforeArgs = splitPath[0]
     var args = {}
@@ -128,26 +128,26 @@ var handle = function (method, path, data, callback) {
                 getMediaList(callback)
                 return;
             case "/settings/note_folder":
-                console.log("settingsHelper.getUseNoteFolder() " + settingsHelper.getUseNoteFolder())
+                console.logDebug("settingsHelper.getUseNoteFolder() " + settingsHelper.getUseNoteFolder())
                 callback(false, settingsHelper.getUseNoteFolder() + "")
                 return;
             case "/note/get_note":
-                console.log("get note " + settingsHelper.getNotePath() + "/" + args['path'])
+                console.logDebug("get note " + settingsHelper.getNotePath() + "/" + args['path'])
                 fs.stat(settingsHelper.getNotePath() + "/" + args['path'], (err, stat) => {
-                    console.log("get note stat " + err)
+                    console.logDebug("get note stat " + err)
 
                     if (err) {
                         callback(undefined)
                         return
                     }
                     if (stat.isFile()) {
-                        console.log("get note file")
+                        console.logDebug("get note file")
 
                         fs.readFile(settingsHelper.getNotePath() + "/" + args['path'], "base64", function (err, dataZ) {
                             callback(err, dataZ)
                         })
                     } else {
-                        console.log("get note folder")
+                        console.logDebug("get note folder")
                         require('mkdirp').sync(getTmpPath() + "/exported");
                         const tmppath = getTmpPath() + "/exported/note.sqd";
 
@@ -181,7 +181,7 @@ var handle = function (method, path, data, callback) {
                     this.next()
                     return;
                 }
-                console.log("get metadata " + step)
+                console.logDebug("get metadata " + step)
                 var stepCorrected = cleanPath(step)
                 var cached = CacheManager.getInstance().get(stepCorrected)
                 if (cached != undefined) {
@@ -193,9 +193,9 @@ var handle = function (method, path, data, callback) {
 
                     })
                     handler.next();
-                    console.log("from cache" + cached.media)
+                    console.logDebug("from cache" + cached.media)
                 } else {
-                    console.log("not from cache")
+                    console.logDebug("not from cache")
                     new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + step), step).getMainTextMetadataAndPreviews(function (text, metadata, previews, media) {
                         if (text != undefined) {
                             handler.addResult(step, {
@@ -329,7 +329,7 @@ var handle = function (method, path, data, callback) {
             case "/settings/note_folder":
                 settingsHelper.setUseNoteFolder(data.useFolder)
                 callback(false, undefined)
-                console.log("useFolder " + data.useFolder)
+                console.logDebug("useFolder " + data.useFolder)
                 return;
             case "/settings/note_path":
                 settingsHelper.setNotePath(data.path)
@@ -445,7 +445,7 @@ var handle = function (method, path, data, callback) {
                             }
                         }
                         new KeywordsDBManager(settingsHelper.getNotePath() + "/quickdoc/keywords/" + settingsHelper.getAppUid()).actionArray(kactions, function () {
-                            console.log(data.add_to_recent)
+                            console.logDebug(data.add_to_recent)
                             if (data.add_to_recent) {
                                 var dbactions = []
                                 dbactions.push({
@@ -744,34 +744,30 @@ var getTmpPath = function () {
 var prepareEditor = function (callback) {
     console.logDebug("prepareEditor");
     var rimraf = require('rimraf');
-    const tmp = getTmpPath();
+    const tmp = "../";
 
-    rimraf(tmp, function (e) {
-        var fs = require('fs');
-        console.logDebug("rm " + e)
-        fs.mkdir(tmp, function (e) {
-            console.logDebug("mkdir " + e)
+    
+    var fs = require('fs');
 
-            fs.readFile(__dirname + '/../reader/reader.html', 'utf8', function (err, data) {
-                if (err) {
-                    fs.rea
-                    console.logDebug("error ")
-                    return console.logDebug(err);
-                }
-                const index = path.join(tmp, 'reader.html');
-                data = data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/../');
-                data = data.replace(new RegExp('<!ROOTURL>', 'g'), __dirname + '/../');
-                data = data.replace(new RegExp('<!APIURL>', 'g'), '')
+    fs.readFile(__dirname + '/../reader/reader.html', 'utf8', function (err, data) {
+        if (err) {
+            fs.rea
+            console.logDebug("error ")
+            return console.logDebug(err);
+        }
+        const index = 'reader.html';
+        data = data.replace(new RegExp('<!ROOTPATH>', 'g'), __dirname + '/../');
+        data = data.replace(new RegExp('<!ROOTURL>', 'g'), __dirname + '/../');
+        data = data.replace(new RegExp('<!APIURL>', 'g'), '')
 
-                fs.writeFileSync(index, data);
-                console.logDebug("index " + index)
-                callback(false, index)
-            });
+        fs.writeFileSync(index, data);
+        console.logDebug("index " + index)
+        callback(false, index)
+    });
 
 
-        });
-
-    })
+        
+    
 }
 var NewNoteCreationTask = function (folder, callback) {
     console.logDebug("NewNoteCreationTask " + path)
@@ -846,12 +842,12 @@ class CarnetHttpServer {
                 var media = current_url.searchParams.get('media');
                 var note = current_url.searchParams.get('note');
                 if (note!= undefined &&note.endsWith(".sqd") && note.indexOf("../") == -1) {
-                    console.log("get " + media)
-                    console.log("from note " + note)
+                    console.logDebug("get " + media)
+                    console.logDebug("from note " + note)
 
                     new NoteOpener(new Note("", "", settingsHelper.getNotePath() + "/" + note), note).getMedia(media, function (mediaStream, zip) {
-                        console.log("get " + media)
-                        console.log("mediaStream " + mediaStream)
+                        console.logDebug("get " + media)
+                        console.logDebug("mediaStream " + mediaStream)
 
                         if (mediaStream != undefined) {
 
@@ -871,7 +867,7 @@ class CarnetHttpServer {
         this.host = '127.0.0.1'
         server.on('listening', function () {
             carnetHttpServer.port = server.address().port
-            console.log('Listening at ' + carnetHttpServer.getAddress())
+            console.logDebug('Listening at ' + carnetHttpServer.getAddress())
             callback()
         })
         server.listen(0, this.host)

@@ -32,7 +32,7 @@ LocalRecentDBManager.prototype.actionArray = function (items, callback) {
             };
             fullDB["data"].push(item);
         }
-        require("mkdirp")(getParentFolderFromPath(db.path), function () {
+        require("mkdirp")(getParentFolderFromPath(db.path)).then(made => {
             // opts is optional, and defaults to {} 
 
             console.logDebug("writing")
@@ -74,7 +74,7 @@ LocalRecentDBManager.prototype.action = function (path, action, time, callback) 
 
             fullDB["data"].push(item);
             console.logDebug(JSON.stringify(item))
-            require("mkdirp")(getParentFolderFromPath(db.path), function () {
+            require("mkdirp")(getParentFolderFromPath(db.path)).then(made => {
                 // opts is optional, and defaults to {} 
 
                 console.logDebug("writing")
@@ -134,7 +134,7 @@ LocalRecentDBManager.prototype.mergeDB = function (path, callback) {
                 }
                 dataJson["data"] = dataJson["data"].sort(keysrt('time'))
                 if (hasChanged) {
-                    require("mkdirp")(getParentFolderFromPath(db.path), function () {
+                    require("mkdirp")(getParentFolderFromPath(db.path)).then(made => {
                         // opts is optional, and defaults to {} 
                         lockFile.lock('recent.lock', {
                             wait: 10000

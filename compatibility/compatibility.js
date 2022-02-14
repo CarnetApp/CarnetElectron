@@ -66,9 +66,8 @@ class Compatibility {
     }
 
     openElectronSyncDialog() {
-        var {
-            remote
-        } = require('electron');
+        const remote = require('@electron/remote');
+
         const BrowserWindow = remote.BrowserWindow;
 
         var win = new BrowserWindow({
@@ -90,6 +89,9 @@ class Compatibility {
             slashes: true
         }))
         win.setMenu(null)
+        win.webContents.openDevTools()
+        var main = remote.require("./main");
+        main.enableEditorWebContent(win.webContents.id)
     }
 
     sendNextLargeDownload() {

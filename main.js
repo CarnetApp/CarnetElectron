@@ -1,11 +1,13 @@
 const {
     app,
     BrowserWindow,
-    ipcMain
+    ipcMain,
+    webContents
 } = require('electron');
 const path = require('path')
 const url = require('url')
-
+// In the main process:
+require('@electron/remote/main').initialize()
 const Store = require('electron-store');
 const store = new Store();
 var SettingsHelper = require("./server/settings_helper").SettingsHelper;
@@ -18,6 +20,10 @@ var isDebug = args[2]
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+console.logDebug = function (mess) {
+    if (isDebug)
+        console.log(mess)
+}
 
 function guid() {
     function s4() {
@@ -33,7 +39,7 @@ function guid() {
 if (settingsHelper.getAppUid() == null || settingsHelper.getAppUid() == "undefined")
     settingsHelper.setAppUid(guid());
 uid = settingsHelper.getAppUid();
-console.log("app uid " + uid)
+console.logDebug("app uid " + uid)
 var dbmerger = require("./server/recent/merge_db");
 var keywordsdbmerger = require("./server/keywords/merge_db");
 
@@ -41,7 +47,7 @@ function startMerging() {
     new dbmerger.DBMerger(exports.getNotePath() + "/quickdoc/recentdb/", uid).startMergin(function (hasChanged) {
         if (mergeListener != undefined && hasChanged)
             mergeListener();
-        console.log("merge finished has changed ? " + hasChanged);
+        console.logDebug("merge finished has changed ? " + hasChanged);
         //  setTimeout(startMerging, 5*60*1000);
 
     });
@@ -51,7 +57,7 @@ function startKeywordsMerging() {
     new keywordsdbmerger.KeywordDBMerger(exports.getNotePath() + "/quickdoc/keywords/", uid).startMergin(function (hasChanged) {
         if (mergeListener != undefined && hasChanged)
             mergeListener();
-        console.log("merge finished has changed ? " + hasChanged);
+        console.logDebug("merge finished has changed ? " + hasChanged);
         //  setTimeout(startKeywordsMerging, 5*60*1000);
 
     });
@@ -75,7 +81,6 @@ function createWindow() {
             webPreferences: {
                 nodeIntegration: true,
                 webviewTag: true,
-                enableRemoteModule: true,
                 contextIsolation: false,
 
             }
@@ -89,7 +94,7 @@ function createWindow() {
             protocol: 'file:',
             slashes: true
         }) + '?api_url=' + server.carnetHttpServer.getAddress())
-
+        require("@electron/remote/main").enable(win.webContents);
         // Open the DevTools.
         //win.webContents.openDevTools()
         console.log("app uid " + uid)
@@ -108,10 +113,6 @@ function createWindow() {
 
 }
 
-console.logDebug = function (mess) {
-    if (isDebug)
-        console.log(mess)
-}
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -147,7 +148,7 @@ var sendStop = function () {
 }
 var sync = new (require("./server/sync/sync")).Sync(sendStart
     , function (hasDownloadedSmt) {
-        console.log("hasDownloadedSmt " + hasDownloadedSmt)
+        console.logDebug("hasDownloadedSmt " + hasDownloadedSmt)
         if (hasDownloadedSmt) {
             startMerging();
             startKeywordsMerging()
@@ -177,6 +178,11 @@ exports.displayMainWindow = (size, pos) => {
     win.setSize(size[0], size[1]);
     win.setPosition(pos[0], pos[1]);
     win.show();
+}
+
+exports.enableEditorWebContent = (webContentsId) => {
+    require("@electron/remote/main").enable(webContents.fromId(webContentsId));
+
 }
 
 exports.hideMainWindow = () => {

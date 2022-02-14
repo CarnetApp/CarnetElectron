@@ -78,21 +78,31 @@ SettingsHelper.prototype.getRemoteWebdavPath = function () {
 
 
 SettingsHelper.prototype.setRemoteWebdavPath = function (path) {
-
-    return store.set("remote_webdav_path", path)
+    if(path == undefined)
+        store.delete("remote_webdav_path")
+    else
+        return store.set("remote_webdav_path", path)
 }
 
 SettingsHelper.prototype.setRemoteWebdavAddr = function (addr) {
-
-    return store.set("remote_webdav_addr", addr)
+    if(addr == undefined)
+        store.delete("remote_webdav_addr")
+    else
+        return store.set("remote_webdav_addr", addr)
 }
 
 SettingsHelper.prototype.setRemoteWebdavUsername = function (username) {
-    return store.set("remote_webdav_username", username)
+    if(username == undefined)
+        store.delete("remote_webdav_username")
+    else
+        return store.set("remote_webdav_username", username)
 }
 
 SettingsHelper.prototype.setRemoteWebdavPassword = function (password) {
-    return store.set("remote_webdav_password", password)
+    if(password == undefined)
+        store.delete("remote_webdav_password")
+    else
+        return store.set("remote_webdav_password", password)
 }
 
 SettingsHelper.prototype.displayFrame = function () {

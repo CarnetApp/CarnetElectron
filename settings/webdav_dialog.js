@@ -50,11 +50,15 @@ function getWebdavAddress() {
 function connect() {
     if (!(document.getElementById("address").value == "" || document.getElementById("username").value == "" || document.getElementById("password").value == "")) {
         document.getElementById("loading-view").style.display = "block"
-        var createClient = require("webdav");
+        const { AuthType, createClient }  = require("webdav");
         this.client = createClient(
             getWebdavAddress(),
-            document.getElementById("username").value,
-            document.getElementById("password").value
+            {
+                authType: AuthType.Password,
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value
+            }
+            
         ).getDirectoryContents("/")
             .then(function (contents) {
                 document.getElementById("loading-view").style.display = "none"
@@ -67,7 +71,7 @@ function connect() {
 
                 var SyncDBManager = require("../server/sync/sync_db_manager").SyncDBManager
                 SyncDBManager.getInstance().reset()
-                const remote = require('electron').remote;
+                const remote = require('@electron/remote');
                 const window = remote.getCurrentWindow();
                 window.close();
             }).catch(function (e) {

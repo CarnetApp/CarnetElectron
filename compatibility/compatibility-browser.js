@@ -36,9 +36,9 @@ class BrowserCompatibility extends Compatibility {
 
             } else {
                 const {
-                    remote,
                     ipcRenderer
                 } = require('electron');
+                const remote = require('@electron/remote');
                 $('head').append("<style>\
                 @media screen and (min-width: 1400px) {\
 				#loading-view {\
@@ -61,7 +61,7 @@ class BrowserCompatibility extends Compatibility {
                     syncButton.classList.remove("rotation")
                     syncButton.disabled = false;
                 });
-                var main = remote.require("./main.js");
+                var main = remote.require("./main");
                 if (main.isSyncing()) {
                     syncButton.classList.add("rotation")
                     syncButton.disabled = true;
