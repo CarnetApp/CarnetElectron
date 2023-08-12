@@ -266,6 +266,9 @@ Writer.prototype.setDoNotEdit = function (b) {
 
 Writer.prototype.displayErrorLarge = function (error) {
 
+    this.errorTextContainer.innerHTML=error
+    this.errorContainer.style.display = "block"
+
 }
 
 Writer.prototype.extractNote = function (callback) {
@@ -273,9 +276,13 @@ Writer.prototype.extractNote = function (callback) {
     const writer = this;
     $("#media-loading").show()
     RequestBuilder.sRequestBuilder.get("/note/open?path=" + encodeURIComponent(this.note.path), function (error, data) {
-        if (error) {
+        if (error || data.isMarkdown) {
             writer.setDoNotEdit(true);
-            writer.displayErrorLarge("Error");
+            if(data.isMarkdown)
+                writer.displayErrorLarge("Error: please enable experimental Markdown Editor in app settings");
+            else
+                writer.displayErrorLarge("Error");
+            compatibility.onNoteLoaded();
             return;
         }
         console.log(data)
@@ -763,7 +770,9 @@ Writer.prototype.init = function () {
 
     this.printDialog = this.elem.querySelector('#print-dialog');
 
-
+    this.errorContainer = this.elem.querySelector('#error-container');
+    this.errorTextContainer = this.elem.querySelector('#error-text');
+    this.errorContainer.style.display = "none"
     this.oEditor = document.getElementById("editor");
 
     this.oCenter = document.getElementById("center");
@@ -962,6 +971,9 @@ Writer.prototype.init = function () {
     this.addMediaMenu = document.getElementById("add-media-menu")
     document.getElementById("exit").onclick = function () {
         writer.askToExit();
+    }
+    document.getElementById("exit-error").onclick = function () {
+        compatibility.exit();;
     }
 
     document.getElementById("reminders-button").onclick = function () {
@@ -1186,6 +1198,7 @@ Writer.prototype.reset = function () {
     this.setMediaList([])
     document.getElementById("whole-frame-container").style.display = "none"
     document.getElementById("toolbar").classList.remove("more")
+    this.errorContainer.style.display = "none"
     var dias = document.getElementsByClassName("mdl-dialog")
     for (var i = 0; i < dias.length; i++) {
         if (dias[i].open)

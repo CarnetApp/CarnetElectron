@@ -24,6 +24,31 @@ body {
 	background: rgb(255, 255, 255);
 }
 
+#error-internal {
+	position: relative;
+	top: calc(50% - 50px);
+	z-index: 1000;
+	text-align: center;
+	width: 100%;
+	padding: 50px;
+	background: black;
+	color: white;
+	font-size: 26px;
+}
+
+#error-container {
+	position: fixed;
+	display: none;
+	z-index: 1000;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.486);
+}
+
+#exit-error{
+	background: white;
+}
+
 body,
 html {
 	line-height: initial;
