@@ -2,7 +2,7 @@ class AndroidRecorder {
 
 
     constructor(options) {
-        AndroidRecorder.instance = this;
+        window.AndroidRecorder = this;
         this.options = options;
         this.state = "none";
         this.cantPause = true;
