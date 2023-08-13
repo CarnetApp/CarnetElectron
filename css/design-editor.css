@@ -29,9 +29,8 @@ body {
 	top: calc(50% - 50px);
 	z-index: 1000;
 	text-align: center;
-	width: 100%;
 	padding: 50px;
-	background: black;
+	background: rgb(255, 0, 0);
 	color: white;
 	font-size: 26px;
 }
@@ -45,9 +44,7 @@ body {
 	background: rgba(0, 0, 0, 0.486);
 }
 
-#exit-error{
-	background: white;
-}
+
 
 body,
 html {
