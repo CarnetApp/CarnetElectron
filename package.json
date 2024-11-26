@@ -96,7 +96,7 @@
     "@babel/cli": "^7.16.7",
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.7",
-    "electron": "16.0.6",
+    "electron": "22.3.25",
     "electron-builder": "^22.14.5"
   }
 }
